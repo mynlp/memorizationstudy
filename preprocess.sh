@@ -4,9 +4,9 @@
 #PJM -L elapse=48:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N preprocess
-#PJM -o preprocess
-#PJM -e preprocess
+#PJM -N deduped_merge
+#PJM -o deduped_merge
+#PJM -e deduped_merge
 
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
