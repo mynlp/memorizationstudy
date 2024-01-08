@@ -1,1 +1,1 @@
-# memorizationstudy
+# memorizationstud
