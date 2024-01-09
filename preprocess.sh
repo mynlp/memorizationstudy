@@ -8,8 +8,6 @@
 #PJM -o deduped_merge_log
 #PJM -e deduped_merge_log
 
-if [ -z "$RUN_ON_REMOTE" ]; then
-    source /work/gk77/k77025/.zshrc
-fi
-
-python3 utils/unshard_memmap.py --input_file "/work/gk77/k77025/memorizationstudy/deduped_data/datasets--EleutherAI--pile-standard-pythia-preshuffled/snapshots/bac79b6820adb34e451f9a02cc1dc7cd920febf0/document-00000-of-00020.bin" --num_shards 21 --output_dir "/work/gk77/k77025/memorizationstudy/deduped_merge"
+source /work/gk77/k77025/.zshrc
+cd pythia
+python3 utils/unshard_memmap.py --input_file "/work/gk77/k77025/memorizationstudy/undeduped_data/datasets--EleutherAI--pile-deduped-pythia-preshuffled/snapshots/4647773ea142ab1ff5694602fa104bbf49088408/document-00000-of-00020.bin" --num_shards 21 --output_dir "/work/gk77/k77025/memorizationstudy/undeduped_merge"
