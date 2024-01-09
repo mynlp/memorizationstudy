@@ -4,9 +4,9 @@
 #PJM -L elapse=48:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N deduped_merge_log
-#PJM -o deduped_merge_log
-#PJM -e deduped_merge_log
+#PJM -N undeduped_merge_log
+#PJM -o undeduped_merge_log
+#PJM -e undeduped_merge_log
 
 source /work/gk77/k77025/.zshrc
 cd pythia
