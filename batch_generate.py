@@ -69,8 +69,7 @@ def main():
     BATCH_SIZE = 1024
     LOG_INTERVAL = 100
     RANK = int(os.environ['RANK'])
-    LOCAL_RANK = RANK
-    NUM_PROCS = int(os.environ['WORLD_SIZE'])
+    NUM_PROCS = 1
     MODEL = os.environ['MODEL']
     CHECKPOINT = int(os.environ['CHECKPOINT'])
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
