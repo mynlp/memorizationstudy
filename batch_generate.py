@@ -82,8 +82,8 @@ def main():
         world_size=NUM_PROCS,
         rank=RANK
     )
-    #store = dist.TCPStore(os.environ['MASTER_ADDR'], port=12125,
-    #                      world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
+    store = dist.TCPStore("127.0.0.1", port=12125,
+                          world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
     logging.info("start")
 
     dist.barrier()
