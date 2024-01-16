@@ -76,7 +76,7 @@ def main():
     CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
     os.environ['MASTER_ADDR'] = "127.0.0.1"
     os.environ['MASTER_PORT'] = '12128'
-    logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
+    #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     torch.cuda.set_device(RANK)
     dist.init_process_group(
