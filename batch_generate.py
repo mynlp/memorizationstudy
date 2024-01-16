@@ -15,6 +15,7 @@ def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_
     if "deduped" in os.environ['MODEL']:
         prefix = 'orz/pile/deduped/document.bin'
     buff_size = 2049*batch_size*2
+    print("Building dataset")
     mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
     context_tokens = []
     true_continuation = []
