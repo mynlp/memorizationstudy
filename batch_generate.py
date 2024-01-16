@@ -109,9 +109,7 @@ def main():
     # Model initialization
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{MODEL}",
-        use_cache=False,
         revision=f'step{CHECKPOINT}',
-        cache_dir=f"/fsx/orz/models/"
     ).half().eval().cuda()
 
     dist.barrier()
