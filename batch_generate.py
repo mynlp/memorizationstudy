@@ -112,7 +112,7 @@ def main():
         revision=f'step{CHECKPOINT}',
     ).half().eval().cuda()
 
-    dist.barrier()
+    #dist.barrier()
     print("Loaded Model")
 
     memorization_evals = []
