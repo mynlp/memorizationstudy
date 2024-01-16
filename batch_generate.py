@@ -14,6 +14,7 @@ def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in os.environ['MODEL']:
         prefix = 'deduped_merge/document.bin'
+    logging.info(prefix)
     buff_size = 2049*batch_size*2
     logging.info("Building dataset")
     mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
@@ -69,10 +70,10 @@ def score(model, context_tokens, true_continuation):
 def main():
     BATCH_SIZE = 1024
     LOG_INTERVAL = 100
-    RANK = int(os.environ['RANK'])
+    RANK = 1#int(os.environ['RANK'])
     NUM_PROCS = 2
-    MODEL = os.environ['MODEL']
-    CHECKPOINT = int(os.environ['CHECKPOINT'])
+    MODEL = "70m-deduped-v0"#os.environ['MODEL']
+    CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     torch.cuda.set_device(RANK)
@@ -81,8 +82,9 @@ def main():
         world_size=NUM_PROCS,
         rank=RANK
     )
-    store = dist.TCPStore(os.environ['MASTER_ADDR'], port=12125,
-                          world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
+    #store = dist.TCPStore(os.environ['MASTER_ADDR'], port=12125,
+    #                      world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
+    logging.info("start")
 
     dist.barrier()
 
