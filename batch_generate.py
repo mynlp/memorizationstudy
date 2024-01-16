@@ -14,9 +14,9 @@ def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in os.environ['MODEL']:
         prefix = 'deduped_merge/document.bin'
-    logging.info(prefix)
+    print(prefix)
     buff_size = 2049*batch_size*2
-    logging.info("Building dataset")
+    print("Building dataset")
     mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
     context_tokens = []
     true_continuation = []
@@ -76,8 +76,8 @@ def main():
     CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
     os.environ['MASTER_ADDR'] = "127.0.0.1"
     os.environ['MASTER_PORT'] = '12128'
-    logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
-    logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
+    logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
+    print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     torch.cuda.set_device(RANK)
     dist.init_process_group(
         "nccl",
@@ -86,7 +86,7 @@ def main():
     )
     store = dist.TCPStore(os.environ['MASTER_ADDR'], port=12125,
                           world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
-    logging.info("start")
+    print("start")
 
     dist.barrier()
 
@@ -115,7 +115,7 @@ def main():
     ).half().eval().cuda()
 
     dist.barrier()
-    logging.info("Loaded Model")
+    print("Loaded Model")
 
     memorization_evals = []
     iters = 0
@@ -128,18 +128,18 @@ def main():
                 break
 
             idx = idx
-            logging.info(f"Loading data took {time.time() - t:.3}s")
+            print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
             accuracies = score(model, context, true_continuation)
 
             for acc in accuracies:
                 memorization_evals.append(f'{idx},{acc}')
                 idx += 1
-            logging.info(f"Generation uptil {idx} took {time.time() - t:.3}s")
+            print(f"Generation uptil {idx} took {time.time() - t:.3}s")
             dist.barrier()
             iters += 1
         except StopIteration:
-            logging.info("Break")
+            print("Break")
             break
     ds_process.join()
     dist.barrier()
