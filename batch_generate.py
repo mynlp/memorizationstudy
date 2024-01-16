@@ -134,6 +134,7 @@ def main():
             dist.barrier()
             iters += 1
         except StopIteration:
+            print("Break")
             break
     ds_process.join()
     dist.barrier()
