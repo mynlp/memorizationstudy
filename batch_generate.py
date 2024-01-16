@@ -75,6 +75,7 @@ def main():
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
     CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
     os.environ['MASTER_ADDR'] = "127.0.0.1"
+    os.environ['MASTER_PORT'] = '12128'
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     torch.cuda.set_device(RANK)
