@@ -70,8 +70,8 @@ def score(model, context_tokens, true_continuation):
 def main():
     BATCH_SIZE = 1024
     LOG_INTERVAL = 100
-    RANK = 0#int(os.environ['RANK'])
-    NUM_PROCS = 2
+    RANK = 1#int(os.environ['RANK'])
+    NUM_PROCS = 1
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
     CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
     os.environ['MASTER_ADDR'] = "127.0.0.1"
