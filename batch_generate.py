@@ -70,7 +70,7 @@ def score(model, context_tokens, true_continuation):
 def main():
     BATCH_SIZE = 1024
     LOG_INTERVAL = 100
-    RANK = 1#int(os.environ['RANK'])
+    RANK = 0#int(os.environ['RANK'])
     NUM_PROCS = 1
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
     CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
@@ -84,7 +84,7 @@ def main():
         world_size=NUM_PROCS,
         rank=RANK
     )
-    store = dist.TCPStore(os.environ['MASTER_ADDR'], port=12125,
+    store = dist.TCPStore(os.environ['MASTER_ADDR'], port=os.environ['MASTER_PORT'],
                           world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
     print("start")
 
