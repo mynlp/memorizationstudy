@@ -136,7 +136,7 @@ def main():
                 memorization_evals.append(f'{idx},{acc}')
                 idx += 1
             print(f"Generation uptil {idx} took {time.time() - t:.3}s")
-            dist.barrier()
+            #dist.barrier()
             iters += 1
         except StopIteration:
             print("Break")
