@@ -75,7 +75,7 @@ def main():
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
     os.environ['MODEL'] = MODEL
     CHECKPOINT = 143000#int(os.environ['CHECKPOINT'])
-    os.environ['CHECKPOINT'] = CHECKPOINT
+    os.environ['CHECKPOINT'] = str(CHECKPOINT)
     os.environ['MASTER_ADDR'] = "127.0.0.1"
     os.environ['MASTER_PORT'] = '13443'
     #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
