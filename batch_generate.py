@@ -73,7 +73,7 @@ def main():
     RANK = 0#int(os.environ['RANK'])
     NUM_PROCS = 1
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
-    CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
+    CHECKPOINT = 143000#int(os.environ['CHECKPOINT'])
     os.environ['MASTER_ADDR'] = "127.0.0.1"
     os.environ['MASTER_PORT'] = '13443'
     #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
