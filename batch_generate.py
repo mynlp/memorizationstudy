@@ -13,7 +13,7 @@ from transformers import GPTNeoXForCausalLM
 def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in os.environ['MODEL']:
-        prefix = 'orz/pile/deduped/document.bin'
+        prefix = 'deduped_merge//document.bin'
     buff_size = 2049*batch_size*2
     logging.info("Building dataset")
     mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
