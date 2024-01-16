@@ -74,6 +74,7 @@ def main():
     NUM_PROCS = 2
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
     CHECKPOINT = 14300#int(os.environ['CHECKPOINT'])
+    os.environ['MASTER_ADDR'] = "127.0.0.1"
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     torch.cuda.set_device(RANK)
@@ -82,7 +83,7 @@ def main():
         world_size=NUM_PROCS,
         rank=RANK
     )
-    store = dist.TCPStore("127.0.0.1", port=12125,
+    store = dist.TCPStore(os.environ['MASTER_ADDR'], port=12125,
                           world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
     logging.info("start")
 
