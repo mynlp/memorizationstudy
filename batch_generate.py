@@ -119,6 +119,7 @@ def main():
 
     memorization_evals = []
     iters = 0
+    debug_count = 0
     while (True):
         try:
             t = time.time()
@@ -135,12 +136,13 @@ def main():
             for acc in accuracies:
                 memorization_evals.append(f'{idx},{acc}')
                 idx += 1
+                debug_count += 1
+                if iters == 200:
+                    with open(f"memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
+                        f.write("\n".join(memorization_evals))
             print(f"Generation uptil {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
-            if iters == 100:
-                with open(f"memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
-                    f.write("\n".join(memorization_evals))
         except StopIteration:
             print("Break")
             break
