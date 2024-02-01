@@ -139,7 +139,7 @@ def main():
                 debug_count += 1
                 if debug_count == 200:
                     with open(f"memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
-                        f.write("\n".join(memorization_evals))
+                        f.write("\n".join(memorization_evals).encode())
             print(f"Generation uptil {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
