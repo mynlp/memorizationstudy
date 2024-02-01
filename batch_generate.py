@@ -138,10 +138,15 @@ def main():
             print(f"Generation uptil {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
+            if iters == 100:
+                with open(f"memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
+                    f.write("\n".join(memorization_evals))
         except StopIteration:
             print("Break")
             break
     ds_process.join()
+    with open(f"memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
+        f.write("\n".join(memorization_evals))
     # dist.barrier()
 
 if __name__ == '__main__':
