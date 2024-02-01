@@ -145,7 +145,7 @@ def main():
             print("Break")
             break
     ds_process.join()
-    with open(f"memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
+    with open(f"generate_results/memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
         f.write("\n".join(memorization_evals))
     # dist.barrier()
 
