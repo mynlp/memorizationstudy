@@ -13,5 +13,7 @@
 #export MODEL=70m-deduped-v0
 #export CHECKPOINT=143000
 #
-
+if [ -z "$RUN_ON_REMOTE" ]; then
+    source /work/gk77/k77025/.zshrc
+fi
 python3 batch_generate.py
