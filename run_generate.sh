@@ -1,6 +1,6 @@
 #PJM -L rscgrp=share-debug
 #PJM -L gpu=2
-#PJM -L elapse=00:o1:00
+#PJM -L elapse=00:01:00
 #PJM -g gk77
 #PJM -j
 #PJM -N test
