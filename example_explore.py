@@ -7,12 +7,17 @@ import torch.distributed as dist
 import transformers.utils as transformer_utils
 import multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
-from transformers import GPTNeoXForCausalLM
+from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
 model = GPTNeoXForCausalLM.from_pretrained(
     "EleutherAI/pythia-70m-deduped-v0",
     revision=f'step143000',
 ).half().eval().cuda()
+tokenizer = AutoTokenizer.from_pretrained(
+    "EleutherAI/pythia-70m-deduped-v0",
+    revision=f'step143000',
+    cache_dir="./pythia-70m-deduped-v0/step143000",
+)
 CHECKPOINT= 143000
 prefix = 'undeduped_merge/document.bin'
 if "deduped" in os.environ['MODEL']:
@@ -47,3 +52,6 @@ for i in range(start_idx, end_idx + 1, BATCH_SIZE):
         true_continuation = torch.tensor(true_continuation).to('cuda')
         generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 64, min_length = 64)
         accuracies = (true_continuation == generations[:,32:64]).float().mean(axis=-1)
+    print(f"The Contentxt:{tokenizer.decode(context_tokens)}")
+    print(f"The True Continuation:{true_continuation}")
+    print(f"The Generated Text:{generations}")
