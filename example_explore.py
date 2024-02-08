@@ -9,18 +9,20 @@ import multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
+
+model_name = "EleutherAI/pythia-70m-deduped-v0"
+CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
-    "EleutherAI/pythia-70m-deduped-v0",
-    revision=f'step143000',
+    model_name,
+    revision=f'step{CHECKPOINT}',
 ).half().eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
     "EleutherAI/pythia-70m-deduped-v0",
     revision=f'step143000',
     cache_dir="./pythia-70m-deduped-v0/step143000",
 )
-CHECKPOINT= 143000
 prefix = 'undeduped_merge/document.bin'
-if "deduped" in os.environ['MODEL']:
+if "deduped" in model_name:
     prefix = 'deduped_merge/document.bin'
 print(prefix)
 buff_size = 2049*1024*2
