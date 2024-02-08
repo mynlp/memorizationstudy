@@ -46,14 +46,16 @@ BATCH_SIZE = 1024
 
 for i in range(start_idx, end_idx + 1, BATCH_SIZE):
     data = mmap_ds[i:i + BATCH_SIZE]
-    context_tokens.extend(data[:, :32].tolist())
-    true_continuation.extend(data[:, 32:64].tolist())
+    context_tokens = data[:, :32].tolist()
+    true_continuation = data[:, 32:64].tolist()
     i += len(context_tokens)
     with torch.no_grad():
         context_tokens = torch.tensor(context_tokens).to('cuda')
         true_continuation = torch.tensor(true_continuation).to('cuda')
         generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 64, min_length = 64)
         accuracies = (true_continuation == generations[:,32:64]).float().mean(axis=-1)
-    print(f"The Contentxt:{tokenizer.batch_decode(context_tokens)}")
-    print(f"The True Continuation:{tokenizer.batch_decode(true_continuation)}")
-    print(f"The Generated Text:{tokenizer.batch_decode(generations)}")
+    for i in range(len(context_tokens)):
+        print(f"Context:{tokenizer.batch_decode(context_tokens[i])}")
+        print(f"True Continuation:{tokenizer.batch_decode(true_continuation[i])}")
+        print(f"Generated Text:{tokenizer.batch_decode(generations[i])}")
+        print(f"Accuracy:{accuracies[i]}")
