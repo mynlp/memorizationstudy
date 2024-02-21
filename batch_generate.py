@@ -112,7 +112,7 @@ def main():
 
     # Dataset Initialization
     mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(args.batch_sze, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
+    ds_process = mp.Process(target=generate_dataset, args=(args.batch_size, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
     ds_process.start()
 
     # Model initialization
