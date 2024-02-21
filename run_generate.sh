@@ -16,4 +16,4 @@
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-python3 batch_generate.py --model 70m-deduped-v0 --checkpoint 143000 --batch_size 1024 --context_size 32 --continuation_size 32
+python3 batch_generate.py --model 13m-deduped-v0 --checkpoint 143000 --batch_size 1024 --context_size 32 --continuation_size 32
