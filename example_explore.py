@@ -37,8 +37,6 @@ RANK = 0
 num_sequences_per_proc = total_num_sequences // NUM_PROCS
 start_idx = num_sequences_per_proc * RANK
 end_idx = num_sequences_per_proc * (RANK + 1) - 1
-start_idx = num_sequences_per_proc * RANK
-end_idx = num_sequences_per_proc * (RANK + 1) - 1
 if RANK == (NUM_PROCS - 1):
     end_idx = total_num_sequences - 1
 BATCH_SIZE = 1024

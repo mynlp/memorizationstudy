@@ -8,9 +8,9 @@ import transformers.utils as transformer_utils
 import multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM
+import argparse
 
-
-def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
+def generate_dataset(batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in os.environ['MODEL']:
         prefix = 'deduped_merge/document.bin'
@@ -23,8 +23,8 @@ def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_
     i = 0
     for i in range(start_seq_idx, end_seq_idx + 1, batch_size):
         data = mmap_ds[i:i + batch_size]
-        context_tokens.extend(data[:, :32].tolist())
-        true_continuation.extend(data[:, 32:64].tolist())
+        context_tokens.extend(data[:, :context_size].tolist())
+        true_continuation.extend(data[:, context_size:context_size+continuation_size].tolist())
         i += len(context_tokens)
 
         if len(context_tokens) == batch_size:
@@ -44,7 +44,7 @@ def generate_dataset(batch_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_
     mp_queue.put((None, None, None))
 
 
-def score(model, context_tokens, true_continuation):
+def score(model, context_tokens, true_continuation, context_size, continuation_size):
     """Calculate memorization score from context tokens and true continuation
 
     Performs greedy generation from context tokens and calculates memorization score
@@ -64,20 +64,27 @@ def score(model, context_tokens, true_continuation):
         generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 64, min_length = 64)
 
 
-        accuracies = (true_continuation == generations[:,32:64]).float().mean(axis=-1)
+        accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
 def main():
-    BATCH_SIZE = 1024
-    LOG_INTERVAL = 100
+    paser = argparse.ArgumentParser()
+    paser.add_argument("--batch_size", type=int, default=1024)
+    paser.add_argument("--context_size", type=int, default=32)
+    paser.add_argument("--continuation_size", type=int, default=32)
+    paser.add_argument("--model", type=str, default="70m-deduped-v0")
+    paser.add_argument("--checkpoint", type=int, default=143000)
+    args = paser.parse_args()
+    #BATCH_SIZE = 1024
+    #LOG_INTERVAL = 100
     RANK = 0#int(os.environ['RANK'])
     NUM_PROCS = 1
     MODEL = "70m-deduped-v0"#os.environ['MODEL']
-    os.environ['MODEL'] = MODEL
+    #os.environ['MODEL'] = MODEL
     CHECKPOINT = 143000#int(os.environ['CHECKPOINT'])
-    os.environ['CHECKPOINT'] = str(CHECKPOINT)
-    os.environ['MASTER_ADDR'] = "127.0.0.1"
-    os.environ['MASTER_PORT'] = '13443'
+    #os.environ['CHECKPOINT'] = str(CHECKPOINT)
+    #os.environ['MASTER_ADDR'] = "127.0.0.1"
+    #os.environ['MASTER_PORT'] = '13443'
     #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     # torch.cuda.set_device(RANK)
@@ -96,7 +103,7 @@ def main():
     transformer_utils.logging.set_verbosity_error()
 
     # Calculate start and end sequence indicies
-    total_num_sequences = CHECKPOINT * 1024
+    total_num_sequences = args.checkpoint * args.batch_sze
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
     start_idx = num_sequences_per_proc * RANK
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
@@ -105,13 +112,13 @@ def main():
 
     # Dataset Initialization
     mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(BATCH_SIZE, start_idx, end_idx, mp_queue))
+    ds_process = mp.Process(target=generate_dataset, args=(args.batch_sze, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
     ds_process.start()
 
     # Model initialization
     model = GPTNeoXForCausalLM.from_pretrained(
-        f"EleutherAI/pythia-{MODEL}",
-        revision=f'step{CHECKPOINT}',
+        f"EleutherAI/pythia-{args.model}",
+        revision=f'step{args.checkpoint}',
     ).half().eval().cuda()
 
     #dist.barrier()
@@ -131,7 +138,7 @@ def main():
             idx = idx
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
-            accuracies = score(model, context, true_continuation)
+            accuracies = score(model, context, true_continuation, args.context_size, args.continuation_size)
 
             for acc in accuracies:
                 memorization_evals.append(f'{idx},{acc}')
@@ -143,7 +150,7 @@ def main():
         except StopIteration:
             print("Break")
             break
-    with open(f"generate_results/memorization_evals_{MODEL}_{CHECKPOINT}.csv", "w") as f:
+    with open(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", "w") as f:
         f.write("\n".join(memorization_evals))
     ds_process.join()
     # dist.barrier()
