@@ -10,9 +10,9 @@ from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM
 import argparse
 
-def generate_dataset(batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
+def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
-    if "deduped" in os.environ['MODEL']:
+    if "deduped" in model:
         prefix = 'deduped_merge/document.bin'
     print(prefix)
     buff_size = 2049*batch_size*2
@@ -112,7 +112,7 @@ def main():
 
     # Dataset Initialization
     mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(args.batch_size, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
+    ds_process = mp.Process(target=generate_dataset, args=(args.model, args.batch_size, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
     ds_process.start()
 
     # Model initialization
