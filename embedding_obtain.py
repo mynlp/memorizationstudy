@@ -49,8 +49,8 @@ batched_context_tokens = []
 batched_true_continuation = []
 for idx in listed[0:100]:
     data = mmap_ds[idx]
-    context_tokens = data[ :32].tolist()
-    true_continuation = data[:, 32:48].tolist()
+    context_tokens = data[:32].tolist()
+    true_continuation = data[32:48].tolist()
     batched_context_tokens.append(context_tokens)
     batched_true_continuation.append(true_continuation)
 i += len(context_tokens)
