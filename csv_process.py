@@ -1,7 +1,7 @@
 from utils import *
 import numpy as np
 
-generate_results = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_64_143000.csv")
+generate_results = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv")
 results_list = []
 #results = generate_results[generate_results['0.0'] == 1.0]
 #results_list.append(results)
