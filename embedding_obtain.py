@@ -56,8 +56,15 @@ for idx in listed[0:100]:
 i += len(context_tokens)
 context_tokens = torch.tensor(batched_context_tokens).to('cuda')
 true_continuation = torch.tensor(batched_true_continuation).to('cuda')
-generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 64, min_length = 64)
+generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 48, min_length = 48)
 accuracies = (true_continuation == generations[0][:,32:48]).float().mean(axis=-1)
+#generations 0  is the predicted tokenids
+#generations 1 is the scores
+#generations 2 is the hidden states
+#generations 3 is the attentions
+#generations 4 is the cross attentions
+
+
 # for i in range(len(context_tokens)):
 #     print(f"Context:{tokenizer.batch_decode(context_tokens[i])}")
 #     print(f"True Continuation:{tokenizer.batch_decode(true_continuation[i])}")
