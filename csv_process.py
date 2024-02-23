@@ -27,4 +27,5 @@ def find_cross(df1, df2, value):
 df1 = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv")
 df2 = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_64_143000.csv")
 
-find_cross(df1, df2, 1)
+cross = find_cross(df1, df2, 1)
+
