@@ -45,12 +45,17 @@ if RANK == (NUM_PROCS - 1):
 df1 = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv")
 df1 = df1[df1['0.0'] == 1]
 listed = df1["0"].to_list()
-data = mmap_ds[listed[0][0:100]]
-context_tokens = data[ :32].tolist()
-true_continuation = data[:, 32:48].tolist()
+batched_context_tokens = []
+batched_true_continuation = []
+for idx in listed[0:100]:
+    data = mmap_ds[listed[0][0:100]]
+    context_tokens = data[ :32].tolist()
+    true_continuation = data[:, 32:48].tolist()
+    batched_context_tokens.append(context_tokens)
+    batched_true_continuation.append(true_continuation)
 i += len(context_tokens)
-context_tokens = torch.tensor(context_tokens).to('cuda')
-true_continuation = torch.tensor(true_continuation).to('cuda')
+context_tokens = torch.tensor(batched_context_tokens).to('cuda')
+true_continuation = torch.tensor(batched_true_continuation).to('cuda')
 generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 64, min_length = 64)
 accuracies = (true_continuation == generations[0][:,32:48]).float().mean(axis=-1)
 # for i in range(len(context_tokens)):
