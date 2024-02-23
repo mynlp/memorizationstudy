@@ -5,18 +5,18 @@ import torch
 from utils import *
 
 
-model_name = "EleutherAI/pythia-70m-deduped-v0"
+model_name = "EleutherAI/pythia-160m-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
 model.eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
@@ -58,11 +58,11 @@ context_tokens = torch.tensor(batched_context_tokens).to('cuda')
 true_continuation = torch.tensor(batched_true_continuation).to('cuda')
 generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 48, min_length = 48)
 accuracies = (true_continuation == generations[0][:,32:48]).float().mean(axis=-1)
-#generations 0  is the predicted tokenids
-#generations 1 is the scores
-#generations 2 is the hidden states
-#generations 3 is the attentions
-#generations 4 is the cross attentions
+#generations 0  is the predicted tokenids (batch size, sequence length)
+#generations 1 is the scores (continuation size, (batch_size, vocab size)) take the argmax of this to get the token ids of continuations
+#generations 2 is the attentions states (continuation size, (num_layer, (batch_soze, num heads, context size, context size))))
+#generations 3 is the hidden states (continuation size, (num_layer, (batch_size,size,context size,embeddings size))
+#generations 4 is the past key value states (num_layer,(key value, (batch size, num heads, whole size, head dimension)))
 
 
 # for i in range(len(context_tokens)):

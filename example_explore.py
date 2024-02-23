@@ -40,8 +40,6 @@ end_idx = num_sequences_per_proc * (RANK + 1) - 1
 if RANK == (NUM_PROCS - 1):
     end_idx = total_num_sequences - 1
 BATCH_SIZE = 1024
-
-
 for i in range(start_idx, end_idx + 1, BATCH_SIZE):
     data = mmap_ds[i:i + BATCH_SIZE]
     context_tokens = data[:, :32].tolist()
