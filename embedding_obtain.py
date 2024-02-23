@@ -44,16 +44,17 @@ if RANK == (NUM_PROCS - 1):
     end_idx = total_num_sequences - 1
 df1 = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv")
 df1 = df1[df1['0.0'] == 1]
-data = mmap_ds[df1["0"][1]]
-context_tokens = data[:, :32].tolist()
+listed = df1["0"].to_list()
+data = mmap_ds[listed[0][0:100]]
+context_tokens = data[ :32].tolist()
 true_continuation = data[:, 32:48].tolist()
 i += len(context_tokens)
 context_tokens = torch.tensor(context_tokens).to('cuda')
 true_continuation = torch.tensor(true_continuation).to('cuda')
 generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = 64, min_length = 64)
-accuracies = (true_continuation == generations[:,32:48]).float().mean(axis=-1)
-for i in range(len(context_tokens)):
-    print(f"Context:{tokenizer.batch_decode(context_tokens[i])}")
-    print(f"True Continuation:{tokenizer.batch_decode(true_continuation[i])}")
-    print(f"Generated Text:{tokenizer.batch_decode(generations[i])}")
-    print(f"Accuracy:{accuracies[i]}")
+accuracies = (true_continuation == generations[0][:,32:48]).float().mean(axis=-1)
+# for i in range(len(context_tokens)):
+#     print(f"Context:{tokenizer.batch_decode(context_tokens[i])}")
+#     print(f"True Continuation:{tokenizer.batch_decode(true_continuation[i])}")
+#     print(f"Generated Text:{tokenizer.batch_decode(generations[i])}")
+#     print(f"Accuracy:{accuracies[i]}")
