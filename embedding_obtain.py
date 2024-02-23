@@ -48,7 +48,7 @@ listed = df1["0"].to_list()
 batched_context_tokens = []
 batched_true_continuation = []
 for idx in listed[0:100]:
-    data = mmap_ds[listed[0][0:100]]
+    data = mmap_ds[idx]
     context_tokens = data[ :32].tolist()
     true_continuation = data[:, 32:48].tolist()
     batched_context_tokens.append(context_tokens)
