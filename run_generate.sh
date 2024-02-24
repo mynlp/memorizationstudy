@@ -4,9 +4,9 @@
 #PJM -L elapse=48:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N de4103264
-#PJM -o de4103264
-#PJM -e de4103264
+#PJM -N de4103296
+#PJM -o de4103296
+#PJM -e de4103296
 
 #env
 #export RANK=1
@@ -19,4 +19,4 @@ fi
 
 ## available models: 70m, 160m, 410m, 1b, 1.4b, 2.8b, 6.9b, 12b deduped
 ## available models: 14m, 31m, 70m, 160m, 410m, 1b, 1.4b, 2.8b, 6.9b, 12b undeduped
-python3 batch_generate.py --model 410m-deduped-v0 --checkpoint 143000 --batch_size 1024 --context_size 32 --continuation_size 64
+python3 batch_generate.py --model 410m-deduped-v0 --checkpoint 143000 --batch_size 1024 --context_size 32 --continuation_size 96
