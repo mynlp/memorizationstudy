@@ -60,10 +60,10 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
     with torch.no_grad():
         context_tokens = torch.tensor(context_tokens).to('cuda')
         true_continuation = torch.tensor(true_continuation).to('cuda')
-
-        generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = context_size+continuation_size, min_length = context_size+continuation_size)
-
-
+        if isinstance(model, torch.nn.DataParallel):
+            generations = model.module.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = context_size+continuation_size, min_length = context_size+continuation_size)
+        else:
+            generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = context_size+continuation_size, min_length = context_size+continuation_size)
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
