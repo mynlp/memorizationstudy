@@ -119,8 +119,11 @@ def main():
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{args.model}",
         revision=f'step{args.checkpoint}',
-    ).half().eval().cuda()
-
+    )
+    if torch.cuda.device_count() > 1:
+        print(f"使用 {torch.cuda.device_count()} GPUs!")
+        model = torch.nn.DataParallel(model)
+    model = model.half().eval().cuda()
     #dist.barrier()
     print("Loaded Model")
 
