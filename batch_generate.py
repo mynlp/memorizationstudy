@@ -132,7 +132,8 @@ def main():
     model = model.half().eval().cuda()
     #dist.barrier()
     print("Loaded Model")
-
+    all_memorization_evals = []
+    all_memorization_evals_values = []
     memorization_evals = []
     memorization_evals_values = []
     iters = 0
@@ -151,6 +152,8 @@ def main():
             accuracies = score(model, context, true_continuation, args.context_size, args.continuation_size)
 
             for acc in accuracies:
+                all_memorization_evals.append(f'{idx},{acc}')
+                all_memorization_evals_values.append([idx, acc.tolist()])
                 memorization_evals.append(f'{idx},{acc}')
                 memorization_evals_values.append([idx, acc.tolist()])
                 idx += 1
@@ -175,7 +178,7 @@ def main():
         except StopIteration:
             print("Break")
             break
-    df = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
+    df = pd.DataFrame(all_memorization_evals_values, columns=["0", "0.0"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
     ds_process.join()
     # dist.barrier()
