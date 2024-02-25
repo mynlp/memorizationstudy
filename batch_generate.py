@@ -158,7 +158,7 @@ def main():
             print(f"Generation until {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
-            if (idx / 1024) % 1000 == 0:
+            if (idx / 1024) % 10 == 0:
                 print(f"Processed {iters} iterations until {idx}")
                 if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
                     df = read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
