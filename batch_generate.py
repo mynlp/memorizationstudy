@@ -164,13 +164,14 @@ def main():
                     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv", index_col=0)
                     cache = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
                     df = pd.concat([df, cache]).reset_index(drop=True)
-                    pdb.set_trace()
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
                 else:
                     df = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
+                memorization_evals = []
+                memorization_evals_values = []
         except StopIteration:
             print("Break")
             break
