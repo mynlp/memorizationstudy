@@ -10,7 +10,7 @@ from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM
 import argparse
 from utils import *
-
+import pdb
 def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in model:
@@ -164,6 +164,7 @@ def main():
                     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv", index_col=0)
                     cache = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
                     df = pd.concat([df, cache]).reset_index(drop=True)
+                    pdb.set_trace()
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
                 else:
