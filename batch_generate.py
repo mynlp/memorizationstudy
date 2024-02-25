@@ -167,13 +167,14 @@ def main():
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
                 else:
-                    with open(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", "w") as f:
-                        f.write("\n".join(memorization_evals))
+                    df = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
+                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
+                    print("Saved Merged Results")
         except StopIteration:
             print("Break")
             break
-    with open(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", "w") as f:
-        f.write("\n".join(memorization_evals))
+    df = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
+    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
     ds_process.join()
     # dist.barrier()
 
