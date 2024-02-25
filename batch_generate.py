@@ -107,7 +107,7 @@ def main():
     total_num_sequences = args.checkpoint * args.batch_size
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
     if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
-        df = pd.ead_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
+        df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
         start_idx = len(df)+1
     else:
         start_idx = num_sequences_per_proc * RANK
