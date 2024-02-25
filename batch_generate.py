@@ -9,6 +9,7 @@ import multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM
 import argparse
+from utils import *
 
 def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
@@ -105,7 +106,12 @@ def main():
     # Calculate start and end sequence indicies
     total_num_sequences = args.checkpoint * args.batch_size
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
-    start_idx = num_sequences_per_proc * RANK
+    if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
+        df = read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
+        start_idx = len(df)+1
+    else:
+        start_idx = num_sequences_per_proc * RANK
+
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
         end_idx = total_num_sequences - 1
@@ -121,13 +127,14 @@ def main():
         revision=f'step{args.checkpoint}',
     )
     if torch.cuda.device_count() > 1:
-        print(f"使用 {torch.cuda.device_count()} GPUs!")
+        print(f"use {torch.cuda.device_count()} GPUs!")
         model = torch.nn.DataParallel(model)
     model = model.half().eval().cuda()
     #dist.barrier()
     print("Loaded Model")
 
     memorization_evals = []
+    memorization_evals_values = []
     iters = 0
     debug_count = 0
     while (True):
@@ -145,11 +152,23 @@ def main():
 
             for acc in accuracies:
                 memorization_evals.append(f'{idx},{acc}')
+                memorization_evals_values.append([idx, acc])
                 idx += 1
                 debug_count += 1
-            print(f"Generation uptil {idx} took {time.time() - t:.3}s")
+            print(f"Generation until {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
+            if (idx / 1024) % 1000 == 0:
+                print(f"Processed {iters} iterations until {idx}")
+                if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
+                    df = read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
+                    cache = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
+                    df = pd.concat([df, cache]).reset_index(drop=True)
+                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
+                    os.remove(f"generate_results/cache_memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
+                else:
+                    with open(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", "w") as f:
+                        f.write("\n".join(memorization_evals))
         except StopIteration:
             print("Break")
             break
