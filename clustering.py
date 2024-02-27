@@ -48,8 +48,8 @@ generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  
 generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  idx_not_full_memorization[0:100], 32, 16)
 
 
-embedding = generations_full_memo.hidden_states[-1][-1].squeeze().numpy()
-embedding_not_full = generations_not_full.hidden_states[-1][-1].squeeze().numpy()
+embedding = generations_full_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
+embedding_not_full = generations_not_full.hidden_states[-1][-1].squeeze().cpu().numpy()
 data = np.vstack((embedding, embedding_not_full))
 tsne = TSNE(n_components=2, random_state=42)
 data_tsne = tsne.fit_transform(data)
