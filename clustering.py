@@ -44,7 +44,7 @@ df_not_full_memorization = df[df['score'] == 0]
 idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 
-stragety = "last_hidden_state"
+stragety = "mean_hidden_state"
 for num_points in [100, 200, 300 ,400, 500,]:
   generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
   generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
