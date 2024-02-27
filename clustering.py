@@ -43,9 +43,9 @@ df_not_full_memorization = df[df['score'] == 0]
 
 idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
-
-generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  idx_full_memorization[0:100], 32, 16)
-generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  idx_not_full_memorization[0:100], 32, 16)
+num_points = 200
+generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  idx_full_memorization[0:num_points], 32, 16)
+generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  idx_not_full_memorization[0:num_points], 32, 16)
 
 
 embedding = generations_full_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
@@ -56,8 +56,8 @@ data_tsne = tsne.fit_transform(data)
 
 plt.figure(figsize=(8, 6))
 
-plt.scatter(data_tsne[:100, 0], data_tsne[:100, 1], color='blue', label='A')
-plt.scatter(data_tsne[100:, 0], data_tsne[100:, 1], color='red', label='B')
+plt.scatter(data_tsne[:num_points, 0], data_tsne[:num_points, 1], color='blue', label='A')
+plt.scatter(data_tsne[num_points:, 0], data_tsne[num_points:, 1], color='red', label='B')
 plt.title('t-SNE Visualization')
 plt.legend()
 plt.savefig('tsne_visualization.png')
