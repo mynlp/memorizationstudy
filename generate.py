@@ -71,3 +71,5 @@ generations1 = model1.generate(inputs1["input_ids"], temperature = 0.0, top_k = 
 generations2 = model2.generate(inputs2["input_ids"], temperature = 0.0, top_k = 0, top_p = 0, max_length = 40, min_length = 40)
 
 
+#hidden states of last word at the last layer
+embedding = generations.hidden_states[-1][-1]

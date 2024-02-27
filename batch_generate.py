@@ -165,12 +165,12 @@ def main():
                 print(f"Processed {iters} iterations until {idx}")
                 if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
                     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv", index_col=0)
-                    cache = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
+                    cache = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
                     df = pd.concat([df, cache]).reset_index(drop=True)
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
                 else:
-                    df = pd.DataFrame(memorization_evals_values, columns=["0", "0.0"])
+                    df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
                 memorization_evals = []
@@ -178,7 +178,7 @@ def main():
         except StopIteration:
             print("Break")
             break
-    df = pd.DataFrame(all_memorization_evals_values, columns=["0", "0.0"])
+    df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
     ds_process.join()
     # dist.barrier()
