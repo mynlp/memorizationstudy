@@ -43,7 +43,7 @@ df_not_full_memorization = df[df['score'] == 0]
 
 idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
-num_points = 200
+num_points = 500
 generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  idx_full_memorization[0:num_points], 32, 16)
 generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  idx_not_full_memorization[0:num_points], 32, 16)
 
