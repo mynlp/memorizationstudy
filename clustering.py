@@ -6,9 +6,9 @@ import torch
 from utils import *
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
+import random
 
-
-
+random.seed(42)
 model_name = "EleutherAI/pythia-70m-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
@@ -44,8 +44,8 @@ df_not_full_memorization = df[df['score'] == 0]
 idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 num_points = 500
-generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  idx_full_memorization[0:num_points], 32, 16)
-generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  idx_not_full_memorization[0:num_points], 32, 16)
+generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
+generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
 
 
 embedding = generations_full_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
