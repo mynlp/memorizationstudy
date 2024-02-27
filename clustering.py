@@ -44,8 +44,8 @@ df_not_full_memorization = df[df['score'] == 0]
 idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 
-generations_full_memo, accuracies_full_memo = embedding_obtain(model, mmap_ds,  idx_full_memorization[0:100], 32, 16)
-generations_not_full, accuracies_not_full = embedding_obtain(model, mmap_ds,  idx_not_full_memorization[0:100], 32, 16)
+generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  idx_full_memorization[0:100], 32, 16)
+generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  idx_not_full_memorization[0:100], 32, 16)
 
 
 embedding = generations_full_memo.hidden_states[-1][-1].squeeze().numpy()
