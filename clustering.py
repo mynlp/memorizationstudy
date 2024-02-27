@@ -43,25 +43,37 @@ df_not_full_memorization = df[df['score'] == 0]
 
 idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
-num_points = 500
-generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
-generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
 
+stragety = "last_hidden_state"
+for num_points in [100, 200, 300 ,400, 500,]:
+  generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
+  generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
 
-embedding = generations_full_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
-embedding_not_full = generations_not_full.hidden_states[-1][-1].squeeze().cpu().numpy()
-data = np.vstack((embedding, embedding_not_full))
-tsne = TSNE(n_components=2, random_state=42)
-data_tsne = tsne.fit_transform(data)
+  # last hidden state
+  if stragety == "last_hidden_state":
+    embedding = generations_full_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
+    embedding_not_full = generations_not_full.hidden_states[-1][-1].squeeze().cpu().numpy()
+  # mean pooling hidden state of all continuation token at last year
+  elif stragety == "mean_hidden_state":
+    embedding = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:]]).mean(0).squeeze().cpu().numpy()
+    embedding_not_full = torch.stack([x[-1] for x in generations_not_full.hidden_states[1:]]).mean(0).squeeze().cpu().numpy()
+  # max pooling hidden state of all continuation token at last year
+  elif stragety == "max_hidden_state":
+    embedding = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:]]).max(0)[0].values.squeeze().cpu().numpy()
+    embedding_not_full = torch.stack([x[-1] for x in generations_not_full.hidden_states[1:]]).max(0)[0].values.squeeze().cpu().numpy()
+  data = np.vstack((embedding, embedding_not_full))
 
-plt.figure(figsize=(8, 6))
+  tsne = TSNE(n_components=2, random_state=42)
+  data_tsne = tsne.fit_transform(data)
 
-plt.scatter(data_tsne[:num_points, 0], data_tsne[:num_points, 1], color='blue', label='A')
-plt.scatter(data_tsne[num_points:, 0], data_tsne[num_points:, 1], color='red', label='B')
-plt.title('t-SNE Visualization')
-plt.legend()
-plt.savefig('tsne_visualization.png')
-plt.show()
+  plt.figure(figsize=(8, 6))
+
+  plt.scatter(data_tsne[:num_points, 0], data_tsne[:num_points, 1], color='blue', label='A')
+  plt.scatter(data_tsne[num_points:, 0], data_tsne[num_points:, 1], color='red', label='B')
+  plt.title('t-SNE Visualization')
+  plt.legend()
+  plt.savefig(f'tsne_visualization_{num_points}_{stragety}.png')
+  plt.show()
 
 
 
