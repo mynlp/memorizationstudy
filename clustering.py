@@ -59,8 +59,8 @@ for num_points in [100, 200, 300 ,400, 500,]:
     embedding_not_full = torch.stack([x[-1] for x in generations_not_full.hidden_states[1:]]).mean(0).squeeze().cpu().numpy()
   # max pooling hidden state of all continuation token at last year
   elif stragety == "max_hidden_state":
-    embedding = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:]]).max(0)[0].values.squeeze().cpu().numpy()
-    embedding_not_full = torch.stack([x[-1] for x in generations_not_full.hidden_states[1:]]).max(0)[0].values.squeeze().cpu().numpy()
+    embedding = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:]]).max(0)[0].squeeze().cpu().numpy()
+    embedding_not_full = torch.stack([x[-1] for x in generations_not_full.hidden_states[1:]]).max(0)[0].squeeze().cpu().numpy()
   data = np.vstack((embedding, embedding_not_full))
 
   tsne = TSNE(n_components=2, random_state=42)
