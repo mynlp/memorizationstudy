@@ -8,7 +8,7 @@ for file in ["memorization_evals_70m-deduped-v0_32_48_143000.csv", "memorization
             "memorization_evals_410m-deduped-v0_32_48_143000.csv",
                 ]:
     print(file)
-    generate_results = pd.read_csv(file, names=["idx", "score"], index_col=0)
+    generate_results = pd.read_csv("generate_results/"+file, names=["idx", "score"], index_col=0)
     results_list = []
     results = generate_results[generate_results['score'] == 0]
     results_list.append(results)
