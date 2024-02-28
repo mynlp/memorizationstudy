@@ -15,7 +15,9 @@ for file in ["memorization_evals_70m-deduped-v0_32_48_143000.csv", "memorization
     #results.to_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_143000_0.csv")
     for i in np.arange(0, 1, 0.1):
         if i == 0.9:
-            results = generate_results[generate_results['score'].between(i, i+0.1, inclusive="both")]
+            results = generate_results[generate_results['score'].between(i, i+0.1, inclusive="left")]
+        elif i == 0:
+            results = generate_results[generate_results['score'].between(i, i+0.1, inclusive="right")]
         else:
             results = generate_results[generate_results['score'].between(i, i+0.1, inclusive="left")]
         results_list.append(results)
