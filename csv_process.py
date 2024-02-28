@@ -1,6 +1,8 @@
 from utils import *
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
 for file in ["memorization_evals_70m-deduped-v0_32_48_143000.csv", "memorization_evals_70m-deduped-v0_32_64_143000.csv",
             "memorization_evals_70m-deduped-v0_32_80_143000.csv", "memorization_evals_70m-deduped-v0_32_96_143000.csv",
             "memorization_evals_70m-deduped-v0_32_128_143000.csv",
@@ -9,6 +11,16 @@ for file in ["memorization_evals_70m-deduped-v0_32_48_143000.csv", "memorization
                 ]:
     print(file)
     generate_results = pd.read_csv("generate_results/"+file, index_col=0)
+    plt.hist(generate_results['score'], bins=10, color='skyblue', edgecolor='black')
+    # 添加标题和标签
+    plt.title('Distribution of Scores')
+    plt.xlabel('Scores')
+    plt.ylabel('Frequency')
+    plt.savefig(f'{file}.png')
+    plt.show()
+    # 展示图形
+    plt.show()
+    # 创建柱状图
     results_list = []
     results = generate_results[generate_results['score'] == 0]
     results_list.append(results)
