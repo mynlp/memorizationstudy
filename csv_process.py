@@ -1,6 +1,6 @@
 from utils import *
 import numpy as np
-
+import pandas as pd
 for file in ["memorization_evals_70m-deduped-v0_32_48_143000.csv", "memorization_evals_70m-deduped-v0_32_64_143000.csv",
             "memorization_evals_70m-deduped-v0_32_80_143000.csv", "memorization_evals_70m-deduped-v0_32_96_143000.csv",
             "memorization_evals_70m-deduped-v0_32_128_143000.csv",
@@ -8,7 +8,7 @@ for file in ["memorization_evals_70m-deduped-v0_32_48_143000.csv", "memorization
             "memorization_evals_410m-deduped-v0_32_48_143000.csv",
                 ]:
     print(file)
-    generate_results = read_csv(file, names=["idx", "score"])
+    generate_results = pd.read_csv(file, names=["idx", "score"], index_col=0)
     results_list = []
     results = generate_results[generate_results['score'] == 0]
     results_list.append(results)
