@@ -72,8 +72,8 @@ def main():
     paser = argparse.ArgumentParser()
     paser.add_argument("--batch_size", type=int, default=1024)
     paser.add_argument("--context_size", type=int, default=32)
-    paser.add_argument("--continuation_size", type=int, default=32)
-    paser.add_argument("--model", type=str, default="70m-deduped-v0")
+    paser.add_argument("--continuation_size", type=int, default=64)
+    paser.add_argument("--model", type=str, default="410m-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
     args = paser.parse_args()
     #BATCH_SIZE = 1024
@@ -161,7 +161,7 @@ def main():
             print(f"Generation until {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
-            if (idx / 1024) % 1000 == 0:
+            if (idx / 1024) % 10 == 0:
                 print(f"Processed {iters} iterations until {idx}")
                 if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
                     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv", index_col=0)
