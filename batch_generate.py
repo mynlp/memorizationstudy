@@ -167,6 +167,7 @@ def main():
                     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv", index_col=0)
                     cache = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
                     df = pd.concat([df, cache]).reset_index(drop=True)
+                    pdb.set_trace()
                     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
                     print("Saved Merged Results")
                 else:
