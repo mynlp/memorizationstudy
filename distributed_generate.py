@@ -88,7 +88,7 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
         end_idx = total_num_sequences - 1
     # Dataset Initialization
     mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(model, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
+    ds_process = mp.Process(target=generate_dataset, args=(model_name, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
     ds_process.start()
     model = model.half().eval().cuda(rank)
     print("Loaded Model")
@@ -109,7 +109,7 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
             idx = idx
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
-            accuracies = score(model_name, context, true_continuation, context_size, continuation_size)
+            accuracies = score(model, context, true_continuation, context_size, continuation_size)
 
             for acc in accuracies:
                 all_memorization_evals.append(f'{idx},{acc}')
