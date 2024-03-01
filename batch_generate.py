@@ -89,11 +89,11 @@ def main():
     #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     #torch.cuda.set_device(RANK)
-    dist.init_process_group(
-         "nccl",
-         world_size=NUM_PROCS,
-         rank=RANK
-    )
+    #dist.init_process_group(
+    #     "nccl",
+    #     world_size=NUM_PROCS,
+    #     rank=RANK
+    #)
     #store = dist.TCPStore(os.environ['MASTER_ADDR'], port=13443,
     #                       world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
     print("start")
