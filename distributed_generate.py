@@ -70,7 +70,7 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
-def inference(rank, model,checkpoint,batch_size, context_size, continuation_size,  world_size):
+def inference(rank, model,model_name, checkpoint,batch_size, context_size, continuation_size,  world_size):
     dist.init_process_group("nccl", rank=rank, world_size=8)
     print(model)
     model.to(rank)
@@ -109,7 +109,7 @@ def inference(rank, model,checkpoint,batch_size, context_size, continuation_size
             idx = idx
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
-            accuracies = score(model, context, true_continuation, context_size, continuation_size)
+            accuracies = score(model_name, context, true_continuation, context_size, continuation_size)
 
             for acc in accuracies:
                 all_memorization_evals.append(f'{idx},{acc}')
@@ -151,15 +151,15 @@ def main():
     batch_size = 1024
     context_size = 48
     continuation_size = 16
-    model = "70m-deduped-v0"
+    model_name = "70m-deduped-v0"
     checkpoint = 143000
     world_size = 8
     print("start")
     model = GPTNeoXForCausalLM.from_pretrained(
-        f"EleutherAI/pythia-{model}",
+        f"EleutherAI/pythia-{model_name}",
         revision=f'step{checkpoint}',
     )
-    mp.spawn(inference,args=(model, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
+    mp.spawn(inference,args=(model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
 
 
     # # Model initialization
