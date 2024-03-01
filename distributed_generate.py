@@ -5,7 +5,7 @@ import datetime
 import torch
 import torch.distributed as dist
 import transformers.utils as transformer_utils
-import multiprocessing as mp
+import torch.multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM
 import argparse
