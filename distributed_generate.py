@@ -12,11 +12,7 @@ import argparse
 from utils import *
 import pdb
 
-batch_size = 1024
-context_size = 48
-continuation_size = 16
-model = "70m-deduped-v0"
-checkpoint = 143000
+
 def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in model:
@@ -74,11 +70,13 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
-def inference(model, rank, world_size):
+def inference(model,checkpoint,batch_size, context_size, continuation_size, rank, world_size):
     dist.init_process_group("nccl", rank=rank, world_size=8)
     model.to(rank)
     total_num_sequences = checkpoint * batch_size
     num_sequences_per_proc = total_num_sequences // world_size
+    logging.basicConfig(format = f'rank-{rank}:' + '%(levelname)s:%(message)s', level = logging.INFO)
+    logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
     #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
     #     start_idx = len(df)
@@ -149,16 +147,18 @@ def inference(model, rank, world_size):
     ds_process.join()
 
 def main():
-    RANK = 8
-    NUM_PROCS = 8
-    logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
-    logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
+    batch_size = 1024
+    context_size = 48
+    continuation_size = 16
+    model = "70m-deduped-v0"
+    checkpoint = 143000
+    world_size = 8
     print("start")
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{model}",
         revision=f'step{checkpoint}',
     )
-    mp.spawn(inference,args=(model, RANK, NUM_PROCS), nprocs=NUM_PROCS, join=True)
+    mp.spawn(inference,args=(model, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
 
 
     # # Model initialization
