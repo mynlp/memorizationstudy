@@ -71,9 +71,9 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
 def main():
     paser = argparse.ArgumentParser()
     paser.add_argument("--batch_size", type=int, default=1024)
-    paser.add_argument("--context_size", type=int, default=32)
-    paser.add_argument("--continuation_size", type=int, default=64)
-    paser.add_argument("--model", type=str, default="410m-deduped-v0")
+    paser.add_argument("--context_size", type=int, default=48)
+    paser.add_argument("--continuation_size", type=int, default=16)
+    paser.add_argument("--model", type=str, default="70m-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
     args = paser.parse_args()
     #BATCH_SIZE = 1024
@@ -88,17 +88,17 @@ def main():
     #os.environ['MASTER_PORT'] = '13443'
     #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
-    # torch.cuda.set_device(RANK)
-    # dist.init_process_group(
-    #     "nccl",
-    #     world_size=NUM_PROCS,
-    #     rank=RANK
-    # )
-    # store = dist.TCPStore(os.environ['MASTER_ADDR'], port=13443,
-    #                       world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
-    # print("start")
-    #
-    # dist.barrier()
+    #torch.cuda.set_device(RANK)
+    dist.init_process_group(
+         "nccl",
+         world_size=NUM_PROCS,
+         rank=RANK
+    )
+    store = dist.TCPStore(os.environ['MASTER_ADDR'], port=13443,
+                           world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
+    print("start")
+
+    dist.barrier()
 
     # Model initialization
     transformer_utils.logging.set_verbosity_error()
