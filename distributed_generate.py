@@ -11,6 +11,12 @@ from transformers import GPTNeoXForCausalLM
 import argparse
 from utils import *
 import pdb
+
+batch_size = 1024
+context_size = 48
+continuation_size = 16
+model = "70m-deduped-v0"
+checkpoint = 143000
 def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in model:
@@ -68,10 +74,10 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
-def inference(args, model, rank, world_size):
+def inference(model, rank, world_size):
     dist.init_process_group("nccl", rank=rank, world_size=8)
     model.to(rank)
-    total_num_sequences = args.checkpoint * args.batch_size
+    total_num_sequences = checkpoint * batch_size
     num_sequences_per_proc = total_num_sequences // world_size
     # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
     #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
@@ -83,7 +89,7 @@ def inference(args, model, rank, world_size):
         end_idx = total_num_sequences - 1
     # Dataset Initialization
     mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(args.model, args.batch_size, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
+    ds_process = mp.Process(target=generate_dataset, args=(model, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
     ds_process.start()
     model = model.half().eval().cuda(rank)
     print("Loaded Model")
@@ -104,7 +110,7 @@ def inference(args, model, rank, world_size):
             idx = idx
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
-            accuracies = score(model, context, true_continuation, args.context_size, args.continuation_size)
+            accuracies = score(model, context, true_continuation, context_size, continuation_size)
 
             for acc in accuracies:
                 all_memorization_evals.append(f'{idx},{acc}')
@@ -139,25 +145,18 @@ def inference(args, model, rank, world_size):
             break
     df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
     df.to_csv(
-        f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
+        f"generate_results/memorization_evals_{model}_{context_size}_{context_size + continuation_size}_{checkpoint}.csv")
     ds_process.join()
 
 def main():
-    paser = argparse.ArgumentParser()
-    paser.add_argument("--batch_size", type=int, default=1024)
-    paser.add_argument("--context_size", type=int, default=48)
-    paser.add_argument("--continuation_size", type=int, default=16)
-    paser.add_argument("--model", type=str, default="70m-deduped-v0")
-    paser.add_argument("--checkpoint", type=int, default=143000)
-    args = paser.parse_args()
     RANK = 8
     NUM_PROCS = 8
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     print("start")
     model = GPTNeoXForCausalLM.from_pretrained(
-        f"EleutherAI/pythia-{args.model}",
-        revision=f'step{args.checkpoint}',
+        f"EleutherAI/pythia-{model}",
+        revision=f'step{checkpoint}',
     )
     mp.spawn(inference,args=(model, RANK, NUM_PROCS), nprocs=NUM_PROCS, join=True)
 
