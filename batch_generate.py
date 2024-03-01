@@ -78,24 +78,24 @@ def main():
     args = paser.parse_args()
     #BATCH_SIZE = 1024
     #LOG_INTERVAL = 100
-    RANK = 0#int(os.environ['RANK'])
-    NUM_PROCS = 1
-    MODEL = "70m-deduped-v0"#os.environ['MODEL']
+    RANK = 8
+    NUM_PROCS = 8
+    #MODEL = "70m-deduped-v0"#os.environ['MODEL']
     #os.environ['MODEL'] = MODEL
     CHECKPOINT = 143000#int(os.environ['CHECKPOINT'])
     #os.environ['CHECKPOINT'] = str(CHECKPOINT)
-    #os.environ['MASTER_ADDR'] = "127.0.0.1"
-    #os.environ['MASTER_PORT'] = '13443'
-    #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
+    os.environ['MASTER_ADDR'] = "127.0.0.1"
+    os.environ['MASTER_PORT'] = '13443'
+    logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
-    #torch.cuda.set_device(RANK)
+    torch.cuda.set_device(RANK)
     dist.init_process_group(
          "nccl",
          world_size=NUM_PROCS,
          rank=RANK
     )
     store = dist.TCPStore(os.environ['MASTER_ADDR'], port=13443,
-                           world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
+                           world_size=NUM_PROCS, is_master= RANK == 0, timeout=datetime.timedelta(hours=3))
     print("start")
 
     dist.barrier()
@@ -106,11 +106,11 @@ def main():
     # Calculate start and end sequence indicies
     total_num_sequences = args.checkpoint * args.batch_size
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
-    if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
-        df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
-        start_idx = len(df)
-    else:
-        start_idx = num_sequences_per_proc * RANK
+    # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
+    #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
+    #     start_idx = len(df)
+    # else:
+    start_idx = num_sequences_per_proc * RANK
 
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
@@ -126,11 +126,11 @@ def main():
         f"EleutherAI/pythia-{args.model}",
         revision=f'step{args.checkpoint}',
     )
-    if torch.cuda.device_count() > 1:
-        print(f"use {torch.cuda.device_count()} GPUs!")
-        model = torch.nn.DataParallel(model)
+    # if torch.cuda.device_count() > 1:
+    #     print(f"use {torch.cuda.device_count()} GPUs!")
+    #     model = torch.nn.DataParallel(model)
     model = model.half().eval().cuda()
-    #dist.barrier()
+    dist.barrier()
     print("Loaded Model")
     all_memorization_evals = []
     all_memorization_evals_values = []
@@ -181,7 +181,7 @@ def main():
     df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
     ds_process.join()
-    # dist.barrier()
+    dist.barrier()
 
 if __name__ == '__main__':
     mp.set_start_method('spawn')
