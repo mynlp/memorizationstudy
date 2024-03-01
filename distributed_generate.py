@@ -71,7 +71,7 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         return accuracies.cpu()
 
 def inference(rank, model,model_name, checkpoint,batch_size, context_size, continuation_size,  world_size):
-    dist.init_process_group("nccl", rank=rank, world_size=8)
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
     print(model)
     model.to(rank)
     total_num_sequences = checkpoint * batch_size
