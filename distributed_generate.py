@@ -118,7 +118,7 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
                 memorization_evals_values.append([idx, acc.tolist()])
                 idx += 1
                 debug_count += 1
-            print(f"Generation until {idx} took {time.time() - t:.3}s")
+            print(f"Generation until {idx} took {time.time() - t:.3}s at rank {rank}")
             iters += 1
             # if (idx / 1024) % 1430 == 0:
             #     print(f"Processed {iters} iterations until {idx}")
