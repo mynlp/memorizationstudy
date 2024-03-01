@@ -153,7 +153,7 @@ def main():
     continuation_size = 16
     model_name = "70m-deduped-v0"
     checkpoint = 143000
-    world_size = 8
+    world_size = 2
     print("start")
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{model_name}",
