@@ -70,7 +70,7 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
-def inference(model,checkpoint,batch_size, context_size, continuation_size, rank, world_size):
+def inference(rank, model,checkpoint,batch_size, context_size, continuation_size,  world_size):
     dist.init_process_group("nccl", rank=rank, world_size=8)
     print(model)
     model.to(rank)
