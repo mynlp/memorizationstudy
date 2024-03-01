@@ -73,12 +73,6 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
 def inference(model,checkpoint,batch_size, context_size, continuation_size, rank, world_size):
     dist.init_process_group("nccl", rank=rank, world_size=8)
     print(model)
-    print(checkpoint)
-    print(batch_size)
-    print(context_size)
-    print(continuation_size)
-    print(rank)
-    print(world_size)
     model.to(rank)
     total_num_sequences = checkpoint * batch_size
     num_sequences_per_proc = total_num_sequences // world_size
