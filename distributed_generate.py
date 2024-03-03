@@ -79,7 +79,7 @@ def inference(model, model_name, checkpoint, batch_size, context_size, continuat
     # else:
 
     # Dataset Initialization
-    model = model.half().eval().to("cuda")
+    model = model.half().to("cuda")
     model = torch.nn.DataParallel(model)
     model.eval()
     print("Loaded Model")
@@ -139,7 +139,7 @@ def inference(model, model_name, checkpoint, batch_size, context_size, continuat
     #ds_process.join()
 
 def main():
-    batch_size = 8192
+    batch_size = 4096
     context_size = 48
     continuation_size = 16
     model_name = "410m-deduped-v0"
