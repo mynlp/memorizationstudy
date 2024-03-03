@@ -11,24 +11,24 @@ from transformers import GPTNeoXForCausalLM
 import argparse
 from utils import *
 import pdb
-def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
+def generate_dataset(args, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
-    if "deduped" in model:
+    if "deduped" in args.model_name:
         prefix = 'deduped_merge/document.bin'
     print(prefix)
-    buff_size = 2049*batch_size*2
+    buff_size = 2049*args.batch_size*2
     print("Building dataset")
     mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
     context_tokens = []
     true_continuation = []
     i = 0
-    for i in range(start_seq_idx, end_seq_idx + 1, batch_size):
-        data = mmap_ds[i:i + batch_size]
-        context_tokens.extend(data[:, :context_size].tolist())
-        true_continuation.extend(data[:, context_size:context_size+continuation_size].tolist())
+    for i in range(start_seq_idx, end_seq_idx + 1, args.batch_size):
+        data = mmap_ds[i:i + args.batch_size]
+        context_tokens.extend(data[:, :args.context_size].tolist())
+        true_continuation.extend(data[:, args.context_size:args.context_size+args.continuation_size].tolist())
         i += len(context_tokens)
 
-        if len(context_tokens) == batch_size:
+        if len(context_tokens) == args.batch_size:
             # (start index of batch, context tokens, true continuation)
             mp_queue.put((
                 i - len(context_tokens),
@@ -110,7 +110,7 @@ def main():
 
     # Dataset Initialization
     mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(args.batch_size, start_idx, end_idx, mp_queue))
+    ds_process = mp.Process(target=generate_dataset, args=(args, start_idx, end_idx, mp_queue))
     ds_process.start()
 
     # Model initialization
