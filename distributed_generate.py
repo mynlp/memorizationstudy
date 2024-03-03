@@ -117,7 +117,6 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
                 memorization_evals_values.append([idx, acc.tolist()])
                 idx += 1
                 debug_count += 1
-            del idx, context, true_continuation
             print(f"Generation until {idx} took {time.time() - t:.3}s at rank {rank}")
             iters += 1
             # if (idx / 1024) % 1430 == 0:
@@ -147,20 +146,18 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
         f"generate_results/memorization_evals_{model}_{context_size}_{context_size + continuation_size}_{checkpoint}.csv")
     ds_process.join()
 
-def main():
+def main(rank, world_size):
     batch_size = 1024
     context_size = 48
     continuation_size = 16
     model_name = "70m-deduped-v0"
     checkpoint = 143000
-    world_size = 8
     print("start")
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{model_name}",
         revision=f'step{checkpoint}',
     )
-    mp.spawn(inference,args=(model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
-
+    inference(rank, model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size)
 
     # # Model initialization
     # transformer_utils.logging.set_verbosity_error()
@@ -181,4 +178,6 @@ def main():
     # Model initialization
 
 if __name__ == '__main__':
+    world_size = 8
+    mp.spawn(inference,args=(world_size), nprocs=world_size, join=True)
     main()
