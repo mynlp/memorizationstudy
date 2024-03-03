@@ -118,7 +118,6 @@ def main():
         f"EleutherAI/pythia-{args.model}",
         use_cache=False,
         revision=f'step{args.checkpoint}',
-        cache_dir=f"/fsx/orz/models/"
     ).half().eval().cuda()
 
     dist.barrier()
