@@ -79,7 +79,7 @@ def inference(model, model_name, checkpoint, batch_size, context_size, continuat
     # else:
 
     # Dataset Initialization
-    model = model.half().eval().to("cuda")
+    model = model.half().eval().cuda(0)
     model = torch.nn.DataParallel(model)
     model.eval()
     print("Loaded Model")
