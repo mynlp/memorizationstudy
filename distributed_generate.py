@@ -137,7 +137,7 @@ def main():
             idx = idx
             logging.info(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
-            accuracies = score(model, context, true_continuation)
+            accuracies = score(model, context, true_continuation, args.context_size, args.continuation_size)
 
             for acc in accuracies:
                 memorization_evals.append(f'{idx},{acc}')
