@@ -110,7 +110,6 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
             accuracies = score(model, context, true_continuation, context_size, continuation_size)
-
             for acc in accuracies:
                 all_memorization_evals.append(f'{idx},{acc}')
                 all_memorization_evals_values.append([idx, acc.tolist()])
@@ -118,6 +117,7 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
                 memorization_evals_values.append([idx, acc.tolist()])
                 idx += 1
                 debug_count += 1
+            del idx, context, true_continuation
             print(f"Generation until {idx} took {time.time() - t:.3}s at rank {rank}")
             iters += 1
             # if (idx / 1024) % 1430 == 0:
