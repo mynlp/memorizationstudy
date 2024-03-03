@@ -4,9 +4,9 @@
 #PJM -L elapse=48:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N de4103232
-#PJM -o de4103232
-#PJM -e de4103232
+#PJM -N disde704816
+#PJM -o disde704816
+#PJM -e disde704816
 
 #env
 #export RANK=1
