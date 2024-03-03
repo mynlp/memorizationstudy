@@ -13,7 +13,7 @@ from utils import *
 import pdb
 def generate_dataset(args, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
-    if "deduped" in args.model_name:
+    if "deduped" in args.model:
         prefix = 'deduped_merge/document.bin'
     print(prefix)
     buff_size = 2049*args.batch_size*2
