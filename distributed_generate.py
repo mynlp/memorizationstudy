@@ -70,27 +70,18 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
-def inference(rank, model,model_name, checkpoint,batch_size, context_size, continuation_size,  world_size):
-    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+def inference(model, model_name, checkpoint, batch_size, context_size, continuation_size, mp_queue):
+    #dist.init_process_group("nccl", rank=rank, world_size=world_size)
     print(model)
-    model.to(rank)
-    total_num_sequences = checkpoint * batch_size
-    num_sequences_per_proc = total_num_sequences // world_size
-    logging.basicConfig(format = f'rank-{rank}:' + '%(levelname)s:%(message)s', level = logging.INFO)
-    logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
     #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
     #     start_idx = len(df)
     # else:
-    start_idx = num_sequences_per_proc * rank
-    end_idx = num_sequences_per_proc * (rank + 1) - 1
-    if rank == (world_size - 1):
-        end_idx = total_num_sequences - 1
+
     # Dataset Initialization
-    mp_queue = mp.Queue()
-    ds_process = mp.Process(target=generate_dataset, args=(model_name, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
-    ds_process.start()
-    model = model.half().eval().cuda(rank)
+    model = model.half().eval().to("cuda")
+    model = torch.nn.DataParallel(model)
+    model.eval()
     print("Loaded Model")
     all_memorization_evals = []
     all_memorization_evals_values = []
@@ -145,7 +136,7 @@ def inference(rank, model,model_name, checkpoint,batch_size, context_size, conti
     df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
     df.to_csv(
         f"generate_results/memorization_evals_{model}_{context_size}_{context_size + continuation_size}_{checkpoint}.csv")
-    ds_process.join()
+    #ds_process.join()
 
 def main():
     batch_size = 1024
@@ -159,7 +150,24 @@ def main():
         f"EleutherAI/pythia-{model_name}",
         revision=f'step{checkpoint}',
     )
-    mp.spawn(inference,args=(model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
+    mp_queue = mp.Queue()
+    total_num_sequences = checkpoint * batch_size
+    num_sequences_per_proc = total_num_sequences // world_size
+    start_idx = 0
+    end_idx = total_num_sequences - 1
+    ds_process = mp.Process(target=generate_dataset, args=(model_name, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
+    ds_process.start()
+    inference(model, model_name, checkpoint, batch_size, context_size, continuation_size, mp_queue)
+    ds_process.join()
+    # for rank in range(world_size):
+    #     p = mp.Process(target=inference, args=(rank, model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size))
+    #     start_idx = num_sequences_per_proc * rank
+    #     end_idx = num_sequences_per_proc * (rank + 1) - 1
+    #     if rank == (world_size - 1):
+    #         end_idx = total_num_sequences - 1
+    #     ds_process = mp.Process(target=generate_dataset, args=(
+    #     model_name, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
+    #     ds_process.start()
 
 
     # # Model initialization
