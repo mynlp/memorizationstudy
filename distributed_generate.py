@@ -61,10 +61,7 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
     with torch.no_grad():
         context_tokens = torch.tensor(context_tokens).to('cuda')
         true_continuation = torch.tensor(true_continuation).to('cuda')
-        if isinstance(model, torch.nn.DataParallel):
-            generations = model.module.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = context_size+continuation_size, min_length = context_size+continuation_size)
-        else:
-            generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = context_size+continuation_size, min_length = context_size+continuation_size)
+        generations = model.generate(context_tokens, temperature = 0.0, top_k = 0, top_p = 0, max_length = context_size+continuation_size, min_length = context_size+continuation_size)
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
@@ -78,15 +75,10 @@ def main():
     paser.add_argument("--checkpoint", type=int, default=143000)
     args = paser.parse_args()
     RANK = int(os.environ['RANK'])
-    LOCAL_RANK = RANK
     NUM_PROCS = int(os.environ['WORLD_SIZE'])
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     print("start")
-    model = GPTNeoXForCausalLM.from_pretrained(
-        f"EleutherAI/pythia-{args.model}",
-        revision=f'step{args.checkpoint}',
-    )
     torch.cuda.set_device(RANK)
 
     dist.init_process_group(
@@ -125,6 +117,7 @@ def main():
 
     # Run generations
     memorization_evals = []
+    memorization_evals_values = []
     iters = 0
     while (True):
         try:
@@ -141,6 +134,7 @@ def main():
 
             for acc in accuracies:
                 memorization_evals.append(f'{idx},{acc}')
+                memorization_evals_values.append([idx, acc.tolist()])
                 idx += 1
             logging.info(f"Generation uptil {idx} took {time.time() - t:.3}s")
             dist.barrier()
@@ -150,6 +144,9 @@ def main():
 
     ds_process.join()
     dist.barrier()
+    df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
+    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
+
 
 if __name__ == '__main__':
     main()
