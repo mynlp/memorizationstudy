@@ -139,7 +139,7 @@ def inference(model, model_name, checkpoint, batch_size, context_size, continuat
     #ds_process.join()
 
 def main():
-    batch_size = 2048
+    batch_size = 4096
     context_size = 48
     continuation_size = 16
     model_name = "70m-deduped-v0"
