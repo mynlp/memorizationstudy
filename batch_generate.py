@@ -80,9 +80,8 @@ def main():
     #LOG_INTERVAL = 100
     RANK = 0#int(os.environ['RANK'])
     NUM_PROCS = 1
-    MODEL = "70m-deduped-v0"#os.environ['MODEL']
     #os.environ['MODEL'] = MODEL
-    CHECKPOINT = 143000#int(os.environ['CHECKPOINT'])
+   #int(os.environ['CHECKPOINT'])
     #os.environ['CHECKPOINT'] = str(CHECKPOINT)
     #os.environ['MASTER_ADDR'] = "127.0.0.1"
     #os.environ['MASTER_PORT'] = '13443'
@@ -126,10 +125,10 @@ def main():
         f"EleutherAI/pythia-{args.model}",
         revision=f'step{args.checkpoint}',
     )
-    if torch.cuda.device_count() > 1:
-        print(f"use {torch.cuda.device_count()} GPUs!")
-        model = torch.nn.DataParallel(model)
-    model = model.half().eval().cuda()
+    #if torch.cuda.device_count() > 1:
+    #    print(f"use {torch.cuda.device_count()} GPUs!")
+    #    model = torch.nn.DataParallel(model)
+    model = model.half().eval().cuda(0)
     #dist.barrier()
     print("Loaded Model")
     all_memorization_evals = []
