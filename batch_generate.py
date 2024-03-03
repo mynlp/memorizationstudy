@@ -127,7 +127,7 @@ def main():
     )
     if torch.cuda.device_count() > 1:
         print(f"use {torch.cuda.device_count()} GPUs!")
-        model = torch.nn.DataParallel(model)
+        model = torch.nn.DataParallel(model,device_ids=[0, 1, 2, 3, 4, 5, 6, 7])
     model = model.half().eval().cuda(0)
     #dist.barrier()
     print("Loaded Model")
