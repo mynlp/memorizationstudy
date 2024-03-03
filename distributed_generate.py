@@ -11,8 +11,16 @@ from transformers import GPTNeoXForCausalLM
 import argparse
 from utils import *
 import pdb
+from torch.multiprocessing import Process
 
 
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12345'
+    # 初始化进程组
+    dist.init_process_group("nccl", rank=rank, world_size=world_size)
+def cleanup():
+    dist.destroy_process_group()
 def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in model:
@@ -70,18 +78,25 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
         accuracies = (true_continuation == generations[:,context_size:context_size+continuation_size]).float().mean(axis=-1)
         return accuracies.cpu()
 
-def inference(model, model_name, checkpoint, batch_size, context_size, continuation_size, mp_queue):
+def inference(rank, world_size, model_name, checkpoint, batch_size, context_size, continuation_size):
     #dist.init_process_group("nccl", rank=rank, world_size=world_size)
-    print(model)
-    # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
-    #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
-    #     start_idx = len(df)
-    # else:
-
-    # Dataset Initialization
-    model = model.half().eval().cuda(0)
-    model = torch.nn.DataParallel(model)
+    setup(rank, world_size)
+    total_num_sequences = checkpoint * batch_size
+    num_sequences_per_proc = total_num_sequences // world_size
+    start_idx = num_sequences_per_proc * rank
+    end_idx = num_sequences_per_proc * (rank + 1) - 1
+    if rank == (world_size - 1):
+        end_idx = total_num_sequences - 1
+    device = torch.device('cuda:{}'.format(rank))
+    model = GPTNeoXForCausalLM.from_pretrained(f"EleutherAI/pythia-{model_name}", revision=f'step{checkpoint}').to(device)
     model.eval()
+    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[rank])
+    mp_queue = torch.multiprocessing.get_context('spawn').Queue()
+    print(model)
+    ds_process = torch.multiprocessing.get_context('spawn').Process(target=generate_dataset, args=(
+    model_name, batch_size, context_size, continuation_size, mp_queue, batch_size, start_idx, end_idx, mp_queue))  # 根据generate_dataset函数的需要传入正确的参数
+    ds_process.start()
+    torch.cuda.set_device(rank)
     print("Loaded Model")
     all_memorization_evals = []
     all_memorization_evals_values = []
@@ -92,11 +107,10 @@ def inference(model, model_name, checkpoint, batch_size, context_size, continuat
     while (True):
         try:
             t = time.time()
-            idx, context, true_continuation = mp_queue.get()
+            idx, context, true_continuation = mp_queue.get(timeout=10)
             if idx is None:
                 mp_queue.close()
                 break
-
             idx = idx
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
@@ -136,7 +150,9 @@ def inference(model, model_name, checkpoint, batch_size, context_size, continuat
     df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
     df.to_csv(
         f"generate_results/memorization_evals_{model}_{context_size}_{context_size + continuation_size}_{checkpoint}.csv")
-    #ds_process.join()
+    if rank == 0:
+        ds_process.join()
+    cleanup()
 
 def main():
     batch_size = 4096
@@ -146,19 +162,33 @@ def main():
     checkpoint = 143000
     world_size = 8
     print("start")
-    model = GPTNeoXForCausalLM.from_pretrained(
-        f"EleutherAI/pythia-{model_name}",
-        revision=f'step{checkpoint}',
-    )
-    mp_queue = mp.Queue()
+    processes = []
+    for rank in range(world_size):
+        p = Process(target=inference,
+                    args=(rank, world_size, model_name, checkpoint, batch_size, context_size, continuation_size))
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+
+    # model = GPTNeoXForCausalLM.from_pretrained(
+    #     f"EleutherAI/pythia-{model_name}",
+    #     revision=f'step{checkpoint}',
+    # )
+    # mp_queue = mp.Queue()
     total_num_sequences = checkpoint * batch_size
     num_sequences_per_proc = total_num_sequences // world_size
-    start_idx = 0
-    end_idx = total_num_sequences - 1
-    ds_process = mp.Process(target=generate_dataset, args=(model_name, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
-    ds_process.start()
-    inference(model, model_name, checkpoint, batch_size, context_size, continuation_size, mp_queue)
-    ds_process.join()
+    start_idx = num_sequences_per_proc * rank
+    end_idx = num_sequences_per_proc * (rank + 1) - 1
+    if rank == (world_size - 1):
+        end_idx = total_num_sequences - 1
+    #start_idx = 0
+    #end_idx = total_num_sequences - 1
+    # ds_process = mp.Process(target=generate_dataset, args=(model_name, batch_size, context_size, continuation_size, start_idx, end_idx, mp_queue))
+    # ds_process.start()
+    # inference(model, model_name, checkpoint, batch_size, context_size, continuation_size, mp_queue)
+    # ds_process.join()
     # for rank in range(world_size):
     #     p = mp.Process(target=inference, args=(rank, model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size))
     #     start_idx = num_sequences_per_proc * rank
