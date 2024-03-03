@@ -125,9 +125,9 @@ def main():
         f"EleutherAI/pythia-{args.model}",
         revision=f'step{args.checkpoint}',
     )
-    #if torch.cuda.device_count() > 1:
-    #    print(f"use {torch.cuda.device_count()} GPUs!")
-    #    model = torch.nn.DataParallel(model)
+    if torch.cuda.device_count() > 1:
+        print(f"use {torch.cuda.device_count()} GPUs!")
+        model = torch.nn.DataParallel(model)
     model = model.half().eval().cuda(0)
     #dist.barrier()
     print("Loaded Model")

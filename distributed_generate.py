@@ -5,8 +5,7 @@ import datetime
 import torch
 import torch.distributed as dist
 import transformers.utils as transformer_utils
-import torch.multiprocessing as torchmp
-import multiprocessing as mp
+import torch.multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
 from transformers import GPTNeoXForCausalLM
 import argparse
@@ -160,7 +159,7 @@ def main():
         f"EleutherAI/pythia-{model_name}",
         revision=f'step{checkpoint}',
     )
-    torchmp.spawn(inference,args=(model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
+    mp.spawn(inference,args=(model, model_name, checkpoint, batch_size, context_size, continuation_size, world_size), nprocs=world_size, join=True)
 
 
     # # Model initialization
