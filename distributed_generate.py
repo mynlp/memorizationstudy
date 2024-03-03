@@ -142,7 +142,7 @@ def main():
     batch_size = 1024
     context_size = 48
     continuation_size = 16
-    model_name = "70m-deduped-v0"
+    model_name = "410m-deduped-v0"
     checkpoint = 143000
     world_size = 8
     print("start")
