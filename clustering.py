@@ -77,7 +77,7 @@ for num_points in [100, 200, 300 ,400, 500]:
 
   plt.scatter(data_tsne[:num_points, 0], data_tsne[:num_points, 1], color='blue', label='A')
   plt.scatter(data_tsne[num_points:2*num_points, 0], data_tsne[num_points:2*num_points, 1], color='red', label='B')
-  plt.scatter(data_tsne[2*num_points, 0], data_tsne[2*num_points:, 1], color='green', label='C')
+  plt.scatter(data_tsne[2*num_points:, 0], data_tsne[2*num_points:, 1], color='green', label='C')
   plt.title('t-SNE Visualization')
   plt.legend()
   plt.savefig(f'tsne_visualization_{num_points}_{stragety}.png')
