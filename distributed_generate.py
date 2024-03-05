@@ -147,7 +147,7 @@ def main():
             logging.info(f"Generation uptil {idx} took {time.time() - t:.3}s")
             dist.barrier()
             iters += 1
-            if iters%500 == 0:
+            if iters % 500 == 0:
                 df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
         except StopIteration:
             break
@@ -157,7 +157,7 @@ def main():
     df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
     with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "w") as f:
-        f.write(f"{RANK} done \n")
+        f.write(f"{RANK} done\n")
 
 if __name__ == '__main__':
     main()
