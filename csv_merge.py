@@ -17,6 +17,6 @@ for rank in range(args.rank_size):
     result.append(df)
 result = pd.concat(result, ignore_index=True)
 result.to_csv(f"generate_results/memorization_evals_{args.model_name}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
-#os.system("rm generate_results/memorization_evals_70m-deduped-v0_96_112_143000_*.csv")
+os.system("rm generate_results/memorization_evals_70m-deduped-v0_96_112_143000_*.csv")
 
 
