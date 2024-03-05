@@ -37,7 +37,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", names=["idx", "score"])
+df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
 df_not_full_memorization = df[df['score'] == 0]
 df_half_memorization = df[df['score'] == 0.5]
