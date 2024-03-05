@@ -4,9 +4,9 @@
 #PJM -L elapse=48:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N de4103216
-#PJM -o de4103216
-#PJM -e de4103216
+#PJM -N de4103232
+#PJM -o de4103232
+#PJM -e de4103232
 
 #env
 #export RANK=1
@@ -18,7 +18,7 @@ if [ -z "$RUN_ON_REMOTE" ]; then
 fi
 RANK=8
 CONTEXT_SIZE=32
-CONTINUATION_SIZE=16
+CONTINUATION_SIZE=32
 MODEL=1b-deduped-v0
 
 ## available models: 70m, 160m, 410m, 1b, 1.4b, 2.8b, 6.9b, 12b deduped
