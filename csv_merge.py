@@ -13,7 +13,7 @@ args = args.parse_args()
 check_dict = {}
 for rank in range(args.rank_size):
     check_dict[rank] = False
-with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "r") as f:
+with open(f"experiment_cache/memorization_evals_{args.model_name}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "r") as f:
     for line in f:
         rank_idx, _ = line.split()
         check_dict[int(rank_idx)] = True
