@@ -95,7 +95,14 @@ def main():
     # Calculate start and end sequence indicies
     total_num_sequences = args.checkpoint * args.batch_size
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
-    start_idx = num_sequences_per_proc * RANK
+    if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv" in os.listdir(
+            "generate_results"):
+        df = pd.read_csv(
+            f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv",
+            index_col=0)
+        start_idx = len(df)
+    else:
+        start_idx = num_sequences_per_proc * RANK
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
         end_idx = total_num_sequences - 1
@@ -136,9 +143,12 @@ def main():
                 memorization_evals.append(f'{idx},{acc}')
                 memorization_evals_values.append([idx, acc.tolist()])
                 idx += 1
+
             logging.info(f"Generation uptil {idx} took {time.time() - t:.3}s")
             dist.barrier()
             iters += 1
+            if iters%500 == 0:
+                df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
         except StopIteration:
             break
 
@@ -146,7 +156,8 @@ def main():
     dist.barrier()
     df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
-
+    with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "w") as f:
+        f.write(f"{RANK} done \n")
 
 if __name__ == '__main__':
     main()
