@@ -148,6 +148,7 @@ def main():
             dist.barrier()
             iters += 1
             if iters % 500 == 0:
+                df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
                 df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
         except StopIteration:
             break
