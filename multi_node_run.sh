@@ -1,3 +1,4 @@
+#!/bin/sh
 #PJM -L rscgrp=debug-a
 #PJM -L node=1
 #PJM -L elapse=0:10:00
