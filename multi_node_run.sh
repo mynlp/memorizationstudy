@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 #PJM -L rscgrp=regular-a
 #PJM -L node=2
 #PJM -L elapse=0:10:00
