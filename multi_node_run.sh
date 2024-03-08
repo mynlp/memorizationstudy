@@ -11,7 +11,7 @@
 #if [ -z "$RUN_ON_REMOTE" ]; then
 #    source /work/gk77/k77025/.zshrc
 #fi
-source /work/gk77/k77025/.zshrc
+#source /work/gk77/k77025/.zshrc
 echo $0
 module load gcc/8.3.1
 module load ompi/4.1.modu1
