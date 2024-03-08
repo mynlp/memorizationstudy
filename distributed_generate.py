@@ -82,6 +82,7 @@ def main():
     print("start")
     print(f"Rank: {RANK}")
     print(f"World Size: {NUM_PROCS}")
+    print(f"Local Rank: {LOCAL_RANK}")
     torch.cuda.set_device(LOCAL_RANK)
 
     dist.init_process_group(
