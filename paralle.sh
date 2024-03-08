@@ -3,7 +3,7 @@
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-first_node=$(echo "$PJM_O_NODEINF" | awk 'NR==1{print $1}')
+first_node=$(cat "$PJM_O_NODEINF" | awk 'NR==1{print $1}')
 export MASTER_ADDR=$first_node
 echo $MASTER_ADDR
 #python3 -m torch.distributed.launch --nproc_per_node=1 --nnodes=1 --node_rank=$OMPI_COMM_WORLD_RANK --master_addr=`hostname -i` --master_port=29501 distributed_generate.py
