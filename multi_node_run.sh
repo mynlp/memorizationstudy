@@ -3,7 +3,7 @@
 #PJM -L node=2
 #PJM -L elapse=1:00:00
 #PJM --mpi proc=2
-#PJM -g <gk77>
+#PJM -g gk77
 #PJM -j
 #PJM -N de1b3216
 #PJM -o de1b3216
