@@ -1,5 +1,5 @@
 #!/bin/zsh
-#PJM -L rscgrp=regular-a
+#PJM -L rscgrp=short-a
 #PJM -L node=2
 #PJM -L elapse=0:10:00
 #PJM --mpi proc=2
