@@ -75,13 +75,14 @@ def main():
     paser.add_argument("--checkpoint", type=int, default=143000)
     args = paser.parse_args()
     RANK = int(os.environ['RANK'])
+    LOCAL_RANK = int(os.environ['LOCAL_RANK'])
     NUM_PROCS = int(os.environ['WORLD_SIZE'])
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     print("start")
     print(f"Rank: {RANK}")
     print(f"World Size: {NUM_PROCS}")
-    torch.cuda.set_device(RANK%8)
+    torch.cuda.set_device(LOCAL_RANK)
 
     dist.init_process_group(
         "nccl",
