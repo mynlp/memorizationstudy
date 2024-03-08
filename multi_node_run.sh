@@ -9,11 +9,11 @@
 #PJM -o de1b3216
 #PJM -e de1b3216
 
+module load gcc/8.3.1
+module load ompi/4.1.1
+
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-
-module load gcc/8.3.1
-module load ompi/4.1.1
 
 mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh
