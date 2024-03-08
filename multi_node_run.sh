@@ -9,6 +9,8 @@
 #PJM -o de1b3216
 #PJM -e de1b3216
 
+$SHELL --version
+echo $0
 module load gcc/8.3.1
 module load ompi/4.1.1
 
