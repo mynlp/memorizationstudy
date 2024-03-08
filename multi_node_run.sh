@@ -12,4 +12,4 @@
 module load gcc/8.3.1
 module load ompi/4.1.1
 
-mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./parallel.sh
+mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh
