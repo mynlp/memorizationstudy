@@ -18,6 +18,6 @@ source /usr/share/Modules/init/zsh
 module load gcc/8.3.1
 module load ompi/4.1.1
 
-
+echo $$PJM_O_NODEINF
 
 mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh
