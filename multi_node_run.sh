@@ -19,5 +19,6 @@ module load gcc/8.3.1
 module load ompi/4.1.1
 
 echo $PJM_O_NODEINF >> /work/gk77/share/log
+cat $PJM_O_NODEINF >> /work/gk77/share/log
 
 mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh
