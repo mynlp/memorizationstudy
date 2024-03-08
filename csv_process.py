@@ -35,4 +35,10 @@ for file in ["memorization_evals_70m-deduped-v0_48_64_143000.csv",
 # df2 = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_64_143000.csv")
 #
 # cross = find_cross(df1, df2, 1)
-
+a = pd.read_csv("memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
+b = pd.read_csv("memorization_evals_70m-deduped-v0_32_96_143000.csv", index_col=0)
+c=a[a["score"]==1]
+d=b[b["score"]==1]
+c=set(c["idx"].tolist())
+d=set(d["idx"].tolist())
+e=d.intersection(c)
