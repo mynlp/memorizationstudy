@@ -1,8 +1,8 @@
 #!/bin/zsh
 #PJM -L rscgrp=regular-a
-#PJM -L node=4
-#PJM -L elapse=48:00:00
-#PJM --mpi proc=4
+#PJM -L node=8
+#PJM -L elapse=24:00:00
+#PJM --mpi proc=8
 #PJM -g gk77
 #PJM -j
 #PJM -N de1b3216
