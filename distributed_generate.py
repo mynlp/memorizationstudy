@@ -81,7 +81,7 @@ def main():
     print("start")
     print(f"Rank: {RANK}")
     print(f"World Size: {NUM_PROCS}")
-    torch.cuda.set_device(RANK)
+    torch.cuda.set_device(RANK%8)
 
     dist.init_process_group(
         "nccl",
