@@ -8,9 +8,9 @@
 #PJM -N de1b3216
 #PJM -o de1b3216
 #PJM -e de1b3216
-if [ -z "$RUN_ON_REMOTE" ]; then
-    source /work/gk77/k77025/.zshrc
-fi
+#if [ -z "$RUN_ON_REMOTE" ]; then
+#    source /work/gk77/k77025/.zshrc
+#fi
 source /work/gk77/k77025/.zshrc
 echo $0
 module load gcc/8.3.1
