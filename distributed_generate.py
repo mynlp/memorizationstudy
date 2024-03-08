@@ -80,6 +80,7 @@ def main():
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     print("start")
     print(f"Rank: {RANK}")
+    print(f"World Size: {NUM_PROCS}")
     torch.cuda.set_device(RANK)
 
     dist.init_process_group(
