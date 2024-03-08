@@ -11,7 +11,7 @@
 #if [ -z "$RUN_ON_REMOTE" ]; then
 #    source /work/gk77/k77025/.zshrc
 #fi
-source /work/gk77/k77025/.zshrc
+#source /work/gk77/k77025/.zshrc
 #MODULES_INIT_SCRIPT="/usr/share/Modules/init/bash"
 
 source /usr/share/Modules/init/zsh
