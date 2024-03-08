@@ -16,7 +16,7 @@ source /work/gk77/k77025/.zshrc
 
 source /usr/share/Modules/init/zsh
 module load gcc/8.3.1
-module load ompi/4.1.modu1
+module load ompi/4.1.1
 
 
 
