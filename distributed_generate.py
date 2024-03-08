@@ -79,6 +79,7 @@ def main():
     logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     print("start")
+    print(f"Rank: {RANK}")
     torch.cuda.set_device(RANK)
 
     dist.init_process_group(
