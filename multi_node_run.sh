@@ -12,7 +12,7 @@
 #    source /work/gk77/k77025/.zshrc
 #fi
 #source /work/gk77/k77025/.zshrc
-echo $0
+echo $SHELL
 module load gcc/8.3.1
 module load ompi/4.1.modu1
 
