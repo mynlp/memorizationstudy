@@ -71,7 +71,7 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
 def main():
     paser = argparse.ArgumentParser()
     paser.add_argument("--batch_size", type=int, default=1024)
-    paser.add_argument("--context_size", type=int, default=48)
+    paser.add_argument("--context_size", type=int, default=32)
     paser.add_argument("--continuation_size", type=int, default=16)
     paser.add_argument("--model", type=str, default="70m-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
@@ -105,12 +105,12 @@ def main():
     # Calculate start and end sequence indicies
     total_num_sequences = args.checkpoint * args.batch_size
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
-    if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
-        df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
-        start_idx = len(df)
-    else:
-        start_idx = num_sequences_per_proc * RANK
-
+    # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
+    #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
+    #     start_idx = len(df)
+    # else:
+    #     start_idx = num_sequences_per_proc * RANK
+    start_idx = num_sequences_per_proc * RANK
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
         end_idx = total_num_sequences - 1
@@ -132,6 +132,7 @@ def main():
     else:
         model = model.cuda(0)
     model = model.eval()
+    model = model.to_bettertransformer()
     #dist.barrier()
     print("Loaded Model")
     all_memorization_evals = []
