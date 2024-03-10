@@ -40,7 +40,7 @@ def generate_dataset(args, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=12
             while mp_queue.qsize() > prefetch_max:
                 time.sleep(0.05)
     if len(context_tokens) > 0:
-        mp_queue.put((i - len(context_tokens) + 1, context_tokens, true_continuation))
+        mp_queue.put((i - len(context_tokens), context_tokens, true_continuation))
         context_tokens = []
         true_continuation = []
 
