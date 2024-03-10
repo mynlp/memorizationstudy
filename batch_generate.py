@@ -132,7 +132,7 @@ def main():
     else:
         model = model.cuda(0)
     model = model.eval()
-    model = model.to_bettertransformer()
+    #model = model.to_bettertransformer()
     #dist.barrier()
     print("Loaded Model")
     all_memorization_evals = []
