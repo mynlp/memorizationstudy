@@ -127,7 +127,7 @@ def main():
     #     revision=f'step{args.checkpoint}',
     #     load_in_8_bit=True
     # )
-    model = model.half()
+    #model = model.half()
     if torch.cuda.device_count() > 1:
         print(f"use {torch.cuda.device_count()} GPUs!")
         model = torch.nn.DataParallel(model,device_ids=[0, 1, 2, 3, 4, 5, 6, 7])
