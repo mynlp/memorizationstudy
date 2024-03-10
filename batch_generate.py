@@ -121,7 +121,7 @@ def main():
     ds_process.start()
 
     # Model initialization
-    model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f'step{args.checkpoint}', load_in_8bit=True, device_map="auto")
+    model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f'step{args.checkpoint}', load_in_8bit=True, device_map="cuda")
     # model = GPTNeoXForCausalLM.from_pretrained(
     #     f"EleutherAI/pythia-{args.model}",
     #     revision=f'step{args.checkpoint}',
