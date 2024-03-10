@@ -7,7 +7,7 @@ first_node=$(cat "$PJM_O_NODEINF" | awk 'NR==1{print $1}')
 export MASTER_ADDR=$first_node
 RANK=8
 CONTEXT_SIZE=32
-CONTINUATION_SIZE=64
+CONTINUATION_SIZE=96
 MODEL=1b-deduped-v0
 echo $MASTER_ADDR
 #python3 -m torch.distributed.launch --nproc_per_node=1 --nnodes=1 --node_rank=$OMPI_COMM_WORLD_RANK --master_addr=`hostname -i` --master_port=29501 distributed_generate.py
