@@ -28,3 +28,4 @@ result.to_csv(f"generate_results/memorization_evals_{args.model_name}_{args.cont
     #os.system(f"rm generate_results/memorization_evals_{args.model_name}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_*.csv")
 
 
+#generate_results/memorization_evals_1b-deduped-v0_32_48_143000.csv
