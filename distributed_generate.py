@@ -16,14 +16,16 @@ def generate_dataset(args, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=12
     if "deduped" in args.model:
         prefix = 'deduped_merge/document.bin'
     print(prefix)
-    buff_size = 2049*args.batch_size*2
     print("Building dataset")
     mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
     context_tokens = []
     true_continuation = []
     i = 0
     for i in range(start_seq_idx, end_seq_idx + 1, args.batch_size):
-        data = mmap_ds[i:i + args.batch_size]
+        if i + args.batch_size > end_seq_idx:
+            data = mmap_ds[i:end_seq_idx+1]
+        else:
+            data = mmap_ds[i:i + args.batch_size]
         context_tokens.extend(data[:, :args.context_size].tolist())
         true_continuation.extend(data[:, args.context_size:args.context_size+args.continuation_size].tolist())
         i += len(context_tokens)
@@ -158,11 +160,11 @@ def main():
             break
 
     ds_process.join()
-    dist.barrier()
     df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
     with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "a+") as f:
         f.write(f"{RANK} done\n")
+    dist.barrier()
 
 if __name__ == '__main__':
     main()
