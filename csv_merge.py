@@ -20,6 +20,7 @@ for rank in range(args.rank_size):
 #if all(check_dict.values()):
 result = []
 for rank in range(args.rank_size):
+    print(f"Loading csv file idx {rank}...")
     file = f"generate_results/memorization_evals_{args.model_name}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{rank}.csv"
     df = pd.read_csv(file, index_col=0)
     result.append(df)
