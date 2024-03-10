@@ -124,7 +124,7 @@ def main():
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{args.model}",
         revision=f'step{args.checkpoint}',
-        load_in_8_bits=True
+        load_in_8_bit=True
     )
     model = model.half()
     if torch.cuda.device_count() > 1:
