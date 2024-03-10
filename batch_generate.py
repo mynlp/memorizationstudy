@@ -7,7 +7,7 @@ import torch.distributed as dist
 import transformers.utils as transformer_utils
 import multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
-from transformers import GPTNeoXForCausalLM
+from transformers import GPTNeoXForCausalLM, AutoModelForCausalLM
 import argparse
 from utils import *
 import pdb
@@ -121,11 +121,12 @@ def main():
     ds_process.start()
 
     # Model initialization
-    model = GPTNeoXForCausalLM.from_pretrained(
-        f"EleutherAI/pythia-{args.model}",
-        revision=f'step{args.checkpoint}',
-        load_in_8_bit=True
-    )
+    model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f'step{args.checkpoint}', load_in_8_bit=True)
+    # model = GPTNeoXForCausalLM.from_pretrained(
+    #     f"EleutherAI/pythia-{args.model}",
+    #     revision=f'step{args.checkpoint}',
+    #     load_in_8_bit=True
+    # )
     model = model.half()
     if torch.cuda.device_count() > 1:
         print(f"use {torch.cuda.device_count()} GPUs!")
