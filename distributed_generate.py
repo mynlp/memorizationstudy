@@ -161,7 +161,7 @@ def main():
     dist.barrier()
     df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
     df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
-    with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "w") as f:
+    with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "a+") as f:
         f.write(f"{RANK} done\n")
 
 if __name__ == '__main__':
