@@ -123,8 +123,9 @@ def main():
         f"EleutherAI/pythia-{args.model}",
         use_cache=False,
         revision=f'step{args.checkpoint}',
-    ).half().eval().cuda()
-
+    ).half().eval()
+    model = model.to_bettertransformer()
+    model = model.cuda()
     dist.barrier()
     logging.info("Loaded Model")
 
