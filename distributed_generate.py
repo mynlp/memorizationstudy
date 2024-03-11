@@ -99,7 +99,7 @@ def main():
     transformer_utils.logging.set_verbosity_error()
 
     # Calculate start and end sequence indicies
-    total_num_sequences = args.checkpoint * args.batch_size
+    total_num_sequences = args.checkpoint * 1024
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
     if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv" in os.listdir(
             "generate_results"):
