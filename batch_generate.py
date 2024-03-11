@@ -73,7 +73,7 @@ def main():
     paser.add_argument("--batch_size", type=int, default=1024)
     paser.add_argument("--context_size", type=int, default=32)
     paser.add_argument("--continuation_size", type=int, default=16)
-    paser.add_argument("--model", type=str, default="70m-deduped-v0")
+    paser.add_argument("--model", type=str, default="12b-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
     args = paser.parse_args()
     #BATCH_SIZE = 1024
@@ -121,20 +121,20 @@ def main():
     ds_process.start()
 
     # Model initialization
-    model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f'step{args.checkpoint}', load_in_8bit=True, device_map="cuda:0")
-    # model = GPTNeoXForCausalLM.from_pretrained(
-    #     f"EleutherAI/pythia-{args.model}",
-    #     revision=f'step{args.checkpoint}',
-    #     load_in_8_bit=True
-    # )
-    #model = model.half()
-    # if torch.cuda.device_count() > 1:
-    #     print(f"use {torch.cuda.device_count()} GPUs!")
-    #     model = torch.nn.DataParallel(model,device_ids=[0, 1, 2, 3, 4, 5, 6, 7])
-    # else:
-    #     model = model.cuda(0)
+    #model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f'step{args.checkpoint}', load_in_8bit=True, device_map="cuda:0")
+    model = GPTNeoXForCausalLM.from_pretrained(
+        f"EleutherAI/pythia-{args.model}",
+        revision=f'step{args.checkpoint}',
+        load_in_8_bit=True
+    )
+    model = model.half()
+    if torch.cuda.device_count() > 1:
+        print(f"use {torch.cuda.device_count()} GPUs!")
+        model = torch.nn.DataParallel(model,device_ids=[0, 1, 2, 3, 4, 5, 6, 7])
+    else:
+        model = model.cuda(0)
     model = model.eval()
-    #model = model.to_bettertransformer()
+    model = model.to_bettertransformer()
     #dist.barrier()
     print("Loaded Model")
     all_memorization_evals = []
