@@ -5,9 +5,9 @@
 #PJM --mpi proc=8
 #PJM -g gk77
 #PJM -j
-#PJM -N de6.9b3216
-#PJM -o de6.9b3216
-#PJM -e de6.9b3216
+#PJM -N de4103296
+#PJM -o de4103296
+#PJM -e de4103296
 #if [ -z "$RUN_ON_REMOTE" ]; then
 #    source /work/gk77/k77025/.zshrc
 #fi
@@ -26,4 +26,4 @@ cat $PJM_O_NODEINF >> /work/gk77/share/log
 #CONTINUATION_SIZE=$4
 #BATCH_SIZE=$5
 #MODEL=$6
-mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 8 8 32 16 512 6.9b-deduped-v0
+mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 8 8 32 96 1024 410m-deduped-v0
