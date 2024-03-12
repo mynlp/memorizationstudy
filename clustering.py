@@ -47,7 +47,7 @@ idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 idx_half_memorization = df_half_memorization["idx"].tolist()
 
-stragety = "mean_hidden_state"
+stragety = "context_embedding"
 for num_points in [100, 200, 300 ,400, 500]:
   generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
   generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
@@ -58,6 +58,10 @@ for num_points in [100, 200, 300 ,400, 500]:
     embedding = generations_full_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
     embedding_not_full = generations_not_full.hidden_states[-1][-1].squeeze().cpu().numpy()
     embedding_half_memo = generations_half_memo.hidden_states[-1][-1].squeeze().cpu().numpy()
+  if stragety == "context_embedding":
+    embedding = generations_full_memo.hidden_states[0][-1].mean(1).squeeze().cpu().numpy()
+    embedding_not_full = generations_not_full.hidden_states[0][-1].mean(1).squeeze().cpu().numpy()
+    embedding_half_memo = generations_half_memo.hidden_states[0][-1].mean(1).squeeze().squeeze().cpu().numpy()
   # mean pooling hidden state of all continuation token at last year
   elif stragety == "mean_hidden_state":
     embedding = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:]]).mean(0).squeeze().cpu().numpy()
