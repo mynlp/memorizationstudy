@@ -20,5 +20,10 @@ module load ompi/4.1.1
 
 echo $PJM_O_NODEINF >> /work/gk77/share/log
 cat $PJM_O_NODEINF >> /work/gk77/share/log
-
-mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh
+#N_NODE=$1
+#RANK=$2
+#CONTEXT_SIZE=$3
+#CONTINUATION_SIZE=$4
+#BATCH_SIZE=$5
+#MODEL=$6
+mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 8 8 32 16 512 6.9b-deduped-v0
