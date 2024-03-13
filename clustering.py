@@ -47,7 +47,7 @@ idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 idx_half_memorization = df_half_memorization["idx"].tolist()
 
-stragety = "context_embedding"
+stragety = "mean_hidden_state"
 for num_points in [100, 200, 300 ,400, 500]:
   generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
   generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
@@ -84,7 +84,7 @@ for num_points in [100, 200, 300 ,400, 500]:
   plt.scatter(data_tsne[2*num_points:, 0], data_tsne[2*num_points:, 1], color='green', label='C')
   plt.title('t-SNE Visualization')
   plt.legend()
-  plt.savefig(f'tsne_visualization_{num_points}_{stragety}_"160m".png')
+  plt.savefig(f'tsne_visualization_{num_points}_{stragety}_160m.png')
   plt.show()
 
 
