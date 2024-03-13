@@ -9,18 +9,18 @@ import matplotlib.pyplot as plt
 import random
 
 random.seed(42)
-model_name = "EleutherAI/pythia-70m-deduped-v0"
+model_name = "EleutherAI/pythia-160m-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
 model.eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
@@ -37,7 +37,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
+df = pd.read_csv("generate_results/memorization_evals_160m-deduped-v0_32_48_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
 df_not_full_memorization = df[df['score'] == 0]
 df_half_memorization = df[df['score'] == 0.5]
@@ -84,7 +84,7 @@ for num_points in [100, 200, 300 ,400, 500]:
   plt.scatter(data_tsne[2*num_points:, 0], data_tsne[2*num_points:, 1], color='green', label='C')
   plt.title('t-SNE Visualization')
   plt.legend()
-  plt.savefig(f'tsne_visualization_{num_points}_{stragety}.png')
+  plt.savefig(f'tsne_visualization_{num_points}_{stragety}_"160m".png')
   plt.show()
 
 

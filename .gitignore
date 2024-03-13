@@ -159,6 +159,8 @@ experiment_cache
 experiment_cache/
 generate_results
 generate_results/
+result_figures/
+result_figures
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
