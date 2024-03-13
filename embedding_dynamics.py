@@ -56,7 +56,7 @@ generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  
 context_embedding = generations_full_memo.hidden_states[0][-1].mean(1).squeeze()
 context_embedding_not_full = generations_not_full.hidden_states[0][-1].mean(1).squeeze()
 context_embedding_half_memo = generations_half_memo.hidden_states[0][-1].mean(1).squeeze().squeeze()
-for token in range(2, 16):
+for token in range(12, 16):
     embedding = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).mean(0).squeeze()
     embedding_not_full = torch.stack([x[-1] for x in generations_not_full.hidden_states[1:token]]).mean(0).squeeze()
     embedding_half_memo = torch.stack([x[-1] for x in generations_half_memo.hidden_states[1:token]]).mean(0).squeeze()
