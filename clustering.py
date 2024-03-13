@@ -17,7 +17,7 @@ model = GPTNeoXForCausalLM.from_pretrained(
   revision=f"step{CHECKPOINT}",
   cache_dir=f"./pythia-{size}-deduped/step{CHECKPOINT}",
 )
-model=model.half().eval().cuda()
+model=model.half()..to_bettertransformer().eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
