@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import random
 
 random.seed(42)
-size = "410m"
+size = "1b"
 model_name = f"EleutherAI/pythia-{size}-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
