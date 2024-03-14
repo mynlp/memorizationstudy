@@ -13,13 +13,13 @@ results_70 = results_70[results_70['score'] == 1]
 results_160 = results_160[results_160['score'] == 1]
 results_410 = results_410[results_410['score'] == 1]
 results_1b = results_1b[results_1b['score'] == 1]
-unmemorized = results_70[results_1b['0.0'] == 0]
+unmemorized = results_70[results_1b['score'] == 0]
 
 idx_70 = set(results_70["idx"].tolist())
 idx_160 = set(results_160["idx"].tolist())
 idx_410 = set(results_410["idx"].tolist())
 idx_1b = set(results_1b["idx"].tolist())
-unmemorized_idx = set(unmemorized.tolist())
+unmemorized_idx = set(unmemorized["idx"].tolist())
 
 context_tokens = []
 cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
