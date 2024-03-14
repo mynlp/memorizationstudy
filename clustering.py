@@ -10,6 +10,8 @@ import random
 
 random.seed(42)
 size = "1b"
+context_size = 32
+continuation_size = 16
 model_name = f"EleutherAI/pythia-{size}-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
@@ -38,7 +40,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv(f"generate_results/memorization_evals_{size}-deduped-v0_32_48_143000.csv", index_col=0)
+df = pd.read_csv(f"generate_results/memorization_evals_{size}-deduped-v0_{context_size}_{context_size+continuation_size}_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
 df_not_full_memorization = df[df['score'] == 0]
 df_half_memorization = df[df['score'] == 0.5]
@@ -50,9 +52,9 @@ idx_half_memorization = df_half_memorization["idx"].tolist()
 
 stragety = "mean_hidden_state"
 for num_points in [500]:
-  generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
-  generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
-  generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), 32, 16)
+  generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context_size, continuation_size)
+  generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), context_size, continuation_size)
+  generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), context_size, continuation_size)
 
   # last hidden state
   if stragety == "last_hidden_state":
