@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import random
 
 random.seed(42)
-size = "1b"
+size = "70m"
 context_size = 32
 continuation_size = 16
 model_name = f"EleutherAI/pythia-{size}-deduped-v0"
@@ -51,7 +51,7 @@ idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 idx_half_memorization = df_half_memorization["idx"].tolist()
 
 stragety = "mean_hidden_state"
-for num_points in [500]:
+for num_points in [100,200,300,400,500]:
   generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context_size, continuation_size)
   generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), context_size, continuation_size)
   generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), context_size, continuation_size)
@@ -87,7 +87,7 @@ for num_points in [500]:
   plt.scatter(data_tsne[2*num_points:, 0], data_tsne[2*num_points:, 1], color='green', label='C')
   plt.title('t-SNE Visualization')
   plt.legend()
-  plt.savefig(f'tsne_visualization_{num_points}_{stragety}_{size}.png')
+  plt.savefig(f'tsne_visualization_{num_points}_{stragety}_{size}_{context_size}_{context_size+continuation_size}.png')
   plt.show()
 
 
