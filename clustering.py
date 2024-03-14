@@ -11,7 +11,7 @@ import random
 random.seed(42)
 size = "70m"
 context_size = 32
-continuation_size = 16
+continuation_size = 32
 model_name = f"EleutherAI/pythia-{size}-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
