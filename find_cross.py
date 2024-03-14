@@ -13,7 +13,7 @@ results_70 = results_70[results_70['score'] == 1]
 results_160 = results_160[results_160['score'] == 1]
 results_410 = results_410[results_410['score'] == 1]
 results_1b = results_1b[results_1b['score'] == 1]
-unmemorized = results_70[results_1b['score'] == 0]
+unmemorized = results_1b[results_1b['score'] == 0]
 
 idx_70 = set(results_70["idx"].tolist())
 idx_160 = set(results_160["idx"].tolist())
