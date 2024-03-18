@@ -1,10 +1,10 @@
 #!/bin/zsh
 #PJM -L rscgrp=regular-a
-#PJM -L node=1
-#PJM -L elapse=48:00:00
+#PJM -L node=8
+#PJM -L elapse=24:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N de4103296
+#PJM -N de3296
 #PJM -o de4103296
 #PJM -e de4103296
 
