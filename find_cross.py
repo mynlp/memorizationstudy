@@ -20,17 +20,17 @@ idx_160 = set(results_160["idx"].tolist())
 idx_410 = set(results_410["idx"].tolist())
 idx_1b = set(results_1b["idx"].tolist())
 unmemorized_idx = set(unmemorized["idx"].tolist())
-
-context_tokens = []
-cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
-for i in tqdm(list(cross_all)):
-    data = mmap_ds[i]
-    context_tokens.extend(data.tolist())
-    i += len(context_tokens)
-context_tokens = torch.tensor(context_tokens)
-torch.save(context_tokens, "cross_remembered/context_tokens.pt")
 
+# context_tokens = []
+# for i in tqdm(list(cross_all)):
+#     data = mmap_ds[i]
+#     context_tokens.extend(data.tolist())
+#     i += len(context_tokens)
+# context_tokens = torch.tensor(context_tokens)
+# torch.save(context_tokens, "cross_remembered/context_tokens.pt")
+
+cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
 context_tokens = []
 unmemorized = random.sample(unmemorized_idx, len(cross_all)*3)
 for i in tqdm(list(unmemorized)):
