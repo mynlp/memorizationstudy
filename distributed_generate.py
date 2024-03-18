@@ -101,16 +101,6 @@ def main():
     # Calculate start and end sequence indicies
     total_num_sequences = args.checkpoint * 1024
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
-
-    check_dict = {}
-    for rank in range(args.rank_size):
-        check_dict[rank] = False
-    with open(
-            f"experiment_cache/memorization_evals_{args.model_name}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt",
-            "r") as f:
-        for line in f:
-            rank_idx, _ = line.split()
-            check_dict[int(rank_idx)] = True
     if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv" in os.listdir(
             "generate_results"):
         df = pd.read_csv(
