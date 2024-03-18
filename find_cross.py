@@ -32,7 +32,7 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
 context_tokens = []
-unmemorized = random.sample(unmemorized_idx, len(cross_all)*3)
+unmemorized = random.sample(unmemorized_idx, len(cross_all)*2)
 for i in tqdm(list(unmemorized)):
     data = mmap_ds[i]
     context_tokens.extend(data.tolist())
