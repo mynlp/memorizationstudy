@@ -3,7 +3,7 @@ from transformers import AutoTokenizer
 from transformers import DataCollatorForLanguageModeling
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import math
-
+import torch
 
 def preprocess_function(examples):
     return tokenizer([" ".join(x) for x in examples["answers.text"]])
@@ -24,10 +24,16 @@ def group_texts(examples):
     result["labels"] = result["input_ids"].copy()
     return result
 
-
+data = torch.load("cross_remembered/context_tokens.pt")
 eli5 = load_dataset("eli5", split="train_asks[:5000]")
 eli5 = eli5.train_test_split(test_size=0.2)
-tokenizer = AutoTokenizer.from_pretrained("distilgpt2")
+model_name = "EleutherAI/pythia-160m-deduped-v0"
+CHECKPOINT= 143000
+tokenizer = AutoTokenizer.from_pretrained(
+  model_name,
+  revision=f"step{CHECKPOINT}",
+  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
+)
 eli5 = eli5.flatten()
 tokenized_eli5 = eli5.map(
     preprocess_function,
