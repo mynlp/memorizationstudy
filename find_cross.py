@@ -9,16 +9,16 @@ results_160 = pd.read_csv("generate_results/memorization_evals_160m-deduped-v0_3
 results_410 = pd.read_csv("generate_results/memorization_evals_410m-deduped-v0_32_48_143000.csv", index_col=0)
 results_1b = pd.read_csv("generate_results/memorization_evals_1b-deduped-v0_32_48_143000.csv", index_col=0)
 
-results_70 = results_70[results_70['score'] == 1]
-results_160 = results_160[results_160['score'] == 1]
-results_410 = results_410[results_410['score'] == 1]
-results_1b = results_1b[results_1b['score'] == 1]
+memorized_results_70 = results_70[results_70['score'] == 1]
+memorized_results_160 = results_160[results_160['score'] == 1]
+memorized_results_410 = results_410[results_410['score'] == 1]
+memorized_results_1b = results_1b[results_1b['score'] == 1]
 unmemorized = results_1b[results_1b['score'] == 0]
 
-idx_70 = set(results_70["idx"].tolist())
-idx_160 = set(results_160["idx"].tolist())
-idx_410 = set(results_410["idx"].tolist())
-idx_1b = set(results_1b["idx"].tolist())
+idx_70 = set(memorized_results_70["idx"].tolist())
+idx_160 = set(memorized_results_160["idx"].tolist())
+idx_410 = set(memorized_results_410["idx"].tolist())
+idx_1b = set(memorized_results_1b["idx"].tolist())
 unmemorized_idx = set(unmemorized["idx"].tolist())
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
