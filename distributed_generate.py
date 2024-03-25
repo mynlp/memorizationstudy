@@ -76,6 +76,7 @@ def main():
     paser.add_argument("--model", type=str, default="1b-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
     args = paser.parse_args()
+    print(args)
     RANK = int(os.environ['RANK'])
     LOCAL_RANK = int(os.environ['LOCAL_RANK'])
     NUM_PROCS = int(os.environ['WORLD_SIZE'])
@@ -107,6 +108,7 @@ def main():
             f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv",
             index_col=0)
         start_idx = len(df)
+        print(f"Found memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv and continues from idx {start_idx}")
     else:
         start_idx = num_sequences_per_proc * RANK
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
