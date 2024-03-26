@@ -16,7 +16,7 @@ def batchfy(data):
 raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
 model_name = "EleutherAI/pythia-160m-deduped-v0"
 CHECKPOINT = 143000
-context_length = 2048
+context_length = 2049
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
@@ -40,8 +40,7 @@ ds = DatasetDict({
     'train': train_valid['train'],
     'test': test_valid['test'],
     'valid': test_valid['train']})
-block_size = 128
-tokenizer.pad_token = tokenizer.eos_token
+¥tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 model = GPT2LMHeadModel(config).cuda()
 args = TrainingArguments(
