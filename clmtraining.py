@@ -35,12 +35,11 @@ config = AutoConfig.from_pretrained(
 
 
 raw_dataset = raw_dataset.flatten()
-tokenized_eli5 = raw_dataset.map(
+lm_dataset = raw_dataset.map(
     batchfy,
     batched=True,
 )
 block_size = 128
-lm_dataset = tokenized_eli5.map(group_texts, batched=True)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 model = AutoModelForCausalLM.from_pretrained("distilgpt2")
