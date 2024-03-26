@@ -3,6 +3,14 @@ from pythia.utils.mmap_dataset import MMapIndexedDataset
 import torch
 import random
 from tqdm import tqdm
+from transformers import AutoTokenizer
+model_name = "EleutherAI/pythia-160m-deduped-v0"
+CHECKPOINT = 143000
+tokenizer = AutoTokenizer.from_pretrained(
+  model_name,
+  revision=f"step{CHECKPOINT}",
+  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
+)
 prefix = 'deduped_merge/document.bin'
 results_70 = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
 results_160 = pd.read_csv("generate_results/memorization_evals_160m-deduped-v0_32_48_143000.csv", index_col=0)
@@ -32,11 +40,15 @@ cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
 # torch.save(context_tokens, "cross_remembered/context_tokens.pt")
 
 context_tokens = []
+idx = 0
 unmemorized = random.sample(unmemorized_idx, len(cross_all)*3)
 for i in tqdm(list(unmemorized)):
     data = mmap_ds[i]
-    context_tokens.extend(data.tolist())
-    i += len(context_tokens)
-context_tokens = torch.tensor(context_tokens)
-torch.save(context_tokens, "cross_remembered/unmemorized.pt")
+    idx += 1
+    text = tokenizer.decode(data)
+    context_tokens.append([idx, text])
+df = pd.DataFrame(context_tokens, columns=["idx", "text"])
+df.to_json("cross_remembered/unmemorized_text.json", index=False, orient='records', lines=True)
+
+
 
