@@ -16,13 +16,16 @@ def tokenize(element):
     :param element: The element to be tokenized.
     :return: A dictionary containing the batch of input_ids.
     """
-    outputs = tokenizer(
-        element["text"],
-        truncation=True,
-        max_length=context_length,
-        return_overflowing_tokens=True,
-        return_length=True,
-    )
+    try:
+        outputs = tokenizer(
+            element["text"],
+            truncation=True,
+            max_length=context_length,
+            return_overflowing_tokens=True,
+            return_length=True,
+        )
+    except TypeError:
+       print(element["text"])
     input_batch = []
     for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
         if length == context_length:
@@ -34,7 +37,7 @@ raw_dataset = datasets.load_dataset("json", data_files="cross_remembered/memoriz
 context_length = 512
 tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 tokenized_datasets = raw_dataset.map(
-    tokenize, batched=True, remove_columns=raw_dataset["train"].column_names
+    tokenize, batched=True, remove_columns=raw_dataset.column_names
 )
 tokenized_datasets = tokenized_datasets.train_test_split(test_size=0.2)
 
