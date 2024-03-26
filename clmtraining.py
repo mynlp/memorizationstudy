@@ -1,3 +1,4 @@
+import datasets
 from datasets import load_dataset, DatasetDict,Dataset
 from transformers import AutoTokenizer, AutoConfig
 from transformers import DataCollatorForLanguageModeling, GPT2LMHeadModel
@@ -8,22 +9,29 @@ import torch
 
 
 
-def batchfy(data):
-  input_batch = []
-  for input_ids in (data):
-      input_batch.append(input_ids)
-  return {"input_ids": input_batch}
+def tokenize(element):
+    outputs = tokenizer(
+        element["text"],
+        truncation=True,
+        max_length=context_length,
+        return_overflowing_tokens=True,
+        return_length=True,
+    )
+    input_batch = []
+    for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
+        if length == context_length:
+            input_batch.append(input_ids)
+    return {"input_ids": input_batch}
 
-raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
-model_name = "EleutherAI/pythia-160m-deduped-v0"
-CHECKPOINT = 143000
-context_length = 2049
-tokenizer = AutoTokenizer.from_pretrained(
-  model_name,
-  revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
+#raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
+raw_dataset = datasets.load_dataset("csv", data_files="cross_remembered/memorized_text.csv")
+raw_dataset = raw_dataset.train_test_split(test_size=0.2)
+context_length = 512
+tokenized_datasets = raw_datasets.map(
+    tokenize, batched=True, remove_columns=raw_datasets["train"].column_names
 )
-
+tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
+CHECKPOINT = 143000
 config = AutoConfig.from_pretrained(
     "gpt2",
     vocab_size=len(tokenizer),
@@ -31,18 +39,9 @@ config = AutoConfig.from_pretrained(
     bos_token_id=tokenizer.bos_token_id,
     eos_token_id=tokenizer.eos_token_id,
 )
-
-
-raw_dataset = raw_dataset.flatten()
-train_valid = raw_dataset.train_test_split(test_size=0.2)
-test_valid = train_valid['test'].train_test_split(test_size=0.5)
-ds = DatasetDict({
-    'train': train_valid['train'],
-    'test': test_valid['test'],
-    'valid': test_valid['train']})
+model = GPT2LMHeadModel(config)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
-model = GPT2LMHeadModel(config)
 args = TrainingArguments(
     output_dir="clmtraining",
     per_device_train_batch_size=32,
@@ -57,7 +56,7 @@ args = TrainingArguments(
     lr_scheduler_type="cosine",
     learning_rate=5e-4,
     save_steps=5_000,
-    #fp16=True,
+    fp16=True,
     push_to_hub=False,
 )
 
