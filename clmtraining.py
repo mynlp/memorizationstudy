@@ -5,7 +5,7 @@ from transformers import DataCollatorForLanguageModeling, GPT2LMHeadModel
 from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import math
 import torch
-
+import pdb
 
 
 
@@ -25,7 +25,8 @@ def tokenize(element):
             return_length=True,
         )
     except TypeError:
-       print(element["text"])
+        pdb.set_trace()
+        print(element["text"])
     input_batch = []
     for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
         if length == context_length:
@@ -37,7 +38,7 @@ raw_dataset = datasets.load_dataset("json", data_files="cross_remembered/memoriz
 context_length = 512
 tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 tokenized_datasets = raw_dataset.map(
-    tokenize, batched=True, remove_columns=raw_dataset.column_names
+    tokenize, batched=True, remove_columns=raw_dataset["train"].column_names
 )
 tokenized_datasets = tokenized_datasets.train_test_split(test_size=0.2)
 
@@ -76,7 +77,7 @@ trainer = Trainer(
     args=args,
     data_collator=data_collator,
     train_dataset=tokenized_datasets["train"],
-    eval_dataset=tokenized_datasets["valid"],
+    eval_dataset=tokenized_datasets["test"],
 )
 
 trainer.train()
