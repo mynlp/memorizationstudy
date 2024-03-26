@@ -10,6 +10,12 @@ import torch
 
 
 def tokenize(element):
+    """
+    Tokenizes the given element.
+
+    :param element: The element to be tokenized.
+    :return: A dictionary containing the batch of input_ids.
+    """
     outputs = tokenizer(
         element["text"],
         truncation=True,
@@ -24,7 +30,7 @@ def tokenize(element):
     return {"input_ids": input_batch}
 
 #raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
-raw_dataset = datasets.load_dataset("csv", data_files="cross_remembered/memorized_text.csv")
+raw_dataset = datasets.load_dataset("csv", data_files="cross_remembered/memorized_text.csv", keep_default_na=False)
 raw_dataset = raw_dataset.train_test_split(test_size=0.2)
 context_length = 512
 tokenized_datasets = raw_dataset.map(
