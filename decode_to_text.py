@@ -25,7 +25,7 @@ for idx, line in tqdm(enumerate(data)):
   text = tokenizer.decode(line)
   result.append([idx, line])
 df = pd.DataFrame(result, columns=["idx", "text"])
-df.to_csv("cross_remebered/memorized_text.csv",)
+df.to_csv("cross_remembered/memorized_text.csv",)
 
 
 
