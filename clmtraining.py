@@ -44,7 +44,7 @@ ds = DatasetDict({
 block_size = 128
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
-model = AutoModelForCausalLM.from_pretrained("distilgpt2")
+model = AutoModelForCausalLM.from_pretrained("distilgpt2").cuda()
 args = TrainingArguments(
     output_dir="clmtraining",
     per_device_train_batch_size=32,
