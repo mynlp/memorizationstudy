@@ -34,7 +34,7 @@ def tokenize(element):
             input_batch.append(input_ids)
     return {"input_ids": input_batch}
 
-def filter_streaming_dataset(dataset, filters):
+def filter_dataset(dataset, filters):
     filtered_dict = {"text":[]}
     total = 0
     for sample in tqdm(iter(dataset)):
@@ -45,6 +45,7 @@ def filter_streaming_dataset(dataset, filters):
 
 #raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
 raw_dataset = datasets.load_dataset("json", data_files="cross_remembered/memorized_text.json")
+raw_dataset = filter_dataset(raw_dataset)
 context_length = 512
 tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 tokenized_datasets = raw_dataset.map(
