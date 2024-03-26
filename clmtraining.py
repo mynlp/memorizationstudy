@@ -59,7 +59,6 @@ args = TrainingArguments(
     save_steps=5_000,
     fp16=True,
     push_to_hub=False,
-    local_rank= 0
 )
 
 trainer = Trainer(
