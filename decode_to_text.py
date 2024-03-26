@@ -23,7 +23,7 @@ tokenizer = AutoTokenizer.from_pretrained(
 result = []
 for idx, line in tqdm(enumerate(data)):
   text = tokenizer.decode(line)
-  result.append([idx, line])
+  result.append([idx, text])
 df = pd.DataFrame(result, columns=["idx", "text"])
 df.to_csv("cross_remembered/memorized_text.csv")
 
