@@ -35,10 +35,12 @@ config = AutoConfig.from_pretrained(
 
 
 raw_dataset = raw_dataset.flatten()
-lm_dataset = raw_dataset.map(
-    batchfy,
-    batched=True,
-)
+train_valid = raw_dataset.train_test_split(test_size=0.2)
+test_valid = train_valid['test'].train_test_split(test_size=0.5)
+ds = DatasetDict({
+    'train': train_valid['train'],
+    'test': test_valid['test'],
+    'valid': test_valid['train']})
 block_size = 128
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
@@ -66,8 +68,8 @@ trainer = Trainer(
     tokenizer=tokenizer,
     args=args,
     data_collator=data_collator,
-    train_dataset=lm_dataset["train"],
-    eval_dataset=lm_dataset["valid"],
+    train_dataset=ds["train"],
+    eval_dataset=ds["valid"],
 )
 
 trainer.train()
