@@ -16,14 +16,13 @@ def batchfy(data):
 raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
 model_name = "EleutherAI/pythia-160m-deduped-v0"
 CHECKPOINT = 143000
-context_length = 128
+context_length = 2048
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
   cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
 tokenizer.pad_token = tokenizer.eos_token
-data_collator = DataCollatorForLanguageModeling(tokenizer, mlm=False)
 
 config = AutoConfig.from_pretrained(
     "gpt2",
