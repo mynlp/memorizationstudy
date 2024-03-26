@@ -37,7 +37,8 @@ def tokenize(element):
 def filter_dataset(dataset):
     filtered_dict = {"text":[]}
     total = 0
-    for sample in tqdm(iter(dataset)):
+    for sample in tqdm(dataset):
+        pdb.set_trace()
         if sample["text"] is not None:
             filtered_dict["text"].append(sample["text"])
     print(f"{len(filtered_dict['content'])/total:.2%} of data after filtering.")
