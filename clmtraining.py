@@ -6,6 +6,7 @@ from transformers import AutoModelForCausalLM, TrainingArguments, Trainer
 import math
 import torch
 import pdb
+from tqdm import tqdm
 
 
 
@@ -32,6 +33,15 @@ def tokenize(element):
         if length == context_length:
             input_batch.append(input_ids)
     return {"input_ids": input_batch}
+
+def filter_streaming_dataset(dataset, filters):
+    filtered_dict = {"text":[]}
+    total = 0
+    for sample in tqdm(iter(dataset)):
+        if sample["text"] is not None:
+            filtered_dict["text"].append(sample["text"])
+    print(f"{len(filtered_dict['content'])/total:.2%} of data after filtering.")
+    return Dataset.from_dict(filtered_dict)
 
 #raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
 raw_dataset = datasets.load_dataset("json", data_files="cross_remembered/memorized_text.json")
