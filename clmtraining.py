@@ -7,6 +7,7 @@ import math
 import torch
 import pdb
 from tqdm import tqdm
+from collections import defaultdict
 
 
 
@@ -17,17 +18,18 @@ def tokenize(element):
     :param element: The element to be tokenized.
     :return: A dictionary containing the batch of input_ids.
     """
-    try:
-        outputs = tokenizer(
-            element["text"],
-            truncation=True,
-            max_length=context_length,
-            return_overflowing_tokens=True,
-            return_length=True,
-        )
-    except TypeError:
-        pdb.set_trace()
-        print(element["text"])
+    cache = []
+    for sample in element["text"]:
+        if sample is not None:
+            cache.append(sample)
+    print(len(cache))
+    outputs = tokenizer(
+        cache,
+        truncation=True,
+        max_length=context_length,
+        return_overflowing_tokens=True,
+        return_length=True,
+    )
     input_batch = []
     for length, input_ids in zip(outputs["length"], outputs["input_ids"]):
         if length == context_length:
@@ -35,22 +37,22 @@ def tokenize(element):
     return {"input_ids": input_batch}
 
 def filter_dataset(dataset):
-    filtered_dict = {"train":{"text":[]}}
-    total = 0
+    filtered_dict = defaultdict(list)
     for sample in tqdm(dataset["train"]["text"]):
-        if sample is not None:
-            filtered_dict["train"]["text"].append(sample)
+        if sample["text"] is not None:
+            for k, v in sample.items():
+                filtered_dict[k].append(v)
     return Dataset.from_dict(filtered_dict)
 
 #raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
 raw_dataset = datasets.load_dataset("json", data_files="cross_remembered/memorized_text.json")
-raw_dataset = filter_dataset(raw_dataset)
+#processed_raw_dataset = filter_dataset(raw_dataset)
 context_length = 512
 tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 tokenized_datasets = raw_dataset.map(
     tokenize, batched=True, remove_columns=raw_dataset["train"].column_names
 )
-tokenized_datasets = tokenized_datasets.train_test_split(test_size=0.2)
+tokenized_datasets = tokenized_datasets["train"].train_test_split(test_size=0.2)
 
 CHECKPOINT = 143000
 config = AutoConfig.from_pretrained(
