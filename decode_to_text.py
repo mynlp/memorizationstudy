@@ -2,6 +2,7 @@ import torch
 from datasets import load_dataset
 from transformers import AutoTokenizer
 import pandas as pd
+from tqdm import tqdm
 
 
 def batchfy(data):
@@ -20,7 +21,7 @@ tokenizer = AutoTokenizer.from_pretrained(
   cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
 result = []
-for idx, line in enumerate(data) :
+for idx, line in tqdm(enumerate(data)):
   text = tokenizer.decode(line)
   result.append([idx, line])
 df = pd.DataFrame(result, columns=["idx", "text"])
