@@ -40,7 +40,7 @@ ds = DatasetDict({
     'train': train_valid['train'],
     'test': test_valid['test'],
     'valid': test_valid['train']})
-¥tokenizer.pad_token = tokenizer.eos_token
+tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 model = GPT2LMHeadModel(config).cuda()
 args = TrainingArguments(
