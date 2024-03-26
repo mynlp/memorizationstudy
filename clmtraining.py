@@ -22,7 +22,6 @@ tokenizer = AutoTokenizer.from_pretrained(
   revision=f"step{CHECKPOINT}",
   cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
 )
-tokenizer.pad_token = tokenizer.eos_token
 
 config = AutoConfig.from_pretrained(
     "gpt2",
