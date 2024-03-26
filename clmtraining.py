@@ -38,7 +38,6 @@ def filter_dataset(dataset):
     filtered_dict = {"train":{"text":[]}}
     total = 0
     for sample in tqdm(dataset["train"]["text"]):
-        pdb.set_trace()
         if sample is not None:
             filtered_dict["train"]["text"].append(sample)
     return Dataset.from_dict(filtered_dict)
