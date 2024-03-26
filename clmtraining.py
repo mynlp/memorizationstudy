@@ -32,12 +32,12 @@ def tokenize(element):
 #raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
 raw_dataset = datasets.load_dataset("json", data_files="cross_remembered/memorized_text.json")
 context_length = 512
+tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 tokenized_datasets = raw_dataset.map(
     tokenize, batched=True, remove_columns=raw_dataset["train"].column_names
 )
 tokenized_datasets = tokenized_datasets.train_test_split(test_size=0.2)
 
-tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 CHECKPOINT = 143000
 config = AutoConfig.from_pretrained(
     "gpt2",
