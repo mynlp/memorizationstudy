@@ -35,13 +35,12 @@ def tokenize(element):
     return {"input_ids": input_batch}
 
 def filter_dataset(dataset):
-    filtered_dict = {"text":[]}
+    filtered_dict = {"train":{"text":[]}}
     total = 0
-    for sample in tqdm(dataset):
+    for sample in tqdm(dataset["train"]["text"]):
         pdb.set_trace()
-        if sample["text"] is not None:
-            filtered_dict["text"].append(sample["text"])
-    print(f"{len(filtered_dict['content'])/total:.2%} of data after filtering.")
+        if sample is not None:
+            filtered_dict["train"]["text"].append(sample)
     return Dataset.from_dict(filtered_dict)
 
 #raw_dataset = Dataset.from_dict({"input_ids": torch.load("cross_remembered/context_tokens.pt").view(-1,2049)})
