@@ -27,9 +27,10 @@ def tokenize(element):
 raw_dataset = datasets.load_dataset("csv", data_files="cross_remembered/memorized_text.csv")
 raw_dataset = raw_dataset.train_test_split(test_size=0.2)
 context_length = 512
-tokenized_datasets = raw_datasets.map(
-    tokenize, batched=True, remove_columns=raw_datasets["train"].column_names
+tokenized_datasets = raw_dataset.map(
+    tokenize, batched=True, remove_columns=raw_dataset["train"].column_names
 )
+
 tokenizer = AutoTokenizer.from_pretrained("openai-community/gpt2")
 CHECKPOINT = 143000
 config = AutoConfig.from_pretrained(
@@ -65,8 +66,8 @@ trainer = Trainer(
     tokenizer=tokenizer,
     args=args,
     data_collator=data_collator,
-    train_dataset=ds["train"],
-    eval_dataset=ds["valid"],
+    train_dataset=tokenized_datasets["train"],
+    eval_dataset=tokenized_datasets["valid"],
 )
 
 trainer.train()
