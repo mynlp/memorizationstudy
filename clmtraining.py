@@ -34,7 +34,7 @@ def tokenize(element):
             input_batch.append(input_ids)
     return {"input_ids": input_batch}
 
-def filter_dataset(dataset, filters):
+def filter_dataset(dataset):
     filtered_dict = {"text":[]}
     total = 0
     for sample in tqdm(iter(dataset)):
