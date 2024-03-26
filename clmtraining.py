@@ -46,7 +46,7 @@ tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 model = AutoModelForCausalLM.from_pretrained("distilgpt2")
 args = TrainingArguments(
-    output_dir="codeparrot-ds",
+    output_dir="clmtraining",
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
     evaluation_strategy="steps",
@@ -60,7 +60,7 @@ args = TrainingArguments(
     learning_rate=5e-4,
     save_steps=5_000,
     fp16=True,
-    push_to_hub=True,
+    push_to_hub=False,
 )
 
 trainer = Trainer(
