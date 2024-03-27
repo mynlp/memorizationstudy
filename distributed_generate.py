@@ -111,6 +111,7 @@ def main():
         file_exisits = True
         print(f"Found memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv and continues from idx {start_idx}")
     else:
+        file_exisits = False
         start_idx = num_sequences_per_proc * RANK
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
