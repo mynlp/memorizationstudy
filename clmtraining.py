@@ -66,7 +66,7 @@ model = GPT2LMHeadModel(config)
 tokenizer.pad_token = tokenizer.eos_token
 data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 args = TrainingArguments(
-    output_dir="clmtraining",
+    output_dir="clm_output",
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
     evaluation_strategy="steps",

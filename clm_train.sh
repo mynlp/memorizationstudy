@@ -1,6 +1,6 @@
 #!/bin/zsh
 #PJM -L rscgrp=share-debug
-#PJM -L gpu=1
+#PJM -L gpu=4
 #PJM -L elapse=00:30:00
 #PJM -g gk77
 #PJM -j
@@ -16,4 +16,4 @@
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-python clmtraining.py
+torchrun --nproc_per_node 4 clmtraining.py
