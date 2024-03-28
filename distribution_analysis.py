@@ -63,6 +63,7 @@ plt.plot([], [], color='blue', linestyle='-', label='Category 1')  # 类别1的�
 plt.plot([], [], color='red', linestyle='--', label='Category 2')  # 类别2的图例
 
 plt.legend()  # 显示图例
+plt.savefig(f'distribution.png')
 plt.show()  # 显示图像
 
 # plt.title('t-SNE Visualization')
