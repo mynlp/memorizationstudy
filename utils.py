@@ -54,7 +54,8 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
         true_continuation = data[context_size:context_size + continuation_size].tolist()
         batched_context_tokens.append(context_tokens)
         batched_true_continuation.append(true_continuation)
-
+    context_tokens = torch.tensor(batched_context_tokens).to('cuda')
+    true_continuation = torch.tensor(batched_true_continuation).to('cuda')
     model_outputs = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
     logits = model_outputs["scores"]
     highest_probability_at_idx = []
