@@ -38,14 +38,14 @@ print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
-df_full_memorization = df[df['score'] == 1]
-df_not_full_memorization = df[df['score'] == 0]
-df_half_memorization = df[df['score'] == 0.5]
+memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'] == 0.9], "0.8":df[df['score'] == 0.8],
+                  "0.7":df[df['score'] == 0.7], "0.6":df[df['score'] == 0.6], "0.5":df[df['score'] == 0.5],
+                  "0.4":df[df['score'] == 0.4], "0.3":df[df['score'] == 0.3], "0.2":df[df['score'] == 0.2],
+                  "0.1":df[df['score'] == 0.1], "0":df[df['score'] == 0]}
 
-
-idx_full_memorization = df_full_memorization["idx"].tolist()
-idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
-idx_half_memorization = df_half_memorization["idx"].tolist()
+idx_full_memorization = memorized_dict["1"].tolist()
+idx_not_full_memorization = memorized_dict["0"].tolist()
+idx_half_memorization = memorized_dict["0.5"].tolist()
 
 stragety = "dynamics"
 num_points = 500

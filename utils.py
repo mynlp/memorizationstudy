@@ -58,13 +58,9 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
     true_continuation = torch.tensor(batched_true_continuation).to('cuda')
     model_outputs = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
     logits = model_outputs["scores"]
-    highest_probability_at_idx = []
+    highest_entropy_at_idx = []
     for idx in range(continuation_size):
         probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
-        highest_probability_at_idx.append(probability_scores.max(1)[0].cpu())
-    return highest_probability_at_idx
-
-
-
-
-
+        entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
+        highest_entropy_at_idx.append(torch.mean(entropy_scores).cpu())
+    return highest_entropy_at_idx
