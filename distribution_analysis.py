@@ -54,10 +54,16 @@ highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(i
 plt.figure(figsize=(12, 8))  # 创建图像
 
 # 使用不同的颜色和样式绘制两类数据
-for i in range(30):
-    plt.plot(range(16), [x[i].cpu() for x in highest_probability_memorized], color='blue', linestyle='-', alpha=0.5)  # 类别1的样式
-    plt.plot(range(16), [x[i].cpu() for x in highest_probability_unmemorized], color='red', linestyle='--', alpha=0.5)  # 类别2的样式
+for i in range(100):
+    hp_memorized_values = np.array([x[i].cpu() for x in highest_probability_memorized])
+    hp_unmemorized_values = np.array([x[i].cpu() for x in highest_probability_unmemorized])
 
+    changes_memorized = (hp_memorized_values - hp_memorized_values[0]) / hp_memorized_values[0] * 100  # 计算相对于初始值的百分比变化
+    changes_unmemorized = (hp_unmemorized_values - hp_unmemorized_values[0]) / hp_unmemorized_values[
+        0] * 100  # 计算相对于初始值的百分比变化
+
+    plt.plot(range(16), changes_memorized, color='blue', linestyle='-', alpha=0.5)  # 类别1的样式
+    plt.plot(range(16), changes_unmemorized, color='red', linestyle='--', alpha=0.5)  # 类别2的样式
 # 创建图例来说明每个颜色和样式代表的类别
 plt.plot([], [], color='blue', linestyle='-', label='Category 1')  # 类别1的图例
 plt.plot([], [], color='red', linestyle='--', label='Category 2')  # 类别2的图例
