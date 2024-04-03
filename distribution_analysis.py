@@ -9,18 +9,18 @@ import matplotlib.pyplot as plt
 import random
 
 random.seed(42)
-model_name = "EleutherAI/pythia-160m-deduped-v0"
+model_name = "EleutherAI/pythia-410m-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-410m-deduped/step{CHECKPOINT}",
 )
 model.eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-410m-deduped/step{CHECKPOINT}",
 )
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
@@ -37,7 +37,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv("generate_results/memorization_evals_160m-deduped-v0_32_48_143000.csv", index_col=0)
+df = pd.read_csv("generate_results/memorization_evals_410m-deduped-v0_32_48_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
 df_not_full_memorization = df[df['score'] == 0]
 df_half_memorization = df[df['score'] == 0.5]
@@ -47,7 +47,7 @@ idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 idx_half_memorization = df_half_memorization["idx"].tolist()
 
-num_points = 1000
+num_points = 10000
 highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
 highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
 
@@ -55,9 +55,9 @@ plt.figure(figsize=(12, 8))  # 创建图像
 
 # 使用不同的颜色和样式绘制两类数据
 memorized_values = [np.array([x[i].cpu() for x in highest_probability_memorized])
-                    for i in range(1000)]
+                    for i in range(num_points)]
 unmemorized_values = [np.array([x[i].cpu() for x in highest_probability_unmemorized])
-                      for i in range(1000)]
+                      for i in range(num_points)]
 
 # 计算平均值和方差
 memorized_mean = np.mean(memorized_values, axis=0)
