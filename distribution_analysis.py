@@ -47,7 +47,7 @@ idx_full_memorization = df_full_memorization["idx"].tolist()
 idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 idx_half_memorization = df_half_memorization["idx"].tolist()
 
-num_points = 1000
+num_points = 500
 highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
 highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
 
