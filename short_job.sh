@@ -1,6 +1,6 @@
 #!/bin/zsh
 #PJM -L rscgrp=share-debug
-#PJM -L gpt=1
+#PJM -L gpu=1
 #PJM -L elapse=00:30:00
 #PJM -g gk77
 #PJM -j
