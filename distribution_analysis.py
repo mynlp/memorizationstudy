@@ -65,8 +65,8 @@ for i in range(100):
     plt.plot(range(16), changes_memorized, color='blue', linestyle='-', alpha=0.5)  # 类别1的样式
     plt.plot(range(16), changes_unmemorized, color='red', linestyle='--', alpha=0.5)  # 类别2的样式
 # 创建图例来说明每个颜色和样式代表的类别
-plt.plot([], [], color='blue', linestyle='-', label='Category 1')  # 类别1的图例
-plt.plot([], [], color='red', linestyle='--', label='Category 2')  # 类别2的图例
+plt.plot([], [], color='blue', linestyle='-', label='memorized')  # 类别1的图例
+plt.plot([], [], color='red', linestyle='--', label='unmemorized')  # 类别2的图例
 
 plt.legend()  # 显示图例
 plt.savefig(f'distribution.png')
