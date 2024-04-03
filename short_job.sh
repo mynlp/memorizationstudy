@@ -1,5 +1,5 @@
 #!/bin/zsh
-#PJM -L rscgrp=regular-o
+#PJM -L rscgrp=debug-a
 #PJM -L node=25
 #PJM -L elapse=48:00:00
 #PJM -g gk77

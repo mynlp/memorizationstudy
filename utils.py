@@ -63,6 +63,6 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
     for idx in range(continuation_size):
         probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
         entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
-        pdb.set_trace()
-        highest_entropy_at_idx.append(torch.mean(entropy_scores).cpu())
+        #pdb.set_trace()
+        highest_entropy_at_idx.append(torch.mean(entropy_scores))
     return highest_entropy_at_idx
