@@ -55,8 +55,8 @@ plt.figure(figsize=(12, 8))  # 创建图像
 
 # 使用不同的颜色和样式绘制两类数据
 for i in range(30):
-    plt.plot(range(16), [x[i] for x in highest_probability_memorized], color='blue', linestyle='-', alpha=0.5)  # 类别1的样式
-    plt.plot(range(16), [x[i] for x in highest_probability_unmemorized], color='red', linestyle='--', alpha=0.5)  # 类别2的样式
+    plt.plot(range(16), [x[i].cpu() for x in highest_probability_memorized], color='blue', linestyle='-', alpha=0.5)  # 类别1的样式
+    plt.plot(range(16), [x[i].cpu() for x in highest_probability_unmemorized], color='red', linestyle='--', alpha=0.5)  # 类别2的样式
 
 # 创建图例来说明每个颜色和样式代表的类别
 plt.plot([], [], color='blue', linestyle='-', label='Category 1')  # 类别1的图例
