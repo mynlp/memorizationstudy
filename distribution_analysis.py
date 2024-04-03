@@ -54,19 +54,30 @@ highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(i
 plt.figure(figsize=(12, 8))  # 创建图像
 
 # 使用不同的颜色和样式绘制两类数据
-for i in range(100):
-    hp_memorized_values = np.array([x[i].cpu() for x in highest_probability_memorized])
-    hp_unmemorized_values = np.array([x[i].cpu() for x in highest_probability_unmemorized])
+memorized_values = [np.array([x[i].cpu() for x in highest_probability_memorized])
+                    for i in range(1000)]
+unmemorized_values = [np.array([x[i].cpu() for x in highest_probability_unmemorized])
+                      for i in range(1000)]
 
-    changes_memorized = (hp_memorized_values - hp_memorized_values[0]) / hp_memorized_values[0] * 100  # 计算相对于初始值的百分比变化
-    changes_unmemorized = (hp_unmemorized_values - hp_unmemorized_values[0]) / hp_unmemorized_values[
-        0] * 100  # 计算相对于初始值的百分比变化
+# 计算平均值和方差
+memorized_mean = np.mean(memorized_values, axis=0)
+memorized_std = np.std(memorized_values, axis=0)
+unmemorized_mean = np.mean(unmemorized_values, axis=0)
+unmemorized_std = np.std(unmemorized_values, axis=0)
 
-    plt.plot(range(16), changes_memorized, color='blue', linestyle='-', alpha=0.5)  # 类别1的样式
-    plt.plot(range(16), changes_unmemorized, color='red', linestyle='--', alpha=0.5)  # 类别2的样式
+# 绘制平均值
+plt.plot(range(16), memorized_mean, color='blue', linestyle='-')
+plt.plot(range(16), unmemorized_mean, color='red', linestyle='-')
+
+# 添加阴影显示方差
+plt.fill_between(range(16), memorized_mean - memorized_std, memorized_mean + memorized_std,
+                 color='blue', alpha=0.2)
+plt.fill_between(range(16), unmemorized_mean - unmemorized_std, unmemorized_mean + unmemorized_std,
+                 color='red', alpha=0.2)
+
 # 创建图例来说明每个颜色和样式代表的类别
-plt.plot([], [], color='blue', linestyle='-', label='memorized')  # 类别1的图例
-plt.plot([], [], color='red', linestyle='--', label='unmemorized')  # 类别2的图例
+plt.plot([], [], color='blue', linestyle='-', label='Category 1')  # 类别1的图例
+plt.plot([], [], color='red', linestyle='-', label='Category 2')  # 类别2的图例
 
 plt.legend()  # 显示图例
 plt.savefig(f'distribution.png')
