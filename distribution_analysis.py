@@ -56,8 +56,8 @@ idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
 idx_half_memorization = df_half_memorization["idx"].tolist()
 
 num_points = 500
-highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 64)
-highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 64)
+highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
+highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
 
 plt.figure(figsize=(12, 8))  # 创建图像
 # by-line plot
