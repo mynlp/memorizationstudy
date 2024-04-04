@@ -15,8 +15,10 @@ def moving_average(data, window_size):
 
 random.seed(42)
 model_name = "EleutherAI/pythia-70m-deduped-v0"
-CHECKPOINT= 143000
+CHECKPOINT = 143000
 window_size = 5
+context = 64
+continuation = 16
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
@@ -43,7 +45,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_96_143000.csv", index_col=0)
+df = pd.read_csv(f"generate_results/memorization_evals_70m-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
 df_not_full_memorization = df[df['score'] == 0]
 df_half_memorization = df[df['score'] == 0.5]
@@ -76,8 +78,8 @@ for values in unmemorized_rolling_means:
     plt.plot(range(len(memorized_rolling_means[0])), values, color='blue', linestyle='-', alpha=0.1)
 
 # 绘制记忆化和未记忆化数据的平均线
-plt.plot(range(len(memorized_mean[0])), memorized_mean, color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
-plt.plot(range(len(unmemorized_mean[0])), unmemorized_mean, color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
+plt.plot(range(len(memorized_mean)), memorized_mean, color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
+plt.plot(range(len(unmemorized_mean)), unmemorized_mean, color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
 
 # 创建图例来说明每个颜色和样式代表的类别
 # 这里解释了平均线的颜色和透明度较低的每条线
