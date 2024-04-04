@@ -7,7 +7,7 @@ df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_14300
 
 # 提取完全记忆化（score == 1）的数据
 df_full_memorization = df[df['score'] == 1]
-df_un_memorization = df[df['score'] ==01]
+df_un_memorization = df[df['score'] ==0]
 
 # 计算`idx`在整个数据集中的百分位
 df['percentile'] = pd.qcut(df['idx'], 10, labels=False)  # 把整个数据集的idx分成10个百分位区间
