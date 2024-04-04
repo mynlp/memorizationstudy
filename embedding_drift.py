@@ -174,6 +174,10 @@ for token in range(2, 17):
     plt.scatter(tsne_embeddings[8, 0], tsne_embeddings[8, 1], color='pink', label='Twenty')
     plt.scatter(tsne_embeddings[9, 0], tsne_embeddings[9, 1], color='grey', label='Ten')
     plt.scatter(tsne_embeddings[10, 0], tsne_embeddings[10, 1], color='cyan', label='Zero')
+    plt.title('t-SNE Visualization')
+    plt.legend()
+    plt.savefig(f'embedding_drift_step_{token}.png')
+    plt.show()
 print("distance across steps:")
 print(distance_list_full)
 print(distance_list_ninety)
@@ -186,10 +190,7 @@ print(distance_list_twenty)
 print(distance_list_ten)
 print(distance_list_zero)
 
-plt.title('t-SNE Visualization')
-plt.legend()
-plt.savefig(f'embedding_drift_step_{token}.png')
-plt.show()
+
 
 
 
