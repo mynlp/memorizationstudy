@@ -8,9 +8,15 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import random
 
+# 定义一个简单的函数来计算移动平均
+def moving_average(data, window_size):
+    window = np.ones(int(window_size)) / float(window_size)
+    return np.convolve(data, window, 'same')
+
 random.seed(42)
 model_name = "EleutherAI/pythia-70m-deduped-v0"
 CHECKPOINT= 143000
+window_size = 3
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
@@ -59,22 +65,35 @@ memorized_mean = np.mean(memorized_values, axis=0)
 unmemorized_values = [np.array([x[i].cpu() for x in highest_probability_unmemorized])
                       for i in range(num_points)]
 unmemorized_mean = np.mean(unmemorized_values, axis=0)
+memorized_rolling_means = [moving_average(values, window_size) for values in memorized_values]
+unmemorized_rolling_means = [moving_average(values, window_size) for values in unmemorized_values]
+# 用低透明度绘制每一条记忆化数据的线
+for values in memorized_rolling_means:
+    plt.plot(range(num_points), values, color='red', linestyle='-', alpha=0.1)
 
-for values in memorized_values:
-    plt.plot(range(64), values, color='red', linestyle='-', alpha=0.1)  # 使用较低的透明度来避免图形过于拥挤
+# 用低透明度绘制每一条未记忆化数据的线
+for values in unmemorized_rolling_means:
+    plt.plot(range(num_points), values, color='blue', linestyle='-', alpha=0.1)
 
-# 绘制未记忆化的每一条线
-for values in unmemorized_values:
-    plt.plot(range(64), values, color='blue', linestyle='-', alpha=0.1)  # 使用较低的透明度
-plt.plot(range(64), memorized_mean, color='purple', linestyle='-', label = 'Average Memorized')
-plt.plot(range(64), unmemorized_mean, color='cyan', linestyle='-', label = 'Average Unmemorized')
+# 绘制记忆化和未记忆化数据的平均线
+plt.plot(range(num_points), memorized_mean, color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
+plt.plot(range(num_points), unmemorized_mean, color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
+
 # 创建图例来说明每个颜色和样式代表的类别
-plt.plot([], [], color='red', linestyle='-', label='Memorized')  # 添加一个看不见的线作图例表示记忆化
-plt.plot([], [], color='blue', linestyle='-', label='Unmemorized')  # 添加一个看不见的线作图例表示未记忆化
+# 这里解释了平均线的颜色和透明度较低的每条线
+plt.plot([], [], color='red', linestyle='-', alpha=0.1, label='Individual Memorized Instances')
+plt.plot([], [], color='blue', linestyle='-', alpha=0.1, label='Individual Unmemorized Instances')
+plt.plot([], [], color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
+plt.plot([], [], color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
 
-plt.legend()  # 显示图例
-plt.savefig(f'distribution_individual_lines.png')  # 保存图形
-plt.show()  # 显示图形
+# 添加标题和坐标轴标签
+plt.title('Comparison of Memorized and Unmemorized Data Over Time')
+plt.xlabel('Time Point')
+plt.ylabel('Data Value')
+
+plt.legend()
+plt.savefig('distribution_individual_lines.png')
+plt.show()
 
 # code for mean and std plot
 # # 使用不同的颜色和样式绘制两类数据
