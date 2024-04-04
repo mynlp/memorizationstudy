@@ -69,15 +69,15 @@ memorized_rolling_means = [moving_average(values, window_size) for values in mem
 unmemorized_rolling_means = [moving_average(values, window_size) for values in unmemorized_values]
 # 用低透明度绘制每一条记忆化数据的线
 for values in memorized_rolling_means:
-    plt.plot(range(num_points), values, color='red', linestyle='-', alpha=0.1)
+    plt.plot(len(memorized_rolling_means[0]), values, color='red', linestyle='-', alpha=0.1)
 
 # 用低透明度绘制每一条未记忆化数据的线
 for values in unmemorized_rolling_means:
-    plt.plot(range(num_points), values, color='blue', linestyle='-', alpha=0.1)
+    plt.plot(len(memorized_rolling_means[0]), values, color='blue', linestyle='-', alpha=0.1)
 
 # 绘制记忆化和未记忆化数据的平均线
-plt.plot(range(num_points), memorized_mean, color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
-plt.plot(range(num_points), unmemorized_mean, color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
+plt.plot(len(memorized_mean[0]), memorized_mean, color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
+plt.plot(len(unmemorized_mean[0]), unmemorized_mean, color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
 
 # 创建图例来说明每个颜色和样式代表的类别
 # 这里解释了平均线的颜色和透明度较低的每条线
