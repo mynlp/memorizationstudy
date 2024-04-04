@@ -84,6 +84,18 @@ context_embedding_twenty = generations_twenty_memo.hidden_states[0][-1]
 context_embedding_ten = generations_ten_memo.hidden_states[0][-1]
 context_embedding_zero = generations_zero_full.hidden_states[0][-1]
 
+distance_list_full = []
+distance_list_ninety = []
+distance_list_eighty = []
+distance_list_seventy = []
+distance_list_sixty = []
+distance_list_half = []
+distance_list_fourty = []
+distance_list_thirty = []
+distance_list_twenty = []
+distance_list_ten = []
+distance_list_zero = []
+
 for token in range(2, 17):
     plt.figure(figsize=(8, 6))
     predicted_embedding_full = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1)
@@ -109,7 +121,17 @@ for token in range(2, 17):
     averaged_embedding_twenty = torch.concat((context_embedding_twenty, predicted_embedding_twenty), dim=1).mean(0).mean(0)
     averaged_embedding_ten = torch.concat((context_embedding_ten, predicted_embedding_ten), dim=1).mean(0).mean(0)
     averaged_embedding_zero = torch.concat((context_embedding_zero, predicted_embedding_zero), dim=1).mean(0).mean(0)
-
+    distance_list_full.append(averaged_embedding_full)
+    distance_list_ninety.append(averaged_embedding_ninety)
+    distance_list_eighty.append(averaged_embedding_eighty)
+    distance_list_seventy.append(averaged_embedding_seventy)
+    distance_list_sixty.append(averaged_embedding_sixty)
+    distance_list_half.append(averaged_embedding_half)
+    distance_list_fourty.append(averaged_embedding_forty)
+    distance_list_thirty.append(averaged_embedding_thirty)
+    distance_list_twenty.append(averaged_embedding_twenty)
+    distance_list_ten.append(averaged_embedding_ten)
+    distance_list_zero.append(averaged_embedding_zero)
     distance_full = torch.dist(averaged_embedding_half, averaged_embedding_full)
     distance_ninety = torch.dist(averaged_embedding_half, averaged_embedding_ninety)
     distance_eighty = torch.dist(averaged_embedding_half, averaged_embedding_eighty)
