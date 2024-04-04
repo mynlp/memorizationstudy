@@ -1,33 +1,50 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-# 加载数据
+# 步骤1: 加载数据
 df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
 
-# 计算整个数据集中每个`idx`的百分位
-df['percentile_rank'] = df['idx'].rank(pct=True)
+# 提取完全记忆化（score == 1）的数据
+df_full_memorization = df[df['score'] == 1]
+df_un_memorization = df[df['score'] ==01]
 
-# 提取完全记忆化（score == 1）和未记忆化（score == 0）的百分位
-df_full_memorization = df[df['score'] == 1]['percentile_rank']
-df_unmemorized = df[df['score'] == 0]['percentile_rank']
+# 计算`idx`在整个数据集中的百分位
+df['percentile'] = pd.qcut(df['idx'], 10, labels=False)  # 把整个数据集的idx分成10个百分位区间
 
-# 创建绘图
+# 计算df_full_memorization中每个idx的百分位
+df_full_memorization['percentile'] = pd.cut(df_full_memorization['idx'], bins=np.percentile(df['idx'], np.arange(0, 101, 10)), labels=False, include_lowest=True)
+df_un_memorization['percentile'] = pd.cut(df_un_memorization['idx'], bins=np.percentile(df['idx'], np.arange(0, 101, 10)), labels=False, include_lowest=True)
+# 步骤2: 计算df_full_memorization中每个百分位区间的idx数量
+counts_per_percentile = df_full_memorization['percentile'].value_counts().sort_index()
+counts_per_percentile_un = df_un_memorization['percentile'].value_counts().sort_index()
+# 输出结果
+print(counts_per_percentile)
+
+# 计算百分位区间的标签 (10% 到 100%)
+percentile_labels = [f"{i}-{i+10}%" for i in range(0, 100, 10)]
+
+# 画图
 plt.figure(figsize=(10, 6))
-
-# 绘制百分位直方图
-plt.hist(df_full_memorization, bins=30, alpha=0.75, label='Memorized Sequences', color='blue')
-plt.hist(df_unmemorized, bins=30, alpha=0.75, label='Unmemorized Sequences', color='red')
-
-# 设置标签和标题
-plt.title('Percentile Distribution of Memorized and Unmemorized Sequences')
-plt.xlabel('Percentile Rank')
-plt.ylabel('Count')
-plt.legend()
-
-# 保存和显示图形
-plt.savefig("percentile_distribution_comparison.png")
+counts_per_percentile.plot(kind='bar')
+plt.xticks(ticks=range(len(percentile_labels)), labels=percentile_labels, rotation=45)
+plt.xlabel('Percentile Range')
+plt.ylabel('Count of Memorized idx')
+plt.title('Distribution of Memorized idx Across Percentiles')
+plt.grid(axis='y')
+# 显示图形
+plt.tight_layout()  # 调整布局以防止标签被剪切
+plt.savefig("memorized_idx_distribution_percentiles.png")
 plt.show()
 
-# 清除当前图形
-plt.clf()
+plt.figure(figsize=(10, 6))
+counts_per_percentile_un.plot(kind='bar')
+plt.xticks(ticks=range(len(percentile_labels)), labels=percentile_labels, rotation=45)
+plt.xlabel('Percentile Range')
+plt.ylabel('Count of Memorized idx')
+plt.title('Distribution of Memorized idx Across Percentiles')
+plt.grid(axis='y')
+# 显示图形
+plt.tight_layout()  # 调整布局以防止标签被剪切
+plt.savefig("memorized_idx_distribution_percentiles.png")
+plt.show()
