@@ -55,15 +55,19 @@ plt.figure(figsize=(12, 8))  # 创建图像
 # by-line plot
 memorized_values = [np.array([x[i].cpu() for x in highest_probability_memorized])
                     for i in range(num_points)]
+memorized_mean = np.mean(memorized_values, axis=0)
 unmemorized_values = [np.array([x[i].cpu() for x in highest_probability_unmemorized])
                       for i in range(num_points)]
+unmemorized_mean = np.mean(unmemorized_values, axis=0)
+
 for values in memorized_values:
-    plt.plot(range(96), values, color='red', linestyle='-', alpha=0.1)  # 使用较低的透明度来避免图形过于拥挤
+    plt.plot(range(64), values, color='red', linestyle='-', alpha=0.1)  # 使用较低的透明度来避免图形过于拥挤
 
 # 绘制未记忆化的每一条线
 for values in unmemorized_values:
-    plt.plot(range(96), values, color='blue', linestyle='-', alpha=0.1)  # 使用较低的透明度
-
+    plt.plot(range(64), values, color='blue', linestyle='-', alpha=0.1)  # 使用较低的透明度
+plt.plot(range(64), memorized_mean, color='purple', linestyle='-', label = 'Average Memorized')
+plt.plot(range(64), unmemorized_mean, color='cyan', linestyle='-', label = 'Average Unmemorized')
 # 创建图例来说明每个颜色和样式代表的类别
 plt.plot([], [], color='red', linestyle='-', label='Memorized')  # 添加一个看不见的线作图例表示记忆化
 plt.plot([], [], color='blue', linestyle='-', label='Unmemorized')  # 添加一个看不见的线作图例表示未记忆化
@@ -77,14 +81,13 @@ plt.show()  # 显示图形
 
 #
 # # 计算平均值和方差
-# memorized_mean = np.mean(memorized_values, axis=0)
+#memorized_mean = np.mean(memorized_values, axis=0)
 # memorized_std = np.std(memorized_values, axis=0)
-# unmemorized_mean = np.mean(unmemorized_values, axis=0)
+#unmemorized_mean = np.mean(unmemorized_values, axis=0)
 # unmemorized_std = np.std(unmemorized_values, axis=0)
 #
 # # 绘制平均值
-# plt.plot(range(16), memorized_mean, color='blue', linestyle='-')
-# plt.plot(range(16), unmemorized_mean, color='red', linestyle='-')
+
 #
 # # 添加阴影显示方差
 # plt.fill_between(range(16), memorized_mean - memorized_std, memorized_mean + memorized_std,
