@@ -72,17 +72,17 @@ generations_ten_memo, accuracies_ten_memo = embedding_obtain(mmap_ds, model,  ra
 generations_zero_full, accuracies_zero_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
 
 # last hidden state
-context_embedding_full = generations_full_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_ninety = generations_ninety_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_eighty = generations_eighty_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_seventy = generations_seventy_full.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_sixty = generations_sixty_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_half = generations_half_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_fourty = generations_fourty_full.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_thirty = generations_thirty_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_twenty = generations_twenty_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_ten = generations_ten_memo.hidden_states[0][-1].mean(1).squeeze()
-context_embedding_zero = generations_zero_full.hidden_states[0][-1].mean(1).squeeze()
+context_embedding_full = generations_full_memo.hidden_states[0][-1]
+context_embedding_ninety = generations_ninety_memo.hidden_states[0][-1]
+context_embedding_eighty = generations_eighty_memo.hidden_states[0][-1]
+context_embedding_seventy = generations_seventy_full.hidden_states[0][-1]
+context_embedding_sixty = generations_sixty_memo.hidden_states[0][-1]
+context_embedding_half = generations_half_memo.hidden_states[0][-1]
+context_embedding_fourty = generations_fourty_full.hidden_states[0][-1]
+context_embedding_thirty = generations_thirty_memo.hidden_states[0][-1]
+context_embedding_twenty = generations_twenty_memo.hidden_states[0][-1]
+context_embedding_ten = generations_ten_memo.hidden_states[0][-1]
+context_embedding_zero = generations_zero_full.hidden_states[0][-1]
 plt.figure(figsize=(8, 6))
 
 for token in range(12, 17):
