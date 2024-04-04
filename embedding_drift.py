@@ -121,10 +121,10 @@ for token in range(12, 17):
     distance_ten = torch.dist(averaged_embedding_half, averaged_embedding_ten)
     distance_zero = torch.dist(averaged_embedding_half, averaged_embedding_zero)
 
-    all_embeddings = np.stack([averaged_embedding_full.numpy(), averaged_embedding_ninety.numpy(), averaged_embedding_eighty.numpy(),
-                               averaged_embedding_seventy.numpy(), averaged_embedding_sixty.numpy(), averaged_embedding_half.numpy(),
-                               averaged_embedding_forty.numpy(), averaged_embedding_thirty.numpy(), averaged_embedding_twenty.numpy(),
-                               averaged_embedding_ten.numpy(), averaged_embedding_zero].numpy(), axis=0)
+    all_embeddings = np.stack([averaged_embedding_full.cpu().numpy(), averaged_embedding_ninety.cpu().numpy(), averaged_embedding_eighty.cpu().numpy(),
+                               averaged_embedding_seventy.cpu().numpy(), averaged_embedding_sixty.cpu().numpy(), averaged_embedding_half.cpu().numpy(),
+                               averaged_embedding_forty.cpu().numpy(), averaged_embedding_thirty.cpu().numpy(), averaged_embedding_twenty.cpu().numpy(),
+                               averaged_embedding_ten.cpu().numpy(), averaged_embedding_zero.cpu().numpy()], axis=0)
 
 
     tsne = TSNE(n_components=2, random_state=42)
