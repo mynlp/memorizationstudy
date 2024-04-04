@@ -22,7 +22,7 @@ memorized_results_160 = results_160[results_160['score'] == 1]
 memorized_results_410 = results_410[results_410['score'] == 1]
 memorized_results_1b = results_1b[results_1b['score'] == 1]
 unmemorized = results_1b[results_1b['score'] == 0]
-
+distribution_idx = 0
 idx_70 = set(memorized_results_70["idx"].tolist())
 idx_160 = set(memorized_results_160["idx"].tolist())
 idx_410 = set(memorized_results_410["idx"].tolist())
@@ -41,14 +41,51 @@ cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
 
 context_tokens = []
 idx = 0
-unmemorized = random.sample(unmemorized_idx, len(cross_all)*3)
-for i in tqdm(list(unmemorized)):
+# 举例，这是你不想包括的idx
+unmemorized = random.sample(unmemorized_idx, len(cross_all)*10)
+part_size = len(unmemorized) // 10
+
+# 创建3个子列表
+part1 = unmemorized[0:part_size]
+part2 = unmemorized[part_size:1*part_size]
+part3 = unmemorized[2*part_size:3*part_size]
+part4 = unmemorized[3*part_size:4*part_size]
+part5 = unmemorized[4*part_size:5*part_size]
+part6 = unmemorized[5*part_size:6*part_size]
+part7 = unmemorized[6*part_size:7*part_size]
+part8 = unmemorized[7*part_size:8*part_size]
+part9 = unmemorized[8*part_size:9*part_size]
+part10 = unmemorized[9*part_size:]
+
+# 第2步: 创建可用于抽样的索引列表
+if distribution_idx == 0:
+    excluded_idx = part1
+elif distribution_idx == 1:
+    excluded_idx = part2
+elif distribution_idx == 2:
+    excluded_idx = part3
+elif distribution_idx == 3:
+    excluded_idx = part4
+elif distribution_idx == 4:
+    excluded_idx = part5
+elif distribution_idx == 5:
+    excluded_idx = part6
+elif distribution_idx == 6:
+    excluded_idx = part7
+elif distribution_idx == 7:
+    excluded_idx = part8
+elif distribution_idx == 8:
+    excluded_idx = part9
+elif distribution_idx == 9:
+    excluded_idx = part10
+available_idx = [i for i in unmemorized_idx if i not in excluded_idx]
+for i in tqdm(available_idx):
     data = mmap_ds[i]
     idx += 1
     text = tokenizer.decode(data)
     context_tokens.append([idx, text])
 df = pd.DataFrame(context_tokens, columns=["idx", "text"])
-df.to_json("cross_remembered/unmemorized_text.json", index=False, orient='records', lines=True)
+df.to_json(f"cross_remembered/unmemorized_text_{distribution_idx}.json", index=False, orient='records', lines=True)
 
 
 
