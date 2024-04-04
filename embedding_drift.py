@@ -132,7 +132,7 @@ for token in range(12, 17):
     tsne_embeddings = tsne.fit_transform(all_embeddings)
 
 
-    plt.scatter(tsne_embeddings[0, 0], tsne_embeddings[:0, 1], color='blue', label='Full')
+    plt.scatter(tsne_embeddings[0, 0], tsne_embeddings[0, 1], color='blue', label='Full')
     plt.scatter(tsne_embeddings[1, 0], tsne_embeddings[1, 1], color='red', label='Ninety')
     plt.scatter(tsne_embeddings[2, 0], tsne_embeddings[2, 1], color='green', label='Eighty')
     plt.scatter(tsne_embeddings[3, 0], tsne_embeddings[3, 1], color='yellow', label='Seventy')
