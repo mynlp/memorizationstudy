@@ -46,5 +46,5 @@ plt.title('Distribution of Memorized idx Across Percentiles')
 plt.grid(axis='y')
 # 显示图形
 plt.tight_layout()  # 调整布局以防止标签被剪切
-plt.savefig("memorized_idx_distribution_percentiles.png")
+plt.savefig("unmemorized_idx_distribution_percentiles.png")
 plt.show()
