@@ -1,30 +1,32 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # 加载数据
 df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
 
-# 绘制整体idx分布
-plt.hist(df['idx'], bins=30, alpha=0.5, label='Total Distribution', color='grey')
+# 计算整个数据集中每个`idx`的百分位
+df['percentile_rank'] = df['idx'].rank(pct=True)
 
-# 提取记忆化（score为1）的idx并绘制其分布
-df_full_memorization = df[df['score'] == 1]
-plt.hist(df_full_memorization['idx'], bins=30, alpha=0.75, label='Memorized Sequences', color='blue')
+# 提取完全记忆化（score == 1）和未记忆化（score == 0）的百分位
+df_full_memorization = df[df['score'] == 1]['percentile_rank']
+df_unmemorized = df[df['score'] == 0]['percentile_rank']
 
-# 提取未记忆化（score为0）的idx并绘制其分布
-df_unmemorized = df[df['score'] == 0]
-plt.hist(df_unmemorized['idx'], bins=30, alpha=0.75, label='Unmemorized Sequences', color='red')
+# 创建绘图
+plt.figure(figsize=(10, 6))
 
-# 添加图例、标题和坐标轴标签
-plt.legend()
-plt.title('Distribution of idx in Total, Memorized, and Unmemorized Sequences')
-plt.xlabel('idx')
+# 绘制百分位直方图
+plt.hist(df_full_memorization, bins=30, alpha=0.75, label='Memorized Sequences', color='blue')
+plt.hist(df_unmemorized, bins=30, alpha=0.75, label='Unmemorized Sequences', color='red')
+
+# 设置标签和标题
+plt.title('Percentile Distribution of Memorized and Unmemorized Sequences')
+plt.xlabel('Percentile Rank')
 plt.ylabel('Count')
+plt.legend()
 
-# 保存图像文件
-plt.savefig("distribution_comparison.png")
-
-# 显示图形
+# 保存和显示图形
+plt.savefig("percentile_distribution_comparison.png")
 plt.show()
 
 # 清除当前图形
