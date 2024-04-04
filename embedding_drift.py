@@ -174,10 +174,10 @@ for token in range(2, 17):
     plt.scatter(tsne_embeddings[8, 0], tsne_embeddings[8, 1], color='pink', label='Twenty')
     plt.scatter(tsne_embeddings[9, 0], tsne_embeddings[9, 1], color='grey', label='Ten')
     plt.scatter(tsne_embeddings[10, 0], tsne_embeddings[10, 1], color='cyan', label='Zero')
-    plt.title('t-SNE Visualization')
-    plt.legend()
-    plt.savefig(f'embedding_drift.png')
-    plt.show()
+plt.title('t-SNE Visualization')
+plt.legend()
+plt.savefig(f'embedding_drift_step_{token}.png')
+plt.show()
 
 
 
