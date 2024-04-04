@@ -83,9 +83,9 @@ context_embedding_thirty = generations_thirty_memo.hidden_states[0][-1]
 context_embedding_twenty = generations_twenty_memo.hidden_states[0][-1]
 context_embedding_ten = generations_ten_memo.hidden_states[0][-1]
 context_embedding_zero = generations_zero_full.hidden_states[0][-1]
-plt.figure(figsize=(8, 6))
 
-for token in range(12, 17):
+for token in range(2, 17):
+    plt.figure(figsize=(8, 6))
     predicted_embedding_full = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_ninety = torch.stack([x[-1] for x in generations_ninety_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_eighty = torch.stack([x[-1] for x in generations_eighty_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
@@ -120,7 +120,16 @@ for token in range(12, 17):
     distance_twenty = torch.dist(averaged_embedding_half, averaged_embedding_twenty)
     distance_ten = torch.dist(averaged_embedding_half, averaged_embedding_ten)
     distance_zero = torch.dist(averaged_embedding_half, averaged_embedding_zero)
-
+    print(f"Distance between half and full: {distance_full}")
+    print(f"Distance between half and ninety: {distance_ninety}")
+    print(f"Distance between half and eighty: {distance_eighty}")
+    print(f"Distance between half and seventy: {distance_seventy}")
+    print(f"Distance between half and sixty: {distance_sixty}")
+    print(f"Distance between half and fourty: {distance_fourty}")
+    print(f"Distance between half and thirty: {distance_thirty}")
+    print(f"Distance between half and twenty: {distance_twenty}")
+    print(f"Distance between half and ten: {distance_ten}")
+    print(f"Distance between half and zero: {distance_zero}")
     all_embeddings = np.stack([averaged_embedding_full.cpu().numpy(), averaged_embedding_ninety.cpu().numpy(), averaged_embedding_eighty.cpu().numpy(),
                                averaged_embedding_seventy.cpu().numpy(), averaged_embedding_sixty.cpu().numpy(), averaged_embedding_half.cpu().numpy(),
                                averaged_embedding_forty.cpu().numpy(), averaged_embedding_thirty.cpu().numpy(), averaged_embedding_twenty.cpu().numpy(),
@@ -143,10 +152,10 @@ for token in range(12, 17):
     plt.scatter(tsne_embeddings[8, 0], tsne_embeddings[8, 1], color='pink', label='Twenty')
     plt.scatter(tsne_embeddings[9, 0], tsne_embeddings[9, 1], color='grey', label='Ten')
     plt.scatter(tsne_embeddings[10, 0], tsne_embeddings[10, 1], color='cyan', label='Zero')
-plt.title('t-SNE Visualization')
-plt.legend()
-plt.savefig(f'embedding_drift.png')
-plt.show()
+    plt.title('t-SNE Visualization')
+    plt.legend()
+    plt.savefig(f'embedding_drift.png')
+    plt.show()
 
 
 
