@@ -12,7 +12,8 @@ from sklearn.decomposition import PCA
 random.seed(42)
 model_name = "EleutherAI/pythia-70m-deduped-v0"
 CHECKPOINT= 143000
-continuation_size = 16
+context_size = 32
+continuation_size = 96
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
@@ -39,7 +40,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
+df = pd.read_csv(f"generate_results/memorization_evals_70m-deduped-v0_{context_size}_{context_size+continuation_size}_143000.csv", index_col=0)
 memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'] == int(continuation_size*0.9)/continuation_size], "0.8":df[df['score'] == int(continuation_size*0.8)/continuation_size],
                   "0.7":df[df['score'] == int(continuation_size*0.7)/continuation_size], "0.6":df[df['score'] == int(continuation_size*0.6)/continuation_size], "0.5":df[df['score'] == int(continuation_size*0.5)/continuation_size],
                   "0.4":df[df['score'] == int(continuation_size*0.4)/continuation_size], "0.3":df[df['score'] == int(continuation_size*0.3)/continuation_size], "0.2":df[df['score'] == int(continuation_size*0.2)/continuation_size],
@@ -96,7 +97,7 @@ distance_list_twenty = []
 distance_list_ten = []
 distance_list_zero = []
 
-for token in range(2, 17):
+for token in range(2, 97):
     plt.figure(figsize=(8, 6))
     predicted_embedding_full = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1)
     predicted_embedding_ninety = torch.stack([x[-1] for x in generations_ninety_memo.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_ninety_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1)
