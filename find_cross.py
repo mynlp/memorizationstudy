@@ -50,19 +50,15 @@ context_tokens = []
 idx = 0
 # 举例，这是你不想包括的idx
 unmemorized = random.sample(unmemorized_idx, len(cross_all)*10)
-part_size = len(unmemorized) // 10
+part_size = len(unmemorized) // 5
 
 # 创建3个子列表
 part1 = unmemorized[0:part_size]
 part2 = unmemorized[part_size:1*part_size]
 part3 = unmemorized[2*part_size:3*part_size]
 part4 = unmemorized[3*part_size:4*part_size]
-part5 = unmemorized[4*part_size:5*part_size]
-part6 = unmemorized[5*part_size:6*part_size]
-part7 = unmemorized[6*part_size:7*part_size]
-part8 = unmemorized[7*part_size:8*part_size]
-part9 = unmemorized[8*part_size:9*part_size]
-part10 = unmemorized[9*part_size:]
+part5 = unmemorized[4*part_size:]
+
 
 # 第2步: 创建可用于抽样的索引列表
 if args.distribution_idx == 0:
@@ -75,16 +71,7 @@ elif args.distribution_idx == 3:
     excluded_idx = part4
 elif args.distribution_idx == 4:
     excluded_idx = part5
-elif args.distribution_idx == 5:
-    excluded_idx = part6
-elif args.distribution_idx == 6:
-    excluded_idx = part7
-elif args.distribution_idx == 7:
-    excluded_idx = part8
-elif args.distribution_idx == 8:
-    excluded_idx = part9
-elif args.distribution_idx == 9:
-    excluded_idx = part10
+
 available_idx = [i for i in unmemorized_idx if i not in excluded_idx]
 for i in tqdm(available_idx):
     data = mmap_ds[i]
