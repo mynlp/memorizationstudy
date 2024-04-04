@@ -17,7 +17,7 @@ random.seed(42)
 model_name = "EleutherAI/pythia-70m-deduped-v0"
 CHECKPOINT = 143000
 window_size = 5
-context = 64
+context = 96
 continuation = 16
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
