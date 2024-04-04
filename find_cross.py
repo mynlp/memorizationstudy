@@ -4,6 +4,10 @@ import torch
 import random
 from tqdm import tqdm
 from transformers import AutoTokenizer
+import argparse
+
+
+
 model_name = "EleutherAI/pythia-160m-deduped-v0"
 CHECKPOINT = 143000
 tokenizer = AutoTokenizer.from_pretrained(
@@ -22,7 +26,10 @@ memorized_results_160 = results_160[results_160['score'] == 1]
 memorized_results_410 = results_410[results_410['score'] == 1]
 memorized_results_1b = results_1b[results_1b['score'] == 1]
 unmemorized = results_1b[results_1b['score'] == 0]
-distribution_idx = 0
+paser = argparse.ArgumentParser()
+paser.add_argument("--distribution_idx", type=int, default=0)
+args = paser.parse_args()
+
 idx_70 = set(memorized_results_70["idx"].tolist())
 idx_160 = set(memorized_results_160["idx"].tolist())
 idx_410 = set(memorized_results_410["idx"].tolist())
@@ -58,25 +65,25 @@ part9 = unmemorized[8*part_size:9*part_size]
 part10 = unmemorized[9*part_size:]
 
 # 第2步: 创建可用于抽样的索引列表
-if distribution_idx == 0:
+if args.distribution_idx == 0:
     excluded_idx = part1
-elif distribution_idx == 1:
+elif args.distribution_idx == 1:
     excluded_idx = part2
-elif distribution_idx == 2:
+elif args.distribution_idx == 2:
     excluded_idx = part3
-elif distribution_idx == 3:
+elif args.distribution_idx == 3:
     excluded_idx = part4
-elif distribution_idx == 4:
+elif args.distribution_idx == 4:
     excluded_idx = part5
-elif distribution_idx == 5:
+elif args.distribution_idx == 5:
     excluded_idx = part6
-elif distribution_idx == 6:
+elif args.distribution_idx == 6:
     excluded_idx = part7
-elif distribution_idx == 7:
+elif args.distribution_idx == 7:
     excluded_idx = part8
-elif distribution_idx == 8:
+elif args.distribution_idx == 8:
     excluded_idx = part9
-elif distribution_idx == 9:
+elif args.distribution_idx == 9:
     excluded_idx = part10
 available_idx = [i for i in unmemorized_idx if i not in excluded_idx]
 for i in tqdm(available_idx):
@@ -85,7 +92,7 @@ for i in tqdm(available_idx):
     text = tokenizer.decode(data)
     context_tokens.append([idx, text])
 df = pd.DataFrame(context_tokens, columns=["idx", "text"])
-df.to_json(f"cross_remembered/unmemorized_text_{distribution_idx}.json", index=False, orient='records', lines=True)
+df.to_json(f"cross_remembered/unmemorized_text_{args.distribution_idx}.json", index=False, orient='records', lines=True)
 
 
 
