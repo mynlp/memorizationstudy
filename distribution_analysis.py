@@ -9,18 +9,18 @@ import matplotlib.pyplot as plt
 import random
 
 random.seed(42)
-model_name = "EleutherAI/pythia-410m-deduped-v0"
+model_name = "EleutherAI/pythia-70m-deduped-v0"
 CHECKPOINT= 143000
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-410m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
 )
 model.eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-410m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
 )
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
@@ -37,7 +37,7 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df = pd.read_csv("generate_results/memorization_evals_410m-deduped-v0_32_48_143000.csv", index_col=0)
+df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_96_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
 df_not_full_memorization = df[df['score'] == 0]
 df_half_memorization = df[df['score'] == 0.5]
@@ -58,15 +58,15 @@ memorized_values = [np.array([x[i].cpu() for x in highest_probability_memorized]
 unmemorized_values = [np.array([x[i].cpu() for x in highest_probability_unmemorized])
                       for i in range(num_points)]
 for values in memorized_values:
-    plt.plot(range(16), values, color='blue', linestyle='-', alpha=0.1)  # 使用较低的透明度来避免图形过于拥挤
+    plt.plot(range(96), values, color='red', linestyle='-', alpha=0.1)  # 使用较低的透明度来避免图形过于拥挤
 
 # 绘制未记忆化的每一条线
 for values in unmemorized_values:
-    plt.plot(range(16), values, color='red', linestyle='-', alpha=0.1)  # 使用较低的透明度
+    plt.plot(range(96), values, color='blue', linestyle='-', alpha=0.1)  # 使用较低的透明度
 
 # 创建图例来说明每个颜色和样式代表的类别
-plt.plot([], [], color='blue', linestyle='-', label='Memorized')  # 添加一个看不见的线作图例表示记忆化
-plt.plot([], [], color='red', linestyle='-', label='Unmemorized')  # 添加一个看不见的线作图例表示未记忆化
+plt.plot([], [], color='red', linestyle='-', label='Memorized')  # 添加一个看不见的线作图例表示记忆化
+plt.plot([], [], color='blue', linestyle='-', label='Unmemorized')  # 添加一个看不见的线作图例表示未记忆化
 
 plt.legend()  # 显示图例
 plt.savefig(f'distribution_individual_lines.png')  # 保存图形
