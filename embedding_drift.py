@@ -44,17 +44,17 @@ memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'] == 0.9], "0.8"
                   "0.4":df[df['score'] == 0.4], "0.3":df[df['score'] == 0.3], "0.2":df[df['score'] == 0.2],
                   "0.1":df[df['score'] == 0.1], "0":df[df['score'] == 0]}
 
-idx_full_memorization = memorized_dict["1"].tolist()
-idx_ninety_memorization = memorized_dict["0.9"].tolist()
-idx_eighty_memorization = memorized_dict["0.8"].tolist()
-idx_seventy_memorization = memorized_dict["0.7"].tolist()
-idx_sixty_memorization = memorized_dict["0.6"].tolist()
-idx_half_memorization = memorized_dict["0.5"].tolist()
-idx_fourty_memorization = memorized_dict["0.4"].tolist()
-idx_thirty_memorization = memorized_dict["0.3"].tolist()
-idx_twenty_memorization = memorized_dict["0.2"].tolist()
-idx_ten_memorization = memorized_dict["0.1"].tolist()
-idx_not_full_memorization = memorized_dict["0"].tolist()
+idx_full_memorization = memorized_dict["1"]["idx"].tolist()
+idx_ninety_memorization = memorized_dict["0.9"]["idx"].tolist()
+idx_eighty_memorization = memorized_dict["0.8"]["idx"].tolist()
+idx_seventy_memorization = memorized_dict["0.7"]["idx"].tolist()
+idx_sixty_memorization = memorized_dict["0.6"]["idx"].tolist()
+idx_half_memorization = memorized_dict["0.5"]["idx"].tolist()
+idx_fourty_memorization = memorized_dict["0.4"]["idx"].tolist()
+idx_thirty_memorization = memorized_dict["0.3"]["idx"].tolist()
+idx_twenty_memorization = memorized_dict["0.2"]["idx"].tolist()
+idx_ten_memorization = memorized_dict["0.1"]["idx"].tolist()
+idx_not_full_memorization = memorized_dict["0"]["idx"].tolist()
 
 stragety = "dynamics"
 num_points = 1000
