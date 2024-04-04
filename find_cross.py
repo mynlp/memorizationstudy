@@ -6,7 +6,7 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
 import argparse
 
-
+random.seed(42)
 
 model_name = "EleutherAI/pythia-160m-deduped-v0"
 CHECKPOINT = 143000
@@ -34,7 +34,7 @@ idx_70 = set(memorized_results_70["idx"].tolist())
 idx_160 = set(memorized_results_160["idx"].tolist())
 idx_410 = set(memorized_results_410["idx"].tolist())
 idx_1b = set(memorized_results_1b["idx"].tolist())
-unmemorized_idx = set(unmemorized["idx"].tolist())
+unmemorized_idx = unmemorized["idx"].tolist()
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 cross_all = idx_70.intersection(idx_160, idx_410, idx_1b)
 
@@ -61,19 +61,19 @@ part5 = unmemorized[4*part_size:]
 
 
 # 第2步: 创建可用于抽样的索引列表
-if args.distribution_idx == 0:
-    excluded_idx = part1
-elif args.distribution_idx == 1:
-    excluded_idx = part2
-elif args.distribution_idx == 2:
-    excluded_idx = part3
-elif args.distribution_idx == 3:
-    excluded_idx = part4
-elif args.distribution_idx == 4:
-    excluded_idx = part5
-
-available_idx = [i for i in unmemorized_idx if i not in excluded_idx]
-for i in tqdm(available_idx):
+# if args.distribution_idx == 0:
+#     excluded_idx = part1
+# elif args.distribution_idx == 1:
+#     excluded_idx = part2
+# elif args.distribution_idx == 2:
+#     excluded_idx = part3
+# elif args.distribution_idx == 3:
+#     excluded_idx = part4
+# elif args.distribution_idx == 4:
+#     excluded_idx = part5
+#
+# available_idx = [i for i in unmemorized_idx if i not in set(excluded_idx)]
+for i in tqdm(part1):
     data = mmap_ds[i]
     idx += 1
     text = tokenizer.decode(data)
