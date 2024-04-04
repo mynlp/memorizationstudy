@@ -16,5 +16,4 @@
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-N_NODE=$1
-python find_cross.py --distribution_idx N_NODE
+python find_cross.py --distribution_idx 2
