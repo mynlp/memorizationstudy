@@ -91,10 +91,10 @@ for token in range(12, 17):
     predicted_embedding_seventy = torch.stack([x[-1] for x in generations_seventy_full.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_sixty = torch.stack([x[-1] for x in generations_sixty_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_half = torch.stack([x[-1] for x in generations_half_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
-    predicted_embedding_fourty = torch.stack([x[-1] for x in generations_fourty_full.hidden_states[1:token]]).squeeze().transpose(0, 1)
+    predicted_embedding_forty = torch.stack([x[-1] for x in generations_fourty_full.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_thirty = torch.stack([x[-1] for x in generations_thirty_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_twenty = torch.stack([x[-1] for x in generations_twenty_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
-    predicted_embedding_teno = torch.stack([x[-1] for x in generations_ten_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
+    predicted_embedding_ten = torch.stack([x[-1] for x in generations_ten_memo.hidden_states[1:token]]).squeeze().transpose(0, 1)
     predicted_embedding_zero =  torch.stack([x[-1] for x in generations_zero_full.hidden_states[1:token]]).squeeze().transpose(0, 1)
 
     averaged_embedding_full = torch.concat((context_embedding_full, predicted_embedding_full), dim=1).mean(0).mean(0)
@@ -103,10 +103,10 @@ for token in range(12, 17):
     averaged_embedding_seventy = torch.concat((context_embedding_seventy, predicted_embedding_seventy), dim=1).mean(0).mean(0)
     averaged_embedding_sixty = torch.concat((context_embedding_sixty, predicted_embedding_sixty), dim=1).mean(0).mean(0)
     averaged_embedding_half = torch.concat((context_embedding_half, predicted_embedding_half), dim=1).mean(0).mean(0)
-    averaged_embedding_fourty = torch.concat((context_embedding_fourty, predicted_embedding_fourty), dim=1).mean(0).mean(0)
+    averaged_embedding_forty = torch.concat((context_embedding_fourty, predicted_embedding_forty), dim=1).mean(0).mean(0)
     averaged_embedding_thirty = torch.concat((context_embedding_thirty, predicted_embedding_thirty), dim=1).mean(0).mean(0)
     averaged_embedding_twenty = torch.concat((context_embedding_twenty, predicted_embedding_twenty), dim=1).mean(0).mean(0)
-    averaged_embedding_ten = torch.concat((context_embedding_ten, predicted_embedding_teno), dim=1).mean(0).mean(0)
+    averaged_embedding_ten = torch.concat((context_embedding_ten, predicted_embedding_ten), dim=1).mean(0).mean(0)
     averaged_embedding_zero = torch.concat((context_embedding_zero, predicted_embedding_zero), dim=1).mean(0).mean(0)
 
     distance_full = torch.dist(averaged_embedding_half, averaged_embedding_full)
@@ -114,7 +114,7 @@ for token in range(12, 17):
     distance_eighty = torch.dist(averaged_embedding_half, averaged_embedding_eighty)
     distance_seventy = torch.dist(averaged_embedding_half, averaged_embedding_seventy)
     distance_sixty = torch.dist(averaged_embedding_half, averaged_embedding_sixty)
-    distance_fourty = torch.dist(averaged_embedding_half, averaged_embedding_fourty)
+    distance_fourty = torch.dist(averaged_embedding_half, averaged_embedding_forty)
     distance_thirty = torch.dist(averaged_embedding_half, averaged_embedding_thirty)
     distance_twenty = torch.dist(averaged_embedding_half, averaged_embedding_twenty)
     distance_ten = torch.dist(averaged_embedding_half, averaged_embedding_ten)
@@ -122,7 +122,7 @@ for token in range(12, 17):
 
     all_embeddings = np.stack([averaged_embedding_full.numpy(), averaged_embedding_ninety.numpy(), averaged_embedding_eighty.numpy(),
                                averaged_embedding_seventy.numpy(), averaged_embedding_sixty.numpy(), averaged_embedding_half.numpy(),
-                                averaged_embedding_fourty.numpy(), averaged_embedding_thirty.numpy(), averaged_embedding_twenty.numpy(),
+                               averaged_embedding_forty.numpy(), averaged_embedding_thirty.numpy(), averaged_embedding_twenty.numpy(),
                                averaged_embedding_ten.numpy(), averaged_embedding_zero].numpy(), axis=0)
 
 
