@@ -157,11 +157,13 @@ for token in range(2, 17):
                                averaged_embedding_ten.cpu().numpy(), averaged_embedding_zero.cpu().numpy()], axis=0)
 
     n_samples = all_embeddings.shape[0]
-    perplexity_value = min(n_samples - 1, 30)
-    tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity_value)
-    tsne_embeddings = tsne.fit_transform(all_embeddings)
-
-
+    # perplexity_value = min(n_samples - 1, 30)
+    # tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity_value)
+    #tsne_embeddings = tsne.fit_transform(all_embeddings)
+    pca = PCA(n_components=2, random_state=42)
+    tsne_embeddings = pca.fit_transform(all_embeddings)
+    plt.xlim(-60, 60)
+    plt.ylim(-60, 60)
     plt.scatter(tsne_embeddings[0, 0], tsne_embeddings[0, 1], color='blue', label='Full')
     plt.scatter(tsne_embeddings[1, 0], tsne_embeddings[1, 1], color='red', label='Ninety')
     plt.scatter(tsne_embeddings[2, 0], tsne_embeddings[2, 1], color='green', label='Eighty')
