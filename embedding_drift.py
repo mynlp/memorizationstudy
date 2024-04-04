@@ -41,10 +41,12 @@ print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 df = pd.read_csv(f"generate_results/memorization_evals_70m-deduped-v0_{context_size}_{context_size+continuation_size}_143000.csv", index_col=0)
-memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'] == int(continuation_size*0.9)/continuation_size], "0.8":df[df['score'] == int(continuation_size*0.8)/continuation_size],
-                  "0.7":df[df['score'] == int(continuation_size*0.7)/continuation_size], "0.6":df[df['score'] == int(continuation_size*0.6)/continuation_size], "0.5":df[df['score'] == int(continuation_size*0.5)/continuation_size],
-                  "0.4":df[df['score'] == int(continuation_size*0.4)/continuation_size], "0.3":df[df['score'] == int(continuation_size*0.3)/continuation_size], "0.2":df[df['score'] == int(continuation_size*0.2)/continuation_size],
-                  "0.1":df[df['score'] == int(continuation_size*0.1)/continuation_size], "0":df[df['score'] == 0]}
+memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'].between(int(continuation_size*0.88)/continuation_size, int(continuation_size*0.92)/continuation_size)],
+                  "0.8":df[df['score'].between(int(continuation_size*0.78)/continuation_size, int(continuation_size*0.82)/continuation_size)],"0.7":df[df['score'].between(int(continuation_size*0.68)/continuation_size, int(continuation_size*0.72)/continuation_size)],
+                  "0.6":df[df['score'].between(int(continuation_size*0.58)/continuation_size, int(continuation_size*0.62)/continuation_size)], "0.5":df[df['score'].between(int(continuation_size*0.48)/continuation_size, int(continuation_size*0.52)/continuation_size)],
+                  "0.4":df[df['score'].between(int(continuation_size*0.38)/continuation_size, int(continuation_size*0.42)/continuation_size)], "0.3":df[df['score'].between(int(continuation_size*0.28)/continuation_size, int(continuation_size*0.32)/continuation_size)],
+                  "0.2":df[df['score'].between(int(continuation_size*0.18)/continuation_size, int(continuation_size*0.22)/continuation_size)], "0.1":df[df['score'].between(int(continuation_size*0.08)/continuation_size, int(continuation_size*0.12)/continuation_size)],
+                  "0":df[df['score'] == 0]}
 
 idx_full_memorization = memorized_dict["1"]["idx"].tolist()
 idx_ninety_memorization = memorized_dict["0.9"]["idx"].tolist()
@@ -60,17 +62,17 @@ idx_not_full_memorization = memorized_dict["0"]["idx"].tolist()
 
 stragety = "dynamics"
 num_points = 100
-generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
-generations_ninety_memo, accuracies_ninety_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_ninety_memorization,num_points), 32, 16)
-generations_eighty_memo, accuracies_eighty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_eighty_memorization,num_points), 32, 16)
-generations_seventy_full, accuracies_seventy_full = embedding_obtain(mmap_ds, model,  random.sample(idx_seventy_memorization,num_points), 32, 16)
-generations_sixty_memo, accuracies_sixty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_sixty_memorization,num_points), 32, 16)
-generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), 32, 16)
-generations_fourty_full, accuracies_fourty_full = embedding_obtain(mmap_ds, model,  random.sample(idx_fourty_memorization,num_points), 32, 16)
-generations_thirty_memo, accuracies_thirty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_thirty_memorization,num_points), 32, 16)
-generations_twenty_memo, accuracies_twenty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_twenty_memorization,num_points), 32, 16)
-generations_ten_memo, accuracies_ten_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_ten_memorization,num_points), 32, 16)
-generations_zero_full, accuracies_zero_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
+generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, continuation_size)
+generations_ninety_memo, accuracies_ninety_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_ninety_memorization,num_points), 32, continuation_size)
+generations_eighty_memo, accuracies_eighty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_eighty_memorization,num_points), 32, continuation_size)
+generations_seventy_full, accuracies_seventy_full = embedding_obtain(mmap_ds, model,  random.sample(idx_seventy_memorization,num_points), 32, continuation_size)
+generations_sixty_memo, accuracies_sixty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_sixty_memorization,num_points), 32, continuation_size)
+generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), 32, continuation_size)
+generations_fourty_full, accuracies_fourty_full = embedding_obtain(mmap_ds, model,  random.sample(idx_fourty_memorization,num_points), 32, continuation_size)
+generations_thirty_memo, accuracies_thirty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_thirty_memorization,num_points), 32, continuation_size)
+generations_twenty_memo, accuracies_twenty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_twenty_memorization,num_points), 32, continuation_size)
+generations_ten_memo, accuracies_ten_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_ten_memorization,num_points), 32, continuation_size)
+generations_zero_full, accuracies_zero_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, continuation_size)
 
 # last hidden state
 context_embedding_full = generations_full_memo.hidden_states[0][-1]
