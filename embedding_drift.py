@@ -58,7 +58,7 @@ idx_ten_memorization = memorized_dict["0.1"]["idx"].tolist()
 idx_not_full_memorization = memorized_dict["0"]["idx"].tolist()
 
 stragety = "dynamics"
-num_points = 1000
+num_points = 100
 generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
 generations_ninety_memo, accuracies_ninety_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_ninety_memorization,num_points), 32, 16)
 generations_eighty_memo, accuracies_eighty_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_eighty_memorization,num_points), 32, 16)
