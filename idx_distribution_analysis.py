@@ -10,6 +10,9 @@ import random
 
 df = pd.read_csv("generate_results/memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
 df_full_memorization = df[df['score'] == 1]
-df_full_memorization["idx"].plot(kind="hist", bins=30, title="Distribution of memorized sequences")
+ax = df_full_memorization["idx"].plot(kind="hist", bins=30, title="Distribution of memorized sequences")
+ax.figure.savefig("memorized_sequences_distribution.png")
+plt.clf()
 df_full_memorization = df[df['score'] == 0]
-df_full_memorization["idx"].plot(kind="hist", bins=30, title="Distribution of unmemorized sequences")
+ax = df_full_memorization["idx"].plot(kind="hist", bins=30, title="Distribution of unmemorized sequences")
+ax.figure.savefig("unmemorized_sequences_distribution.png")
