@@ -94,7 +94,7 @@ plt.xlabel('Time Point')
 plt.ylabel('Data Value')
 
 plt.legend()
-plt.savefig('distribution_individual_lines.png')
+plt.savefig(f'distribution_individual_lines_{context}_{continuation}.png')
 plt.show()
 
 # code for mean and std plot
