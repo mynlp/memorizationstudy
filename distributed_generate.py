@@ -75,6 +75,8 @@ def main():
     paser.add_argument("--continuation_size", type=int, default=16)
     paser.add_argument("--model", type=str, default="1b-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
+    paser.add_argument("--specific_rank", type=int, default=1)
+    paser.add_argument("--total_ranks", type=int, default=64)
     args = paser.parse_args()
     print(args)
     RANK = int(os.environ['RANK'])
