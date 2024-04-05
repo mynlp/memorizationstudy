@@ -158,7 +158,7 @@ for token in range(2, continuation_size+1):
     plt.figure(figsize=(10, 10))
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
     plt.title(f'embedding_figure/Embedding Similarities_{token}')
-    plt.savefig(f'embedding_figure/embedding_drift_step_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_similarities_{token}.png')
     plt.show()
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([averaged_embedding_full.cpu().numpy(), averaged_embedding_ninety.cpu().numpy(), averaged_embedding_eighty.cpu().numpy(),
