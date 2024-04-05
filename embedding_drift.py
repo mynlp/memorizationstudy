@@ -138,12 +138,12 @@ for token in range(2, continuation_size+1):
     distance_ten = torch.dist(averaged_embedding_half, averaged_embedding_ten)
     distance_zero = torch.dist(averaged_embedding_half, averaged_embedding_zero)
 
-    embeddings = [averaged_embedding_full, averaged_embedding_ninety,
-                  averaged_embedding_eighty, averaged_embedding_seventy,
-                  averaged_embedding_sixty, averaged_embedding_half,
-                  averaged_embedding_forty, averaged_embedding_thirty,
-                  averaged_embedding_twenty, averaged_embedding_ten,
-                  averaged_embedding_zero]
+    embeddings = [predicted_embedding_full.mean(0).mean(0), predicted_embedding_ninety.mean(0).mean(0),
+                  predicted_embedding_eighty.mean(0).mean(0), predicted_embedding_seventy.mean(0).mean(0),
+                  predicted_embedding_sixty.mean(0).mean(0), predicted_embedding_half.mean(0).mean(0),
+                  predicted_embedding_forty.mean(0).mean(0), predicted_embedding_thirty.mean(0).mean(0),
+                  predicted_embedding_twenty.mean(0).mean(0), predicted_embedding_ten.mean(0).mean(0),
+                  predicted_embedding_zero.mean(0).mean(0)]
 
     names = ['full', 'ninety', 'eighty', 'seventy', 'sixty', 'half',
              'fourty', 'thirty', 'twenty', 'ten', 'zero']
@@ -157,7 +157,7 @@ for token in range(2, continuation_size+1):
             similarities.loc[names[j], names[i]] = similarity
     plt.figure(figsize=(10, 10))
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
-    plt.title(f'embedding_figure/Embedding Similarities_{token}')
+    plt.title(f'Embedding Similarities_{token}')
     plt.savefig(f'embedding_figure/embedding_similarities_{token}.png')
     plt.show()
     plt.figure(figsize=(8, 6))
