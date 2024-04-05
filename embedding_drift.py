@@ -102,7 +102,7 @@ distance_list_twenty = []
 distance_list_ten = []
 distance_list_zero = []
 
-for token in range(2, 97):
+for token in range(2, continuation_size+1):
     plt.figure(figsize=(8, 6))
     predicted_embedding_full = torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1)
     predicted_embedding_ninety = torch.stack([x[-1] for x in generations_ninety_memo.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_ninety_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1)
@@ -159,6 +159,7 @@ for token in range(2, 97):
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
     plt.title(f'embedding_figure/Embedding Similarities_{token}')
     plt.show()
+    plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([averaged_embedding_full.cpu().numpy(), averaged_embedding_ninety.cpu().numpy(), averaged_embedding_eighty.cpu().numpy(),
                                averaged_embedding_seventy.cpu().numpy(), averaged_embedding_sixty.cpu().numpy(), averaged_embedding_half.cpu().numpy(),
                                averaged_embedding_forty.cpu().numpy(), averaged_embedding_thirty.cpu().numpy(), averaged_embedding_twenty.cpu().numpy(),
