@@ -138,12 +138,12 @@ for token in range(2, continuation_size+1):
     distance_ten = torch.dist(averaged_embedding_half, averaged_embedding_ten)
     distance_zero = torch.dist(averaged_embedding_half, averaged_embedding_zero)
 
-    embeddings = [predicted_embedding_full.mean(0)[token], predicted_embedding_ninety.mean(0)[token],
-                  predicted_embedding_eighty.mean(0)[token], predicted_embedding_seventy.mean(0)[token],
-                  predicted_embedding_sixty.mean(0)[token], predicted_embedding_half.mean(0)[token],
-                  predicted_embedding_forty.mean(0)[token], predicted_embedding_thirty.mean(0)[token],
-                  predicted_embedding_twenty.mean(0)[token], predicted_embedding_ten.mean(0)[token],
-                  predicted_embedding_zero.mean(0)[token]]
+    embeddings = [predicted_embedding_full.mean(0)[token-1], predicted_embedding_ninety.mean(0)[token-1],
+                  predicted_embedding_eighty.mean(0)[token-1], predicted_embedding_seventy.mean(0)[token]-1,
+                  predicted_embedding_sixty.mean(0)[token-1], predicted_embedding_half.mean(0)[token-1],
+                  predicted_embedding_forty.mean(0)[token-1], predicted_embedding_thirty.mean(0)[token-1],
+                  predicted_embedding_twenty.mean(0)[token-1], predicted_embedding_ten.mean(0)[token-1],
+                  predicted_embedding_zero.mean(0)[token-1]]
 
     names = ['full', 'ninety', 'eighty', 'seventy', 'sixty', 'half',
              'fourty', 'thirty', 'twenty', 'ten', 'zero']
