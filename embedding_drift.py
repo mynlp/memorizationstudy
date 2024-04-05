@@ -8,6 +8,9 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import random
 from sklearn.decomposition import PCA
+import seaborn as sns
+import torch.nn.functional as F
+
 
 random.seed(42)
 model_name = "EleutherAI/pythia-70m-deduped-v0"
@@ -135,6 +138,27 @@ for token in range(2, 97):
     distance_ten = torch.dist(averaged_embedding_half, averaged_embedding_ten)
     distance_zero = torch.dist(averaged_embedding_half, averaged_embedding_zero)
 
+    embeddings = [averaged_embedding_full, averaged_embedding_ninety,
+                  averaged_embedding_eighty, averaged_embedding_seventy,
+                  averaged_embedding_sixty, averaged_embedding_half,
+                  averaged_embedding_forty, averaged_embedding_thirty,
+                  averaged_embedding_twenty, averaged_embedding_ten,
+                  averaged_embedding_zero]
+
+    names = ['full', 'ninety', 'eighty', 'seventy', 'sixty', 'half',
+             'fourty', 'thirty', 'twenty', 'ten', 'zero']
+
+    # 创建一个空的 DataFrame 用于保存结果
+    similarities = pd.DataFrame(index=names, columns=names)
+    for i in range(len(embeddings)):
+        for j in range(i, len(embeddings)):
+            similarity = F.cosine_similarity(embeddings[i].unsqueeze(0), embeddings[j].unsqueeze(0)).item()
+            similarities.loc[names[i], names[j]] = similarity
+            similarities.loc[names[j], names[i]] = similarity
+    plt.figure(figsize=(10, 10))
+    sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
+    plt.title(f'Embedding Similarities_{token}')
+    plt.show()
     all_embeddings = np.stack([averaged_embedding_full.cpu().numpy(), averaged_embedding_ninety.cpu().numpy(), averaged_embedding_eighty.cpu().numpy(),
                                averaged_embedding_seventy.cpu().numpy(), averaged_embedding_sixty.cpu().numpy(), averaged_embedding_half.cpu().numpy(),
                                averaged_embedding_forty.cpu().numpy(), averaged_embedding_thirty.cpu().numpy(), averaged_embedding_twenty.cpu().numpy(),
