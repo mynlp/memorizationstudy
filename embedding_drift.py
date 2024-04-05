@@ -157,7 +157,7 @@ for token in range(2, 97):
             similarities.loc[names[j], names[i]] = similarity
     plt.figure(figsize=(10, 10))
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
-    plt.title(f'Embedding Similarities_{token}')
+    plt.title(f'embedding_figure/Embedding Similarities_{token}')
     plt.show()
     all_embeddings = np.stack([averaged_embedding_full.cpu().numpy(), averaged_embedding_ninety.cpu().numpy(), averaged_embedding_eighty.cpu().numpy(),
                                averaged_embedding_seventy.cpu().numpy(), averaged_embedding_sixty.cpu().numpy(), averaged_embedding_half.cpu().numpy(),
@@ -205,7 +205,7 @@ for token in range(2, 97):
     print(f"Distance between half and zero: {distance_zero}")
     plt.title('t-SNE Visualization')
     plt.legend()
-    plt.savefig(f'embedding_drift_step_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_drift_step_{token}.png')
     plt.show()
 print("distance across steps:")
 print(distance_list_full)
