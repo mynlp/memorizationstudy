@@ -14,20 +14,21 @@ import matplotlib.cm as cm
 
 
 random.seed(42)
-model_name = "EleutherAI/pythia-70m-deduped-v0"
+model_size = "70m"
+model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT= 143000
 context = 32
 continuation = 16
 model = GPTNeoXForCausalLM.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-{model_size}-deduped/step{CHECKPOINT}",
 )
 model.eval().cuda()
 tokenizer = AutoTokenizer.from_pretrained(
   model_name,
   revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-70m-deduped/step{CHECKPOINT}",
+  cache_dir=f"./pythia-{model_size}-deduped/step{CHECKPOINT}",
 )
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
@@ -45,7 +46,7 @@ print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 colors = cm.rainbow(np.linspace(0, 1, continuation + 1))
 
-df = pd.read_csv(f"generate_results/memorization_evals_70m-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
+df = pd.read_csv(f"generate_results/memorization_evals_{model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
 # memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'].between(int(continuation*0.88)/continuation, int(continuation*0.92)/continuation)],
 #                   "0.8":df[df['score'].between(int(continuation*0.78)/continuation, int(continuation*0.82)/continuation)],"0.7":df[df['score'].between(int(continuation*0.68)/continuation, int(continuation*0.72)/continuation)],
 #                   "0.6":df[df['score'].between(int(continuation*0.58)/continuation, int(continuation*0.62)/continuation)], "0.5":df[df['score'].between(int(continuation*0.48)/continuation, int(continuation*0.52)/continuation)],
@@ -104,7 +105,7 @@ for token in range(2, continuation+1):
     plt.figure(figsize=(10, 10))
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", annot_kws={"size": 7}, square=True, cmap='hot',  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Similarities_{token}')
-    plt.savefig(f'embedding_figure/embedding_similarities_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_similarities_{model_size}_{token}.png')
     plt.show()
 
     plt.figure(figsize=(8, 6))
@@ -118,7 +119,7 @@ for token in range(2, continuation+1):
     cmap = sns.diverging_palette(230, 20, as_cmap=True)
     sns.heatmap(distances.astype(float), annot=True, fmt=".2f",  annot_kws={"size": 9}, square=True, cmap=cmap,  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Distances_{token}')
-    plt.savefig(f'embedding_figure/embedding_distances_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_distances_{model_size}_{token}.png')
     plt.show()
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([embedding.cpu().numpy() for embedding in embeddings], axis=0)
@@ -133,7 +134,7 @@ for token in range(2, continuation+1):
         print(f"Distance between half and {i}: {distance_list[i]}")
     plt.title('PCA Visualization')
     plt.legend()
-    plt.savefig(f'embedding_figure/embedding_drift_step_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_drift_{model_size}_step_{token}.png')
     plt.show()
 print("distance across steps:")
 for i in range(continuation+1):
