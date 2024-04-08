@@ -14,7 +14,7 @@ import matplotlib.cm as cm
 
 
 random.seed(42)
-model_size = "160m"
+model_size = "410m"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT= 143000
 context = 32
@@ -62,7 +62,7 @@ for key in memorized_dict.keys():
     idx.append(memorized_dict[key]["idx"].tolist())
 
 stragety = "dynamics"
-num_points = 100
+num_points = 500
 generations = []
 accuracies = []
 for memorized_idx in idx:
