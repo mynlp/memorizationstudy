@@ -92,7 +92,7 @@ for token in range(2, continuation+1):
     for embedding in predicted_embeddings:
         embeddings.append(embedding.mean(0)[token-2])
 
-    names = [f"{i}" for i in range(continuation)]
+    names = [f"{i}" for i in range(continuation+1)]
 
     # 创建一个空的 DataFrame 用于保存结果
     similarities = pd.DataFrame(index=names, columns=names)
