@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 import seaborn as sns
 import torch.nn.functional as F
 import matplotlib.cm as cm
-
+from tqdm import tqdm
 
 random.seed(42)
 model_size = "410m"
@@ -65,7 +65,7 @@ stragety = "dynamics"
 num_points = 100
 generations = []
 accuracies = []
-for memorized_idx in idx:
+for memorized_idx in tqdm(idx):
     generation, accuracy = embedding_obtain(mmap_ds, model,  random.sample(memorized_idx,num_points), context, continuation)
     generations.append(generation)
     accuracies.append(accuracy)
