@@ -78,7 +78,6 @@ distance_list = {}
 for i in range(continuation+1):
     distance_list[i] = []
 for token in range(2, continuation+1):
-    plt.figure(figsize=(8, 6))
     predicted_embeddings = []
     for generation in generations:
         predicted_embeddings.append(torch.stack([x[-1] for x in generation.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generation.hidden_states[1:token]]).squeeze().unsqueeze(dim=1))
@@ -95,6 +94,7 @@ for token in range(2, continuation+1):
     names = [f"{i}" for i in range(continuation+1)]
 
     # 创建一个空的 DataFrame 用于保存结果
+    plt.figure(figsize=(8, 6))
     similarities = pd.DataFrame(index=names, columns=names)
     for i in range(len(embeddings)):
         for j in range(i, len(embeddings)):
@@ -105,6 +105,19 @@ for token in range(2, continuation+1):
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
     plt.title(f'Embedding Similarities_{token}')
     plt.savefig(f'embedding_figure/embedding_similarities_{token}.png')
+    plt.show()
+
+    plt.figure(figsize=(8, 6))
+    distances = pd.DataFrame(index=names, columns=names)
+    for i in range(len(embeddings)):
+        for j in range(i, len(embeddings)):
+            distance = torch.dist(embeddings[i].unsqueeze(0), embeddings[j].unsqueeze(0), p=2).item()
+            distances.loc[names[i], names[j]] = distance
+            distances.loc[names[j], names[i]] = distance
+    plt.figure(figsize=(10, 10))
+    sns.heatmap(distances.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
+    plt.title(f'Embedding Distances_{token}')
+    plt.savefig(f'embedding_figure/embedding_distances_{token}.png')
     plt.show()
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([embedding.cpu().numpy() for embedding in embeddings], axis=0)
