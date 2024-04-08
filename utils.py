@@ -44,11 +44,13 @@ def embedding_obtain(dataset, model, idx_list, context_size, continuation_size):
         generations = to_cpu(generations)
         return [generations, accuracies]
     except torch.cuda.OutOfMemoryError:
-        generations = model.generate(context_tokens[:250], temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
-        generations1 = model.generate(context_tokens[250:], temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
-        predictions=torch.concat((torch.generations[0][:, context_size:context_size + continuation_size],
-                      torch.generations[1][:, context_size:context_size + continuation_size]), dim=0)
+        generations = model.generate(context_tokens[:int(len(context_tokens)/2)], temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
+        generations1 = model.generate(context_tokens[int(len(context_tokens)/2):], temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
+        predictions=torch.concat((generations[0][:, context_size:context_size + continuation_size],
+                      generations[1][:, context_size:context_size + continuation_size]), dim=0)
         accuracies = (true_continuation == predictions).float().mean(axis=-1)
+        generations = to_cpu(generations)
+        generations1 = to_cpu(generations1)
         results = []
         idx = 0
         for a, b in zip(generations.hidden_states, generations1.hidden_states):
