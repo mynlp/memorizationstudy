@@ -105,7 +105,7 @@ for token in range(2, continuation+1):
     plt.figure(figsize=(10, 10))
     sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", annot_kws={"size": 7}, square=True, cmap='hot',  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Similarities_{token}')
-    plt.savefig(f'embedding_figure/embedding_similarities_{model_size}_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_similarities_{model_size}_{token}.png', bbox_inches='tight', pad_inches=0)
     plt.show()
 
     plt.figure(figsize=(8, 6))
@@ -119,7 +119,7 @@ for token in range(2, continuation+1):
     cmap = sns.diverging_palette(230, 20, as_cmap=True)
     sns.heatmap(distances.astype(float), annot=True, fmt=".2f",  annot_kws={"size": 9}, square=True, cmap=cmap,  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Distances_{token}')
-    plt.savefig(f'embedding_figure/embedding_distances_{model_size}_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_distances_{model_size}_{token}.png', bbox_inches='tight', pad_inches=0)
     plt.show()
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([embedding.cpu().numpy() for embedding in embeddings], axis=0)
