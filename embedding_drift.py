@@ -85,7 +85,7 @@ for token in range(2, continuation+1):
     averaged_embedding = []
     for context_embedding, predicted_embedding in zip(context_embeddings, predicted_embeddings):
         averaged_embedding.append(torch.concat((context_embedding, predicted_embedding), dim=1).mean(0).mean(0))
-    for i in range(continuation)+1:
+    for i in range(continuation+1):
         distance = torch.dist(averaged_embedding[int(continuation/2)], averaged_embedding[i])
         distance_list[i].append(distance)
     embeddings = []
@@ -109,9 +109,6 @@ for token in range(2, continuation+1):
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([embedding.cpu().numpy() for embedding in embeddings], axis=0)
     n_samples = all_embeddings.shape[0]
-    # perplexity_value = min(n_samples - 1, 30)
-    # tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity_value)
-    #tsne_embeddings = tsne.fit_transform(all_embeddings)
     pca = PCA(n_components=2, random_state=42)
     tsne_embeddings = pca.fit_transform(all_embeddings)
     plt.xlim(-60, 60)
@@ -119,15 +116,14 @@ for token in range(2, continuation+1):
     for i in range(continuation+1):
         plt.scatter(tsne_embeddings[i, 0], tsne_embeddings[i, 1], color=colors[i], label=f'{i}')
     for i in range(continuation+1):
-        print(f"Distance between half and {i}: {distances[i]}")
-    plt.title('t-SNE Visualization')
+        print(f"Distance between half and {i}: {distance_list[i]}")
+    plt.title('PCA Visualization')
     plt.legend()
     plt.savefig(f'embedding_figure/embedding_drift_step_{token}.png')
     plt.show()
-    for i in range(continuation+1):
-        print(f"Distance between half and {i}: {distances[i]}")
 print("distance across steps:")
-
+for i in range(continuation+1):
+    print(f"Distance between half and {i}: {distance_list[i]}")
 
 
 
