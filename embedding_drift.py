@@ -14,7 +14,7 @@ import matplotlib.cm as cm
 
 
 random.seed(42)
-model_size = "70m"
+model_size = "160m"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT= 143000
 context = 32
