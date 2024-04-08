@@ -65,30 +65,29 @@ num_points = 100
 generations = []
 accuracies = []
 for memorized_idx in idx:
-    generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(memorized_idx,num_points), 32, continuation)
-    generations.append(generations_full_memo)
-    accuracies.append(accuracies_full_memo)
+    generation, accuracie = embedding_obtain(mmap_ds, model,  random.sample(memorized_idx,num_points), 32, continuation)
+    generations.append(generation)
+    accuracies.append(accuracie)
 
 # last hidden state
 context_embeddings = []
 for generation in generations:
     context_embeddings.append(generation.hidden_states[0][-1])
 
-distance_list = []
-
+distance_list = {}
+for i in range(continuation):
+    distance_list[i] = []
 for token in range(2, continuation+1):
     plt.figure(figsize=(8, 6))
     predicted_embeddings = []
     for generation in generations:
-        predicted_embeddings.append(torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1))
+        predicted_embeddings.append(torch.stack([x[-1] for x in generation.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generations_full_memo.hidden_states[1:token]]).squeeze().unsqueeze(dim=1))
     averaged_embedding = []
-    for context_embedding, predicted_embedding in zip(context_embedding, predicted_embeddings):
-        averaged_embedding.append( torch.concat((context_embedding, predicted_embedding), dim=1).mean(0).mean(0))
-    distances = []
+    for context_embedding, predicted_embedding in zip(context_embeddings, predicted_embeddings):
+        averaged_embedding.append(torch.concat((context_embedding, predicted_embedding), dim=1).mean(0).mean(0))
     for i in range(len(averaged_embedding)):
-        if i != int(continuation/2):
-            distance = torch.dist(averaged_embedding[int(continuation/2)], averaged_embedding[j])
-            distances.append(distance)
+        distance = torch.dist(averaged_embedding[int(continuation/2)], averaged_embedding[j])
+        distance_list[i].append(distance)
     embeddings = []
     for embedding in predicted_embeddings:
         embeddings.append(embedding.mean(0)[token-2])
@@ -109,7 +108,6 @@ for token in range(2, continuation+1):
     plt.show()
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([embedding.cpu().numpy() for embedding in embeddings], axis=0)
-
     n_samples = all_embeddings.shape[0]
     # perplexity_value = min(n_samples - 1, 30)
     # tsne = TSNE(n_components=2, random_state=42, perplexity=perplexity_value)
