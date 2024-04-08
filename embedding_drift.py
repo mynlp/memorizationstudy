@@ -75,7 +75,7 @@ for generation in generations:
     context_embeddings.append(generation.hidden_states[0][-1])
 
 distance_list = {}
-for i in range(continuation):
+for i in range(continuation+1):
     distance_list[i] = []
 for token in range(2, continuation+1):
     plt.figure(figsize=(8, 6))
@@ -87,7 +87,7 @@ for token in range(2, continuation+1):
         averaged_embedding.append(torch.concat((context_embedding, predicted_embedding), dim=1).mean(0).mean(0))
     for i in range(continuation+1):
         distance = torch.dist(averaged_embedding[int(continuation/2)], averaged_embedding[i])
-        distance_list[i].append(distance)
+        distance_list[i].append(float(distance))
     embeddings = []
     for embedding in predicted_embeddings:
         embeddings.append(embedding.mean(0)[token-2])
