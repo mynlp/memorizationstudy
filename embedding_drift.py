@@ -115,7 +115,8 @@ for token in range(2, continuation+1):
             distances.loc[names[i], names[j]] = distance
             distances.loc[names[j], names[i]] = distance
     plt.figure(figsize=(10, 10))
-    sns.heatmap(distances.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
+    cmap = sns.diverging_palette(230, 20, as_cmap=True)
+    sns.heatmap(distances.astype(float), annot=True, fmt=".2f",  annot_kws={"size": 10}, square=True, cmap=cmap,  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Distances_{token}')
     plt.savefig(f'embedding_figure/embedding_distances_{token}.png')
     plt.show()
