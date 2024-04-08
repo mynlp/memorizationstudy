@@ -102,7 +102,7 @@ for token in range(2, continuation+1):
             similarities.loc[names[i], names[j]] = similarity
             similarities.loc[names[j], names[i]] = similarity
     plt.figure(figsize=(10, 10))
-    sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", square=True, cmap='hot')
+    sns.heatmap(similarities.astype(float), annot=True, fmt=".2f", annot_kws={"size": 10}, square=True, cmap='hot',  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Similarities_{token}')
     plt.savefig(f'embedding_figure/embedding_similarities_{token}.png')
     plt.show()
