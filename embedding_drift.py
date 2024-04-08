@@ -63,7 +63,7 @@ for key in memorized_dict.keys():
     idx.append(memorized_dict[key]["idx"].tolist())
 
 stragety = "dynamics"
-num_points = 300
+num_points = 100
 generations = []
 accuracies = []
 for memorized_idx in tqdm(idx):
