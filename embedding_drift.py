@@ -66,9 +66,9 @@ num_points = 100
 generations = []
 accuracies = []
 for memorized_idx in idx:
-    generation, accuracie = embedding_obtain(mmap_ds, model,  random.sample(memorized_idx,num_points), 32, continuation)
+    generation, accuracy = embedding_obtain(mmap_ds, model,  random.sample(memorized_idx,num_points), context, continuation)
     generations.append(generation)
-    accuracies.append(accuracie)
+    accuracies.append(accuracy)
 
 # last hidden state
 context_embeddings = []
