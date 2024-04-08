@@ -102,7 +102,7 @@ for token in range(2, continuation+1):
             similarities.loc[names[i], names[j]] = similarity
             similarities.loc[names[j], names[i]] = similarity
     plt.figure(figsize=(10, 10))
-    sns.heatmap(similarities.astype(float), annot=True, fmt=".2f", annot_kws={"size": 10}, square=True, cmap='hot',  xticklabels=True, yticklabels=True)
+    sns.heatmap(similarities.astype(float), annot=True, fmt=".3f", annot_kws={"size": 7}, square=True, cmap='hot',  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Similarities_{token}')
     plt.savefig(f'embedding_figure/embedding_similarities_{token}.png')
     plt.show()
@@ -116,7 +116,7 @@ for token in range(2, continuation+1):
             distances.loc[names[j], names[i]] = distance
     plt.figure(figsize=(10, 10))
     cmap = sns.diverging_palette(230, 20, as_cmap=True)
-    sns.heatmap(distances.astype(float), annot=True, fmt=".2f",  annot_kws={"size": 10}, square=True, cmap=cmap,  xticklabels=True, yticklabels=True)
+    sns.heatmap(distances.astype(float), annot=True, fmt=".2f",  annot_kws={"size": 9}, square=True, cmap=cmap,  xticklabels=True, yticklabels=True)
     plt.title(f'Embedding Distances_{token}')
     plt.savefig(f'embedding_figure/embedding_distances_{token}.png')
     plt.show()
