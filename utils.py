@@ -10,6 +10,18 @@ def read_csv(addr):
     csv_sheet = pd.read_csv(addr)
     return csv_sheet
 
+def to_cpu(data):
+    if isinstance(data, dict):
+        return {k: to_cpu(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [to_cpu(v) for v in data]
+    elif isinstance(data, tuple):
+        return tuple(to_cpu(v) for v in data)
+    elif isinstance(data, torch.Tensor):
+        return data.cpu()
+    else:
+        return data
+
 
 def embedding_obtain(dataset, model, idx_list, context_size, continuation_size):
     batched_context_tokens = []
@@ -29,6 +41,7 @@ def embedding_obtain(dataset, model, idx_list, context_size, continuation_size):
     try:
         generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
         accuracies = (true_continuation == generations[0][:, context_size:context_size + continuation_size]).float().mean(axis=-1)
+        generations = to_cpu(generations)
         return [generations, accuracies]
     except torch.cuda.OutOfMemoryError:
         generations = model.generate(context_tokens[:250], temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
