@@ -14,7 +14,7 @@ import matplotlib.cm as cm
 from tqdm import tqdm
 
 random.seed(42)
-model_size = "410m"
+model_size = "1b"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT= 143000
 context = 32
