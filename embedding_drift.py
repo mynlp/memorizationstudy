@@ -46,12 +46,12 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 colors = cm.rainbow(np.linspace(0, 1, continuation + 1))
 
 df = pd.read_csv(f"generate_results/memorization_evals_70m-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
-memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'].between(int(continuation*0.88)/continuation, int(continuation*0.92)/continuation)],
-                  "0.8":df[df['score'].between(int(continuation*0.78)/continuation, int(continuation*0.82)/continuation)],"0.7":df[df['score'].between(int(continuation*0.68)/continuation, int(continuation*0.72)/continuation)],
-                  "0.6":df[df['score'].between(int(continuation*0.58)/continuation, int(continuation*0.62)/continuation)], "0.5":df[df['score'].between(int(continuation*0.48)/continuation, int(continuation*0.52)/continuation)],
-                  "0.4":df[df['score'].between(int(continuation*0.38)/continuation, int(continuation*0.42)/continuation)], "0.3":df[df['score'].between(int(continuation*0.28)/continuation, int(continuation*0.32)/continuation)],
-                  "0.2":df[df['score'].between(int(continuation*0.18)/continuation, int(continuation*0.22)/continuation)], "0.1":df[df['score'].between(int(continuation*0.08)/continuation, int(continuation*0.12)/continuation)],
-                  "0":df[df['score'] == 0]}
+# memorized_dict = {"1": df[df['score'] == 1], "0.9":df[df['score'].between(int(continuation*0.88)/continuation, int(continuation*0.92)/continuation)],
+#                   "0.8":df[df['score'].between(int(continuation*0.78)/continuation, int(continuation*0.82)/continuation)],"0.7":df[df['score'].between(int(continuation*0.68)/continuation, int(continuation*0.72)/continuation)],
+#                   "0.6":df[df['score'].between(int(continuation*0.58)/continuation, int(continuation*0.62)/continuation)], "0.5":df[df['score'].between(int(continuation*0.48)/continuation, int(continuation*0.52)/continuation)],
+#                   "0.4":df[df['score'].between(int(continuation*0.38)/continuation, int(continuation*0.42)/continuation)], "0.3":df[df['score'].between(int(continuation*0.28)/continuation, int(continuation*0.32)/continuation)],
+#                   "0.2":df[df['score'].between(int(continuation*0.18)/continuation, int(continuation*0.22)/continuation)], "0.1":df[df['score'].between(int(continuation*0.08)/continuation, int(continuation*0.12)/continuation)],
+#                   "0":df[df['score'] == 0]}
 
 memorized_dict = {}
 for key in range(continuation+1):
