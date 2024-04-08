@@ -85,8 +85,8 @@ for token in range(2, continuation+1):
     averaged_embedding = []
     for context_embedding, predicted_embedding in zip(context_embeddings, predicted_embeddings):
         averaged_embedding.append(torch.concat((context_embedding, predicted_embedding), dim=1).mean(0).mean(0))
-    for i in range(len(averaged_embedding)):
-        distance = torch.dist(averaged_embedding[int(continuation/2)], averaged_embedding[j])
+    for i in range(continuation)+1:
+        distance = torch.dist(averaged_embedding[int(continuation/2)], averaged_embedding[i])
         distance_list[i].append(distance)
     embeddings = []
     for embedding in predicted_embeddings:
