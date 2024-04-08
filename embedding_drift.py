@@ -73,7 +73,7 @@ for memorized_idx in tqdm(idx):
 # last hidden state
 context_embeddings = []
 for generation in generations:
-    context_embeddings.append(generation.hidden_states[0][-1])
+    context_embeddings.append(generation["hidden_states"][0][-1])
 
 distance_list = {}
 for i in range(continuation+1):
@@ -81,7 +81,7 @@ for i in range(continuation+1):
 for token in range(2, continuation+1):
     predicted_embeddings = []
     for generation in generations:
-        predicted_embeddings.append(torch.stack([x[-1] for x in generation.hidden_states[1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generation.hidden_states[1:token]]).squeeze().unsqueeze(dim=1))
+        predicted_embeddings.append(torch.stack([x[-1] for x in generation["hidden_states"][1:token]]).squeeze().transpose(0, 1) if token != 2 else torch.stack([x[-1] for x in generation["hidden_states"][1:token]]).squeeze().unsqueeze(dim=1))
     averaged_embedding = []
     for context_embedding, predicted_embedding in zip(context_embeddings, predicted_embeddings):
         averaged_embedding.append(torch.concat((context_embedding, predicted_embedding), dim=1).mean(0).mean(0))
