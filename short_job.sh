@@ -1,7 +1,7 @@
 #!/bin/zsh
 #PJM -L rscgrp=share-debug
 #PJM -L gpu=1
-#PJM -L elapse=00:30:00
+#PJM -L elapse=2:00:00
 #PJM -g gk77
 #PJM -j
 #PJM -N shortjob
@@ -12,4 +12,4 @@ if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
 
-python embedding_drift.py
+python distribution_analysis.py
