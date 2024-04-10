@@ -77,6 +77,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
 
     # process each batch
     for i in range(0, len(context_tokens), batch_size):
+        batched_highest_entropy_at_idx = []
         batch_context_tokens = context_tokens[i:i + batch_size]
         batch_true_continuation = true_continuation[i:i + batch_size]
 
@@ -94,7 +95,9 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
         for idx in range(continuation_size):
             probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
             entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
-            highest_entropy_at_idx.append(entropy_scores)
+            batched_highest_entropy_at_idx.append(entropy_scores)
+        batched_highest_entropy_at_idx = torch.stack(batched_highest_entropy_at_idx)#100,16
+        highest_entropy_at_idx.append(batched_highest_entropy_at_idx)
 
     # convert list of tensors into a single tensor
     pdb.set_trace()
