@@ -46,7 +46,7 @@ for model_size in ["70m", "160m", "410m", "1b"]:
     model.generation_config.output_scores = True
     model.generation_config.return_dict_in_generate = True
 
-    df = pd.read_csv(f"generate_results/memorization_evals_70m-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
+    df = pd.read_csv(f"generate_results/memorization_evals_{model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
     df_full_memorization = df[df['score'] == 1]
     df_not_full_memorization = df[df['score'] == 0]
     df_half_memorization = df[df['score'] == 0.5]

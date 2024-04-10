@@ -1,5 +1,5 @@
 #!/bin/zsh
-#PJM -L rscgrp=share-debug
+#PJM -L rscgrp=share-short
 #PJM -L gpu=1
 #PJM -L elapse=2:00:00
 #PJM -g gk77
