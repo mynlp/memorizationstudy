@@ -100,7 +100,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
         highest_entropy_at_idx.append(batched_highest_entropy_at_idx)
 
     # convert list of tensors into a single tensor
-    highest_entropy_at_idx = torch.concat(highest_entropy_at_idx,dim=1).transpose(0,1).cpu()
+    highest_entropy_at_idx = torch.concat(highest_entropy_at_idx,dim=1).cpu()
     # model_outputs = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
     # logits = model_outputs["scores"]
     # highest_entropy_at_idx = []
