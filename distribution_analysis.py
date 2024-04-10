@@ -56,7 +56,7 @@ for model_size in ["70m", "160m", "410m", "1b"]:
     idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
     idx_half_memorization = df_half_memorization["idx"].tolist()
 
-    num_points = 500
+    num_points = 1000
     highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
     highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
 
@@ -106,11 +106,16 @@ f = open("unmemorized_entropy_value.pkl", "wb")
 pickle.dump(unmemorized_entropy_value, f)
 f.close()
 plt.figure(figsize=(12, 8))
-plt.plot(["70m", "160m", "410m", "1b"], [x[0] for x in memorized_entropy_value], color='red', label=f'inital_token')
-plt.plot(["70m", "160m", "410m", "1b"], [x[0] for x in unmemorized_entropy_value], color='blue', label=f'inital_token')
-plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in memorized_entropy_value], color='darkred', label=f'last_token')
-plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in unmemorized_entropy_value],color='darkblue', label=f'last_token')
+plt.plot(["70m", "160m", "410m", "1b"], [x[0] for x in memorized_entropy_value], color='red', label=f'inital_token_memorized')
+plt.plot(["70m", "160m", "410m", "1b"], [x[0] for x in unmemorized_entropy_value], color='blue', label=f'inital_token_unmemorized')
+plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in memorized_entropy_value], color='darkred', label=f'last_token_memorized')
+plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in unmemorized_entropy_value],color='darkblue', label=f'last_token_unmemorized')
+plt.title('Entropy at Initial and Last Token for Memorized and Unmemorized Data')
+plt.xlabel('Model Size')
+plt.ylabel('Entropy')
 
+plt.legend()
+plt.savefig(f'entropy_across_size.png')
 # code for mean and std plot
 # # 使用不同的颜色和样式绘制两类数据
 
