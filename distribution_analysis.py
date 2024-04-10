@@ -105,6 +105,12 @@ f.close()
 f = open("unmemorized_entropy_value.pkl", "wb")
 pickle.dump(unmemorized_entropy_value, f)
 f.close()
+plt.figure(figsize=(12, 8))
+plt.plot(["70m", "160m", "410m", "1b"], [x[0] for x in memorized_entropy_value], color='red', label=f'inital_token')
+plt.plot(["70m", "160m", "410m", "1b"], [x[0] for x in unmemorized_entropy_value], color='blue', label=f'inital_token')
+plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in memorized_entropy_value], color='darkred', label=f'last_token')
+plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in unmemorized_entropy_value],color='darkblue', label=f'last_token')
+
 # code for mean and std plot
 # # 使用不同的颜色和样式绘制两类数据
 
