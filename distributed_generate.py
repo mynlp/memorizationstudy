@@ -175,8 +175,13 @@ def main():
         except StopIteration:
             break
     ds_process.join()
-    df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
-    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
+    if file_exisits:
+        new_df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
+        df = pd.concat((exsit_df, new_df), ignore_index=True)
+        df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
+    else:
+        df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
+        df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
     with open(f"experiment_cache/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.txt", "a+") as f:
         f.write(f"{RANK} done\n")
     dist.barrier()
