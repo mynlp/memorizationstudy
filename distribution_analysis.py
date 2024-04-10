@@ -32,7 +32,7 @@ for model_size in ["70m", "160m", "410m", "1b"]:
       model_name,
       revision=f"step{CHECKPOINT}",
       cache_dir=f"./pythia-{model_size}-deduped/step{CHECKPOINT}",
-    ).half().eval()
+    ).eval()
     model = model.to_bettertransformer()
     model = model.cuda()
     tokenizer = AutoTokenizer.from_pretrained(
