@@ -72,13 +72,38 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
         batched_true_continuation.append(true_continuation)
     context_tokens = torch.tensor(batched_context_tokens).to('cuda')
     true_continuation = torch.tensor(batched_true_continuation).to('cuda')
-    model_outputs = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
-    logits = model_outputs["scores"]
+    batch_size = 100  # set batch size based on your GPU and model requirements
     highest_entropy_at_idx = []
-    for idx in range(continuation_size):
-        probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
-        pdb.set_trace()
-        entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
-        #pdb.set_trace()
-        highest_entropy_at_idx.append(entropy_scores)
+
+    # process each batch
+    for i in range(0, len(context_tokens), batch_size):
+        batch_context_tokens = context_tokens[i:i + batch_size]
+        batch_true_continuation = true_continuation[i:i + batch_size]
+
+        # convert lists to tensors and move to GPU
+        batched_context_tokens = torch.tensor(batch_context_tokens).to('cuda')
+        batched_true_continuation = torch.tensor(batch_true_continuation).to('cuda')
+
+        # run model and get logits
+        model_outputs = model.generate(batched_context_tokens, temperature=0.0, top_k=0, top_p=0,
+                                       max_length=context_size + continuation_size,
+                                       min_length=context_size + continuation_size)
+        logits = model_outputs["scores"]
+
+        # calculate entropy for each token in the context
+        for idx in range(continuation_size):
+            probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
+            entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
+            highest_entropy_at_idx.append(entropy_scores)
+
+    # convert list of tensors into a single tensor
+    highest_entropy_at_idx = torch.cat(highest_entropy_at_idx).cpu()
+    # model_outputs = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0, max_length=context_size+continuation_size, min_length=context_size+continuation_size)
+    # logits = model_outputs["scores"]
+    # highest_entropy_at_idx = []
+    # for idx in range(continuation_size):
+    #     probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
+    #     entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
+    #     #pdb.set_trace()
+    #     highest_entropy_at_idx.append(entropy_scores)
     return highest_entropy_at_idx
