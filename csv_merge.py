@@ -3,11 +3,11 @@ from argparse import ArgumentParser
 import os
 
 args = ArgumentParser()
-args.add_argument("--model_name", type=str, default="1b-deduped-v0")
+args.add_argument("--model_name", type=str, default="12b-deduped-v0")
 args.add_argument("--checkpoint", type=int, default=143000)
-args.add_argument("--rank_size", type=int, default=32)
+args.add_argument("--rank_size", type=int, default=64)
 args.add_argument("--context_size", type=int, default=32)
-args.add_argument("--continuation_size", type=int, default=32)
+args.add_argument("--continuation_size", type=int, default=16)
 args = args.parse_args()
 
 check_dict = {}
