@@ -79,17 +79,23 @@ def main():
     paser.add_argument("--total_ranks", type=int, default=64)
     args = paser.parse_args()
     print(args)
-    RANK = int(os.environ['RANK']) if "RANK" in os.environ else args.specific_rank
-    LOCAL_RANK = int(os.environ['LOCAL_RANK'])
-    NUM_PROCS = int(os.environ['WORLD_SIZE'])
-    logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
+    if "RANK" in os.environ:
+        RANK = int(os.environ['RANK']) if "RANK" in os.environ else args.specific_rank
+        LOCAL_RANK = int(os.environ['LOCAL_RANK'])
+        NUM_PROCS = int(os.environ['WORLD_SIZE'])
+        logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = logging.INFO)
+        logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
+        print("start")
+        print(f"Rank: {RANK}")
+        print(f"World Size: {NUM_PROCS}")
+        print(f"Local Rank: {LOCAL_RANK}")
+        torch.cuda.set_device(LOCAL_RANK)
+    else:
+        RANK = args.specific_rank
+        NUM_PROCS = 1
+        LOCAL_RANK = 0
+    logging.basicConfig(format=f'rank-{RANK}:' + '%(levelname)s:%(message)s', level=logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
-    print("start")
-    print(f"Rank: {RANK}")
-    print(f"World Size: {NUM_PROCS}")
-    print(f"Local Rank: {LOCAL_RANK}")
-    torch.cuda.set_device(LOCAL_RANK)
-
     dist.init_process_group(
         "nccl",
         world_size=NUM_PROCS,
