@@ -92,7 +92,7 @@ def main():
         torch.cuda.set_device(LOCAL_RANK)
     else:
         RANK = args.specific_rank
-        NUM_PROCS = 1
+        NUM_PROCS = 64
         LOCAL_RANK = 0
     logging.basicConfig(format=f'rank-{RANK}:' + '%(levelname)s:%(message)s', level=logging.INFO)
     logging.info(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
