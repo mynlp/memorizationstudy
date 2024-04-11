@@ -128,13 +128,13 @@ def main():
         revision=f'step{args.checkpoint}',
     )
     model = model.half()
+    model = model.eval()
+    model = model.to_bettertransformer()
     if torch.cuda.device_count() > 1:
         print(f"use {torch.cuda.device_count()} GPUs!")
         model = torch.nn.DataParallel(model,device_ids=[0, 1])
     else:
         model = model.cuda(0)
-    model = model.eval()
-    model = model.to_bettertransformer()
     #dist.barrier()
     print("Loaded Model")
     all_memorization_evals = []
