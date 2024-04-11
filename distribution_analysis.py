@@ -22,7 +22,7 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 random.seed(42)
 memorized_entropy_value = []
 unmemorized_entropy_value = []
-for model_size in ["70m", "160m", "410m", "1b"]:
+for model_size in ["70m", "160m"]:
     model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
     CHECKPOINT = 143000
     window_size = 5
