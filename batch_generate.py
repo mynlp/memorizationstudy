@@ -70,7 +70,7 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
 
 def main():
     paser = argparse.ArgumentParser()
-    paser.add_argument("--batch_size", type=int, default=1024)
+    paser.add_argument("--batch_size", type=int, default=512)
     paser.add_argument("--context_size", type=int, default=32)
     paser.add_argument("--continuation_size", type=int, default=16)
     paser.add_argument("--model", type=str, default="6.9b-deduped-v0")
