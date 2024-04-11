@@ -113,9 +113,24 @@ plt.plot(["70m", "160m", "410m", "1b"], [x[-1] for x in unmemorized_entropy_valu
 plt.title('Entropy at Initial and Last Token for Memorized and Unmemorized Data')
 plt.xlabel('Model Size')
 plt.ylabel('Entropy')
-
 plt.legend()
 plt.savefig(f'entropy_across_size.png')
+plt.figure(figsize=(12, 8))
+plt.plot(range(context+continuation), memorized_entropy_value[0], color='red', label=f'70m_memorized')
+plt.plot(range(context+continuation), unmemorized_entropy_value[0], color='blue', label=f'70m_unmemorized')
+plt.plot(range(context+continuation), memorized_entropy_value[1], color='darkred', label=f'160m_memorized')
+plt.plot(range(context+continuation), unmemorized_entropy_value[1], color='darkblue', label=f'160m_unmemorized')
+plt.plot(range(context+continuation), memorized_entropy_value[2], color='green', label=f'410m_memorized')
+plt.plot(range(context+continuation), unmemorized_entropy_value[2], color='yellow', label=f'410m_unmemorized')
+plt.plot(range(context+continuation), memorized_entropy_value[3], color='purple', label=f'1b_memorized')
+plt.plot(range(context+continuation), unmemorized_entropy_value[3], color='orange', label=f'1b_unmemorized')
+plt.title('Entropy at Each Token for Memorized and Unmemorized Data')
+plt.xlabel('Token Position')
+plt.ylabel('Entropy')
+plt.legend()
+plt.savefig(f'entropy_across_steps.png')
+plt.show()
+
 # code for mean and std plot
 # # 使用不同的颜色和样式绘制两类数据
 
