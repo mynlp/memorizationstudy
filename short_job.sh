@@ -1,5 +1,5 @@
 #!/bin/zsh
-#PJM -L rscgrp=share-short
+#PJM -L rscgrp=share
 #PJM -L gpu=1
 #PJM -L elapse=2:00:00
 #PJM -g gk77
@@ -12,4 +12,4 @@ if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
 
-python distribution_analysis.py
+python distributed_generate.py
