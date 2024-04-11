@@ -22,7 +22,7 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 random.seed(42)
 memorized_entropy_value = []
 unmemorized_entropy_value = []
-model_size_list = ["70m", "160m"]
+model_size_list = ["70m", "160m", "410m", "1b"]
 for model_size in model_size_list:
     model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
     CHECKPOINT = 143000
@@ -117,14 +117,14 @@ plt.ylabel('Entropy')
 plt.legend()
 plt.savefig(f'entropy_across_size.png')
 plt.figure(figsize=(12, 8))
-plt.plot(range(1, context+continuation), memorized_entropy_value[0], color='red', label=f'70m_memorized')
-plt.plot(range(1, context+continuation), unmemorized_entropy_value[0], color='blue', label=f'70m_unmemorized')
-plt.plot(range(1, context+continuation), memorized_entropy_value[1], color='darkred', label=f'160m_memorized')
-plt.plot(range(1, context+continuation), unmemorized_entropy_value[1], color='darkblue', label=f'160m_unmemorized')
-# plt.plot(range(context+continuation), memorized_entropy_value[2], color='green', label=f'410m_memorized')
-# plt.plot(range(context+continuation), unmemorized_entropy_value[2], color='yellow', label=f'410m_unmemorized')
-# plt.plot(range(context+continuation), memorized_entropy_value[3], color='purple', label=f'1b_memorized')
-# plt.plot(range(context+continuation), unmemorized_entropy_value[3], color='orange', label=f'1b_unmemorized')
+plt.plot(range(30, context+continuation), memorized_entropy_value[0, 30:], color='red', label=f'70m_memorized')
+plt.plot(range(30, context+continuation), unmemorized_entropy_value[0, 30:], color='blue', label=f'70m_unmemorized')
+plt.plot(range(30, context+continuation), memorized_entropy_value[1, 30:], color='darkred', label=f'160m_memorized')
+plt.plot(range(30, context+continuation), unmemorized_entropy_value[1, 30:], color='darkblue', label=f'160m_unmemorized')
+plt.plot(range(30, context+continuation), memorized_entropy_value[2, 30:], color='green', label=f'410m_memorized')
+plt.plot(range(30, context+continuation), unmemorized_entropy_value[2, 30:], color='yellow', label=f'410m_unmemorized')
+plt.plot(range(30, context+continuation), memorized_entropy_value[3, 30:], color='purple', label=f'1b_memorized')
+plt.plot(range(30, context+continuation), unmemorized_entropy_value[3, 30:], color='orange', label=f'1b_unmemorized')
 plt.title('Entropy at Each Token for Memorized and Unmemorized Data')
 plt.xlabel('Token Position')
 plt.ylabel('Entropy')
