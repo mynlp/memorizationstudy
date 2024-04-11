@@ -70,16 +70,17 @@ def score(model, context_tokens, true_continuation, context_size, continuation_s
 
 def main():
     paser = argparse.ArgumentParser()
-    paser.add_argument("--batch_size", type=int, default=128)
+    paser.add_argument("--batch_size", type=int, default=1024)
     paser.add_argument("--context_size", type=int, default=32)
     paser.add_argument("--continuation_size", type=int, default=16)
-    paser.add_argument("--model", type=str, default="12b-deduped-v0")
+    paser.add_argument("--model", type=str, default="6.9b-deduped-v0")
     paser.add_argument("--checkpoint", type=int, default=143000)
+    paser.add_argument("--rank", type=int, default=0)
     args = paser.parse_args()
     #BATCH_SIZE = 1024
     #LOG_INTERVAL = 100
-    RANK = 0#int(os.environ['RANK'])
-    NUM_PROCS = 1
+    RANK = args.rank#int(os.environ['RANK'])
+    NUM_PROCS = 64
     #os.environ['MODEL'] = MODEL
    #int(os.environ['CHECKPOINT'])
     #os.environ['CHECKPOINT'] = str(CHECKPOINT)
@@ -165,17 +166,17 @@ def main():
             print(f"Generation until {idx} took {time.time() - t:.3}s")
             #dist.barrier()
             iters += 1
-            if (idx / 1024) % 1430 == 0:
+            if (idx / 1024) % 500 == 0:
                 print(f"Processed {iters} iterations until {idx}")
-                if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
-                    df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv", index_col=0)
+                if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv" in os.listdir("generate_results"):
+                    df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv", index_col=0)
                     cache = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
                     df = pd.concat([df, cache]).reset_index(drop=True)
-                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
+                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv")
                     print("Saved Merged Results")
                 else:
                     df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
-                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv")
+                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv")
                     print("Saved Merged Results")
                 memorization_evals = []
                 memorization_evals_values = []
@@ -183,7 +184,7 @@ def main():
             print("Break")
             break
     df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
-    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}.csv")
+    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
     ds_process.join()
     # dist.barrier()
 
