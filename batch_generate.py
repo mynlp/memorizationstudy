@@ -106,12 +106,14 @@ def main():
     # Calculate start and end sequence indicies
     total_num_sequences = args.checkpoint * args.batch_size
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
-    # if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
-    #     df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
-    #     start_idx = len(df)
-    # else:
-    #     start_idx = num_sequences_per_proc * RANK
     start_idx = num_sequences_per_proc * RANK
+    if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv" in os.listdir("generate_results"):
+         df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv", index_col=0)
+         start_idx = len(df)+start_idx
+         file_exsits = True
+    else:
+         start_idx = num_sequences_per_proc * RANK
+         file_exsits = False
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
         end_idx = total_num_sequences - 1
@@ -167,10 +169,9 @@ def main():
             if (idx / 1024) % 500 == 0:
                 print(f"Processed {iters} iterations until {idx}")
                 if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv" in os.listdir("generate_results"):
-                    df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv", index_col=0)
                     cache = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
-                    df = pd.concat([df, cache]).reset_index(drop=True)
-                    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv")
+                    new_df = pd.concat([df, cache]).reset_index(drop=True)
+                    new_df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv")
                     print("Saved Merged Results")
                 else:
                     df = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
@@ -181,8 +182,15 @@ def main():
         except StopIteration:
             print("Break")
             break
-    df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
-    df.to_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
+    if file_exsits:
+        cache = pd.DataFrame(memorization_evals_values, columns=["idx", "score"])
+        new_df = pd.concat([df, cache]).reset_index(drop=True)
+        new_df.to_csv(
+            f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
+    else:
+        df = pd.DataFrame(all_memorization_evals_values, columns=["idx", "score"])
+        df.to_csv(
+            f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
     ds_process.join()
     # dist.barrier()
 
