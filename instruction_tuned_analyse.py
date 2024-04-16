@@ -53,14 +53,20 @@ idx_not_full_memorization = unmemorized_dict["idx"].tolist()
 memorized_idx = random.sample(idx_full_memorization, 1000)
 unmemorized_idx = random.sample(idx_not_full_memorization, 1000)
 memorized_batched_context_tokens = []
+memorized_continuation = []
 unmemorized_batched_context_tokens = []
+unmemorized_continuation = []
 for idx in memorized_idx:
     data = mmap_ds[idx]
-    context_tokens = original_tokenizer.decode(data[:args.context+args.continuation].tolist())
+    context_tokens = original_tokenizer.decode(data[:args.context].tolist())
+    continuation = original_tokenizer.decode(data[args.context:args.context+args.continuation].tolist())
+    memorized_continuation.append(continuation)
     memorized_batched_context_tokens.append(context_tokens)
 for idx in unmemorized_idx:
     data = mmap_ds[idx]
-    context_tokens = original_tokenizer.decode(data[:args.context+args.continuation].tolist())
+    context_tokens = original_tokenizer.decode(data[:args.context].tolist())
+    continuation = original_tokenizer.decode(data[args.context:args.context+args.continuation].tolist())
+    unmemorized_continuation.append(continuation)
     unmemorized_batched_context_tokens.append(context_tokens)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_tokens([args.stop_token])
@@ -72,11 +78,10 @@ generator = pipeline(
     model=model_name,
     device=device,
     max_new_tokens=args.max_new_tokens,
-    torch_dtype=torch.float16,
     stopping_criteria=StoppingCriteriaList([stop_criteria]),
 )
 
-example = f"Does this sentence exist in your memory?\n{memorized_batched_context_tokens[0]}. \nReply to this question with only Yes or No and nothing else"
+example = f"Complete the following sentence.\n{memorized_batched_context_tokens[0]}"
 text = "Question: {}\nAnswer:".format(example)
 result = generator(
     text,
@@ -84,8 +89,9 @@ result = generator(
 )
 output = result[0]["generated_text"]
 print(output)
+print(memorized_continuation[0])
 
-example = f"Does this sentence exist in your memory?\n{unmemorized_batched_context_tokens[4]}. \nReply to this question with only Yes or No and nothing else and carefully reply"
+example = f"Complete the following sentence.\n{unmemorized_batched_context_tokens[0]}"
 text = "Question: {}\nAnswer:".format(example)
 result = generator(
     text,
@@ -93,3 +99,4 @@ result = generator(
 )
 output = result[0]["generated_text"]
 print(output)
+print(unmemorized_continuation[0])
