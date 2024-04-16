@@ -1,60 +1,52 @@
-import os
-import datetime
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from peft import get_peft_model, LoraConfig, TaskType
-from peft import PeftModel, PeftConfig
 
-model_path = "cyberagent/open-calm-7b"
-base_llm1 = AutoModelForCausalLM.from_pretrained(model_path, device_map="auto", torch_dtype=torch.float16)
-tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
-model1 = PeftModel.from_pretrained(base_llm1, './output1', torch_dtype=torch.float16)
-model1.half()
+from transformers import AutoTokenizer, pipeline, StoppingCriteria, StoppingCriteriaList
 
-PROMPT_DICT = {
-    "prompt_input": (
-        "以下は、タスクを説明する指示と、文脈のある入力の組み合わせです。"
-        "要求を適切に満たす応答を書きなさい。\n\n"
-        "### 指示:\n{instruction}\n\n### 入力:{input}\n\n### 応答:"
-    ),
-    "prompt_no_input": (
-        "以下は、タスクを説明する指示です。"
-        "要求を適切に満たす応答を書きなさい。\n\n"
-        "### 指示:\n{instruction}\n\n### 応答:"
-    )
-}
+device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
-if temp < 0.1:
-    temp = 0.1
-elif temp > 1:
-    temp = 1
+model_name = "lambdalabs/pythia-70m-deduped-synthetic-instruct"
+max_new_tokens = 1536
+stop_token = "<|stop|>"
 
-input_prompt = {
-    'instruction': instruction,
-    'input': conversation
-}
 
-prompt = ''
-if input_prompt['input'] == '':
-    prompt = PROMPT_DICT['prompt_no_input'].format_map(input_prompt)
-else:
-    prompt = PROMPT_DICT['prompt_input'].format_map(input_prompt)
+class KeywordsStoppingCriteria(StoppingCriteria):
+    def __init__(self, keywords_ids: list):
+        self.keywords = keywords_ids
 
-inputs = tokenizer(
-    prompt,
-    return_tensors='pt'
-).to(model.device)
+    def __call__(
+        self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs
+    ) -> bool:
+        if input_ids[0][-1] in self.keywords:
+            return True
+        return False
 
-with torch.no_grad():
-    tokens = model.generate(
-        **inputs,
-        max_new_tokens=128,
-        do_sample=True,
-        temperature=temp,
-        top_p=0.9,
-        repetition_penalty=1.05,
-        pad_token_id=tokenizer.pad_token_id,
-    )
 
-output = tokenizer.decode(tokens[0], skip_special_tokens=True)
-output = output.split('\n\n')[-1].split(':')[-1]
+tokenizer = AutoTokenizer.from_pretrained(
+    model_name,
+)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.add_tokens([stop_token])
+
+stop_ids = [tokenizer.encode(w)[0] for w in [stop_token]]
+stop_criteria = KeywordsStoppingCriteria(stop_ids)
+
+generator = pipeline(
+    "text-generation",
+    model=model_name,
+    device=device,
+    max_new_tokens=max_new_tokens,
+    torch_dtype=torch.float16,
+    stopping_criteria=StoppingCriteriaList([stop_criteria]),
+)
+
+example = "How can I make an omelette."
+text = "Question: {}\nAnswer:".format(example)
+
+result = generator(
+    text,
+    num_return_sequences=1,
+)
+
+output = result[0]["generated_text"]
+
+print(output)
