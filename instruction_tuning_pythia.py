@@ -32,11 +32,11 @@ PROMPT_DICT = {
     "prompt_input": (
         "The following is the combination of instruction that explains the task and the context of the input."
         "Please response with answer that meets the requirements。\n\n"
-        "### 指示:\n{instruction}\n\n### 入力:{context}\n\n### 応答:"
+        "### Instruction:\n{instruction}\n\n### Context:{context}\n\n### Answer:"
     ),
     "prompt_no_input": (
         "The following is the instruction that explains the task."
-        "Please response with answer that meets the requirements 要求を適切に満たす応答を書きなさい。\n\n"
+        "Please response with answer that meets the requirements.\n\n"
         "### Instruction:\n{instruction}\n\n### Answer:"
     )
 }
