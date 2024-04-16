@@ -16,7 +16,7 @@ class InstructDataset(Dataset):
         for j in tqdm(json_list):
             # open_qaなど文脈情報が必要ない場合はinputカラムがないため、
             # inputカラムありなしでテンプレート文を分けている。
-            if 'input' in j:
+            if 'context' in j:
                 source_text = PROMPT_DICT['prompt_input'].format_map(j)
             else:
                 source_text = PROMPT_DICT['prompt_no_input'].format_map(j)
