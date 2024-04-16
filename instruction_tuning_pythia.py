@@ -27,7 +27,7 @@ tokenizer = AutoTokenizer.from_pretrained(
   revision=f"step{args.checkpoint}",
   cache_dir=f"./pythia-{args.model}/step{args.checkpoint}",
 )
-dolly_ja = datasets.load_dataset("databricks/databricks-dolly-15k")
+dolly = datasets.load_dataset("databricks/databricks-dolly-15k")
 PROMPT_DICT = {
     "prompt_input": (
         "The following is the combination of instruction that explains the task and the context of the input."
@@ -40,7 +40,7 @@ PROMPT_DICT = {
         "### Instruction:\n{instruction}\n\n### Answer:"
     )
 }
-train_dataset = InstructDataset(dolly_ja, tokenizer, PROMPT_DICT)
+train_dataset = InstructDataset(dolly["train"], tokenizer, PROMPT_DICT)
 collator = InstructCollator(tokenizer)
 loader = DataLoader(train_dataset, collate_fn=collator, batch_size=8, shuffle=True)
 
