@@ -26,9 +26,9 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 original_tokenizer = AutoTokenizer.from_pretrained(
-  model_name,
-  revision=f"step{143000}",
-  cache_dir=f"./pythia-{args.model_size}-deduped/step{143000}",
+  f"EleutherAI/pythia-1b-deduped-v0",
+  revision=f"step143000",
+  cache_dir=f"./pythia-1b-deduped/step143000",
 )
 class KeywordsStoppingCriteria(StoppingCriteria):
     def __init__(self, keywords_ids: list):
