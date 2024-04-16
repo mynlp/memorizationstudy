@@ -27,6 +27,7 @@ tokenizer = AutoTokenizer.from_pretrained(
   revision=f"step{args.checkpoint}",
   cache_dir=f"./pythia-{args.model}/step{args.checkpoint}",
 )
+tokenizer.pad_token = tokenizer.eos_token
 dolly = datasets.load_dataset("databricks/databricks-dolly-15k")
 PROMPT_DICT = {
     "prompt_input": (
