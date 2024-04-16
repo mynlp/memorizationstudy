@@ -76,7 +76,7 @@ generator = pipeline(
     stopping_criteria=StoppingCriteriaList([stop_criteria]),
 )
 
-example = f"Do you remember the following sentence?\n{memorized_batched_context_tokens[0]}. \nReply with only Yes or No"
+example = f"Does this sentence exist in your memory?\n{memorized_batched_context_tokens[0]}. \nReply to this question with only Yes or No and nothing else"
 text = "Question: {}\nAnswer:".format(example)
 result = generator(
     text,
@@ -85,7 +85,7 @@ result = generator(
 output = result[0]["generated_text"]
 print(output)
 
-example = f"Do you remember the following sentence?\n{unmemorized_batched_context_tokens[0]}. \nReply with only Yes or No"
+example = f"Does this sentence exist in your memory?\n{unmemorized_batched_context_tokens[4]}. \nReply to this question with only Yes or No and nothing else and carefully reply"
 text = "Question: {}\nAnswer:".format(example)
 result = generator(
     text,
