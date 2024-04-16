@@ -30,9 +30,9 @@ tokenizer = AutoTokenizer.from_pretrained(
 dolly_ja = datasets.load_dataset("databricks/databricks-dolly-15k")
 PROMPT_DICT = {
     "prompt_input": (
-        "The following is the combination of instruction that explaians the task and the context of the input."
+        "The following is the combination of instruction that explains the task and the context of the input."
         "Please response with answer that meets the requirements。\n\n"
-        "### 指示:\n{instruction}\n\n### 入力:{input}\n\n### 応答:"
+        "### 指示:\n{instruction}\n\n### 入力:{context}\n\n### 応答:"
     ),
     "prompt_no_input": (
         "The following is the instruction that explains the task."

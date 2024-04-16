@@ -22,7 +22,7 @@ class InstructDataset(Dataset):
                 source_text = PROMPT_DICT['prompt_no_input'].format_map(j)
 
             # 指示文と回答文を結合し、文末にEOSトークンを挿入
-            example_text = source_text + j['output'] + self.tokenizer.eos_token
+            example_text = source_text + j['response'] + self.tokenizer.eos_token
 
             # 指示文のみ（「以下は、タスクを〜### 応答:」まで）をtokenize
             # ほしいのは指示文のlength
