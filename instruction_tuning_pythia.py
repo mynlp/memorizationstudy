@@ -20,7 +20,7 @@ paser.add_argument("--checkpoint", type=int, default=143000)
 paser.add_argument("--rank", type=int, default=0)
 args = paser.parse_args()
 model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f"step{args.checkpoint}",
-                                             device_map="auto", torch_dtype=torch.float16)
+                                             device_map="auto")
 #tokenizer = AutoTokenizer.from_pretrained("cyberagent/open-calm-7b")
 tokenizer = AutoTokenizer.from_pretrained(
   f"EleutherAI/pythia-{args.model}",
