@@ -18,7 +18,7 @@ device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("
 
 model_name = f"lambdalabs/pythia-{args.model_size}-deduped-synthetic-instruct"
 max_new_tokens = 2048
-df = pd.read_csv(f"generate_results/memorization_evals_{args.model_size}-deduped-v0_{args.context}_{args.context+args.continuation}_143000.csv", index_col=0)
+df = pd.read_csv(f"generate_results/memorization_evals_1b-deduped-v0_{args.context}_{args.context+args.continuation}_143000.csv", index_col=0)
 
 prefix = 'deduped_merge/document.bin'
 print(prefix)
