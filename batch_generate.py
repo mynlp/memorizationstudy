@@ -23,7 +23,10 @@ def generate_dataset(model, batch_size, context_size, continuation_size, start_s
     true_continuation = []
     i = 0
     for i in range(start_seq_idx, end_seq_idx + 1, batch_size):
-        data = mmap_ds[i:i + batch_size]
+        if i + batch_size > end_seq_idx:
+            data = mmap_ds[i:end_seq_idx + 1]
+        else:
+            data = mmap_ds[i:i + batch_size]
         context_tokens.extend(data[:, :context_size].tolist())
         true_continuation.extend(data[:, context_size:context_size+continuation_size].tolist())
         i += len(context_tokens)

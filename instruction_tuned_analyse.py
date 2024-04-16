@@ -48,14 +48,19 @@ tokenizer = AutoTokenizer.from_pretrained(
 
 memorized_dict = df[df['score'] == 1]
 unmemorized_dict = df[df['score'] == 0]
+half_memorized_dict = df[df['score'] == 0.5]
 idx_full_memorization = memorized_dict["idx"].tolist()
 idx_not_full_memorization = unmemorized_dict["idx"].tolist()
+idx_half_memorization = half_memorized_dict["idx"].tolist()
 memorized_idx = random.sample(idx_full_memorization, 1000)
 unmemorized_idx = random.sample(idx_not_full_memorization, 1000)
+half_memorized_idx = random.sample(idx_half_memorization, 1000)
 memorized_batched_context_tokens = []
 memorized_continuation = []
 unmemorized_batched_context_tokens = []
 unmemorized_continuation = []
+half_batched_context_tokens = []
+half_continuation = []
 for idx in memorized_idx:
     data = mmap_ds[idx]
     context_tokens = original_tokenizer.decode(data[:args.context].tolist())
@@ -68,6 +73,12 @@ for idx in unmemorized_idx:
     continuation = original_tokenizer.decode(data[args.context:args.context+args.continuation].tolist())
     unmemorized_continuation.append(continuation)
     unmemorized_batched_context_tokens.append(context_tokens)
+for idx in half_memorized_idx:
+    data = mmap_ds[idx]
+    context_tokens = original_tokenizer.decode(data[:args.context].tolist())
+    continuation = original_tokenizer.decode(data[args.context:args.context+args.continuation].tolist())
+    half_continuation.append(continuation)
+    half_batched_context_tokens.append(context_tokens)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_tokens([args.stop_token])
 stop_ids = [tokenizer.encode(w)[0] for w in [args.stop_token]]
