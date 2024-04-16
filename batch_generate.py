@@ -112,13 +112,13 @@ def main():
                           index_col=0)
          start_idx = len(exsit_df)+start_idx
          file_exsits = True
-         print(f"Start from idx {start_idx}")
     else:
          file_exsits = False
     end_idx = num_sequences_per_proc * (RANK + 1) - 1
     if RANK == (NUM_PROCS - 1):
         end_idx = total_num_sequences - 1
-
+    print(f"Start from idx {start_idx}")
+    print(f"End at idx {end_idx}")
     # Dataset Initialization
     mp_queue = mp.Queue()
     ds_process = mp.Process(target=generate_dataset, args=(args.model, args.batch_size, args.context_size, args.continuation_size, start_idx, end_idx, mp_queue))
