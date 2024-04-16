@@ -1,14 +1,35 @@
 import torch
-
 from transformers import AutoTokenizer, pipeline, StoppingCriteria, StoppingCriteriaList
+import argparse
+import pandas as pd
+from pythia.utils.mmap_dataset import MMapIndexedDataset
+import random
+
+random.seed(42)
+args = argparse.ArgumentParser()
+args.add_argument("--model_size", type=str, default="1.4b")
+args.add_argument("--max_new_tokens", type=int, default=2048)
+args.add_argument("--stop_token", type=str, default="<|stop|>")
+args.add_argument("--context", type=int, default=32)
+args.add_argument("--continuation", type=int, default=16)
+args = args.parse_args()
 
 device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
-model_name = "lambdalabs/pythia-1.4b-deduped-synthetic-instruct"
+model_name = f"lambdalabs/pythia-{args.model_size}-deduped-synthetic-instruct"
 max_new_tokens = 2048
-stop_token = "<|stop|>"
+df = pd.read_csv(f"generate_results/memorization_evals_{args.model_size}-deduped-v0_{args.context}_{args.context+args.continuation}_143000.csv", index_col=0)
 
-
+prefix = 'deduped_merge/document.bin'
+print(prefix)
+buff_size = 2049*1024*2
+print("Building dataset")
+mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
+original_tokenizer = AutoTokenizer.from_pretrained(
+  model_name,
+  revision=f"step{143000}",
+  cache_dir=f"./pythia-{args.model_size}-deduped/step{143000}",
+)
 class KeywordsStoppingCriteria(StoppingCriteria):
     def __init__(self, keywords_ids: list):
         self.keywords = keywords_ids
@@ -24,23 +45,32 @@ class KeywordsStoppingCriteria(StoppingCriteria):
 tokenizer = AutoTokenizer.from_pretrained(
     model_name,
 )
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.add_tokens([stop_token])
 
-stop_ids = [tokenizer.encode(w)[0] for w in [stop_token]]
+memorized_dict = df[df['score'] == 1]
+idx_full_memorization = memorized_dict["idx"].tolist()
+memorized_idx = random.sample(idx_full_memorization, 1000)
+batched_context_tokens = []
+for idx in memorized_idx:
+    data = mmap_ds[idx]
+    context_tokens = original_tokenizer.decode(data[:args.context+args.continuation].tolist())
+    batched_context_tokens.append(context_tokens)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.add_tokens([args.stop_token])
+stop_ids = [tokenizer.encode(w)[0] for w in [args.stop_token]]
 stop_criteria = KeywordsStoppingCriteria(stop_ids)
 
 generator = pipeline(
     "text-generation",
     model=model_name,
     device=device,
-    max_new_tokens=max_new_tokens,
+    max_new_tokens=args.max_new_tokens,
     torch_dtype=torch.float16,
     stopping_criteria=StoppingCriteriaList([stop_criteria]),
 )
 
-example = "Can you give me some tips on how to save money every month."
+example = f"Do you remember the following sentence?\n{batched_context_tokens[0]}. \nReply with only Yes or No"
 text = "Question: {}\nAnswer:".format(example)
+
 
 result = generator(
     text,
