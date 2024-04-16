@@ -47,13 +47,21 @@ tokenizer = AutoTokenizer.from_pretrained(
 )
 
 memorized_dict = df[df['score'] == 1]
+unmemorized_dict = df[df['score'] == 0]
 idx_full_memorization = memorized_dict["idx"].tolist()
+idx_not_full_memorization = unmemorized_dict["idx"].tolist()
 memorized_idx = random.sample(idx_full_memorization, 1000)
-batched_context_tokens = []
+unmemorized_idx = random.sample(idx_not_full_memorization, 1000)
+memorized_batched_context_tokens = []
+unmemorized_batched_context_tokens = []
 for idx in memorized_idx:
     data = mmap_ds[idx]
     context_tokens = original_tokenizer.decode(data[:args.context+args.continuation].tolist())
-    batched_context_tokens.append(context_tokens)
+    memorized_batched_context_tokens.append(context_tokens)
+for idx in unmemorized_idx:
+    data = mmap_ds[idx]
+    context_tokens = original_tokenizer.decode(data[:args.context+args.continuation].tolist())
+    unmemorized_batched_context_tokens.append(context_tokens)
 tokenizer.pad_token = tokenizer.eos_token
 tokenizer.add_tokens([args.stop_token])
 stop_ids = [tokenizer.encode(w)[0] for w in [args.stop_token]]
@@ -68,15 +76,20 @@ generator = pipeline(
     stopping_criteria=StoppingCriteriaList([stop_criteria]),
 )
 
-example = f"Do you remember the following sentence?\n{batched_context_tokens[0]}. \nReply with only Yes or No"
+example = f"Do you remember the following sentence?\n{memorized_batched_context_tokens[0]}. \nReply with only Yes or No"
 text = "Question: {}\nAnswer:".format(example)
-
-
 result = generator(
     text,
     num_return_sequences=1,
 )
-
 output = result[0]["generated_text"]
+print(output)
 
+example = f"Do you remember the following sentence?\n{unmemorized_batched_context_tokens[0]}. \nReply with only Yes or No"
+text = "Question: {}\nAnswer:".format(example)
+result = generator(
+    text,
+    num_return_sequences=1,
+)
+output = result[0]["generated_text"]
 print(output)
