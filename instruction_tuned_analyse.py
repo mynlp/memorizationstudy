@@ -4,8 +4,8 @@ from transformers import AutoTokenizer, pipeline, StoppingCriteria, StoppingCrit
 
 device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
-model_name = "lambdalabs/pythia-70m-deduped-synthetic-instruct"
-max_new_tokens = 1536
+model_name = "lambdalabs/pythia-1.4b-deduped-synthetic-instruct"
+max_new_tokens = 2048
 stop_token = "<|stop|>"
 
 
@@ -39,7 +39,7 @@ generator = pipeline(
     stopping_criteria=StoppingCriteriaList([stop_criteria]),
 )
 
-example = "How can I make an omelette."
+example = "Can you give me some tips on how to save money every month."
 text = "Question: {}\nAnswer:".format(example)
 
 result = generator(
