@@ -108,7 +108,7 @@ def main():
     num_sequences_per_proc = total_num_sequences // NUM_PROCS
     start_idx = num_sequences_per_proc * RANK
     if f"memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv" in os.listdir("generate_results"):
-         exsit_df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}.csv",
+         exsit_df = pd.read_csv(f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size+args.continuation_size}_{args.checkpoint}_{RANK}.csv",
                           index_col=0)
          start_idx = len(exsit_df)+start_idx
          file_exsits = True
