@@ -25,7 +25,7 @@ model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", 
 tokenizer = AutoTokenizer.from_pretrained(
   f"EleutherAI/pythia-{args.model}",
   revision=f"step{args.checkpoint}",
-  cache_dir=f"./pythia-{args.modeld}/step{args.checkpoint}",
+  cache_dir=f"./pythia-{args.model}/step{args.checkpoint}",
 )
 dolly_ja = datasets.load_dataset("databricks/databricks-dolly-15k")
 PROMPT_DICT = {
