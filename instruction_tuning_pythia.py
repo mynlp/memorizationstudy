@@ -6,25 +6,38 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 from peft import get_peft_model, LoraConfig, TaskType
 from transformers import Trainer, TrainingArguments
+import argparse
 
 # model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-160m-deduped-v0",
 #                                              revision="step143000", cache_dir=f"./pythia-160m-deduped/step143000")
 # tokenizer = AutoTokenizer.from_pretrained(f"EleutherAI/pythia-160m-deduped-v0")
-
-model = AutoModelForCausalLM.from_pretrained("cyberagent/open-calm-7b",
+paser = argparse.ArgumentParser()
+paser.add_argument("--batch_size", type=int, default=256)
+paser.add_argument("--context_size", type=int, default=32)
+paser.add_argument("--continuation_size", type=int, default=16)
+paser.add_argument("--model", type=str, default="6.9b-deduped-v0")
+paser.add_argument("--checkpoint", type=int, default=143000)
+paser.add_argument("--rank", type=int, default=0)
+args = paser.parse_args()
+model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f"step{args.checkpoint}",
                                              device_map="auto", torch_dtype=torch.float16)
-tokenizer = AutoTokenizer.from_pretrained("cyberagent/open-calm-7b")
-dolly_ja = datasets.load_dataset("kunishou/databricks-dolly-15k-ja")
+#tokenizer = AutoTokenizer.from_pretrained("cyberagent/open-calm-7b")
+tokenizer = AutoTokenizer.from_pretrained(
+  f"EleutherAI/pythia-{args.model}",
+  revision=f"step{args.checkpoint}",
+  cache_dir=f"./pythia-{args.modeld}/step{args.checkpoint}",
+)
+dolly_ja = datasets.load_dataset("databricks/databricks-dolly-15k")
 PROMPT_DICT = {
     "prompt_input": (
-        "以下は、タスクを説明する指示と、文脈のある入力の組み合わせです。"
-        "要求を適切に満たす応答を書きなさい。\n\n"
+        "The following is the combination of instruction that explaians the task and the context of the input."
+        "Please response with answer that meets the requirements。\n\n"
         "### 指示:\n{instruction}\n\n### 入力:{input}\n\n### 応答:"
     ),
     "prompt_no_input": (
-        "以下は、タスクを説明する指示です。"
-        "要求を適切に満たす応答を書きなさい。\n\n"
-        "### 指示:\n{instruction}\n\n### 応答:"
+        "The following is the instruction that explains the task."
+        "Please response with answer that meets the requirements 要求を適切に満たす応答を書きなさい。\n\n"
+        "### Instruction:\n{instruction}\n\n### Answer:"
     )
 }
 train_dataset = InstructDataset(dolly_ja, tokenizer, PROMPT_DICT)
