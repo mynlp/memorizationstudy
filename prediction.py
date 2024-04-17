@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+torch.set_default_tensor_type(torch.cuda.FloatTensor)
 
 # 参数设置
 time_steps = 120  # 总的时间步
@@ -30,10 +31,10 @@ class BayesianLSTM(PyroModule):
     def __init__(self, input_size=1, hidden_size=50, out_size=1):
         super().__init__()
         self.lstm = PyroModule[nn.LSTM](input_size, hidden_size, batch_first=True).cuda()
-        self.lstm.weight_ih_l0 = PyroSample(dist.Normal(0., torch.FloatTensor(1).cuda()).expand([4 * hidden_size, input_size]).to_event(2))
-        self.lstm.weight_hh_l0 = PyroSample(dist.Normal(0., torch.FloatTensor(1).cuda()).expand([4 * hidden_size, hidden_size]).to_event(2))
+        self.lstm.weight_ih_l0 = PyroSample(dist.Normal(0., 1).expand([4 * hidden_size, input_size]).to_event(2))
+        self.lstm.weight_hh_l0 = PyroSample(dist.Normal(0., 1).expand([4 * hidden_size, hidden_size]).to_event(2))
         self.linear = PyroModule[nn.Linear](hidden_size, out_size)
-        self.linear.weight = PyroSample(dist.Normal(0., torch.FloatTensor(1).cuda()).expand([out_size, hidden_size]).to_event(2))
+        self.linear.weight = PyroSample(dist.Normal(0., 1).expand([out_size, hidden_size]).to_event(2))
 
     def forward(self, x, y=None):
         x, _ = self.lstm(x.cuda())
