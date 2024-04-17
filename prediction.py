@@ -84,4 +84,5 @@ plt.fill_between(np.arange(len(y_test)),
 plt.plot(np.arange(len(y_test)), mean_predictions.squeeze(), label="Predicted Mean")
 plt.plot(np.arange(len(y_test)), y_test.squeeze(), label="True", alpha=0.5)
 plt.legend()
+plt.savefig("bayesian_lstm.png")
 plt.show()
