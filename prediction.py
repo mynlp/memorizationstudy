@@ -37,7 +37,7 @@ fig = px.line(plot_df,
               y="log_energy_consumption",
               color="weekday",
               title="Log of Appliance Energy Consumption vs Time")
-fig.show()
+#fig.show()
 from sklearn.preprocessing import MinMaxScaler
 
 def create_sliding_window(data, sequence_length, stride=1):
@@ -82,7 +82,6 @@ from torch.autograd import Variable
 
 
 class BayesianLSTM(nn.Module):
-
     def __init__(self, n_features, output_length, batch_size):
         super(BayesianLSTM, self).__init__()
 
@@ -145,10 +144,8 @@ learning_rate = 0.01
 bayesian_lstm = BayesianLSTM(n_features=n_features,
                              output_length=output_length,
                              batch_size = batch_size)
-
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(bayesian_lstm.parameters(), lr=learning_rate)
-
 bayesian_lstm.train()
 
 for e in range(1, n_epochs+1):
@@ -205,7 +202,7 @@ fig = px.line(evaluation.loc[evaluation['date'].between('2016-04-14', '2016-04-2
                  y="log_energy_consumption",
                  color="source",
                  title="Log of Appliance Energy Consumption in Wh vs Time")
-fig.show()
+#fig.show()
 n_experiments = 100
 
 test_uncertainty_df = pd.DataFrame()
@@ -259,7 +256,7 @@ fig.update_layout(title='Uncertainty Quantification for Energy Consumption Test 
                    xaxis_title='Time',
                    yaxis_title='log_energy_consumption (log Wh)')
 
-fig.show()
+#fig.show()
 bounds_df = pd.DataFrame()
 
 # Using 99% confidence bounds
