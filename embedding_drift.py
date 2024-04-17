@@ -15,7 +15,7 @@ from tqdm import tqdm
 from umap import UMAP
 
 random.seed(42)
-model_size = "410n"
+model_size = "410m"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT= 143000
 context = 32

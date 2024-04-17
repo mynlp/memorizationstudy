@@ -6,6 +6,7 @@ import copy
 from tqdm import tqdm
 from torch.utils.data import Dataset
 from torch.nn.utils.rnn import pad_sequence
+from transformers import GPTNeoXForCausalLM, AutoTokenizer,  AutoModelForCausalLM,  LogitsProcessorList, MinLengthLogitsProcessor, StoppingCriteriaList,  MaxLengthCriteria
 
 class InstructDataset(Dataset):
     def __init__(self, json_list, tokenizer, PROMPT_DICT, ignore_index=-100):
@@ -98,8 +99,15 @@ class InstructCollator():
             'attention_mask': attention_mask
         }
 
-def indices_check():
-    pass
+def model_load(model_size, CHECKPOINT=143000):
+    model = GPTNeoXForCausalLM.from_pretrained(
+        f"EleutherAI/pythia-{model_size}-deduped-v0",
+        revision=f"step{CHECKPOINT}",
+        cache_dir=f"./pythia-{model_size}-deduped/step{CHECKPOINT}",
+    ).eval()
+    model = model.to_bettertransformer()
+    model = model.cuda()
+    return model
 
 def read_csv(addr):
     csv_sheet = pd.read_csv(addr)
