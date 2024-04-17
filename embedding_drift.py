@@ -12,9 +12,10 @@ import seaborn as sns
 import torch.nn.functional as F
 import matplotlib.cm as cm
 from tqdm import tqdm
+from umap import UMAP
 
 random.seed(42)
-model_size = "1b"
+model_size = "410n"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT= 143000
 context = 32
@@ -125,17 +126,19 @@ for token in range(2, continuation+1):
     plt.figure(figsize=(8, 6))
     all_embeddings = np.stack([embedding.cpu().numpy() for embedding in embeddings], axis=0)
     n_samples = all_embeddings.shape[0]
-    pca = PCA(n_components=2, random_state=42)
-    tsne_embeddings = pca.fit_transform(all_embeddings)
+    #pca = PCA(n_components=2, random_state=42)
+    #tsne_embeddings = pca.fit_transform(all_embeddings)
+    umap = UMAP(n_components=2, random_state=42)
+    tsne_embeddings = umap.fit_transform(all_embeddings)
     plt.xlim(-60, 60)
     plt.ylim(-60, 60)
     for i in range(continuation+1):
         plt.scatter(tsne_embeddings[i, 0], tsne_embeddings[i, 1], color=colors[i], label=f'{i}')
     for i in range(continuation+1):
         print(f"Distance between half and {i}: {distance_list[i]}")
-    plt.title('PCA Visualization')
+    plt.title('UMAP Visualization')
     plt.legend()
-    plt.savefig(f'embedding_figure/embedding_drift_{model_size}_step_{token}.png')
+    plt.savefig(f'embedding_figure/embedding_drift_{model_size}_step_{token}_UMAP.png')
     plt.show()
 print("distance across steps:")
 for i in range(continuation+1):
