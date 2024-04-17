@@ -48,7 +48,7 @@ from pyro.infer.autoguide import AutoDiagonalNormal
 
 
 
-def train(model, X_train, y_train, num_steps=300000):
+def train(model, X_train, y_train, num_steps=130000):
     optim = AdagradRMSProp({"eta": 1e-2})
     svi = SVI(model, guide, optim, loss=Trace_ELBO())
     for step in range(num_steps):
