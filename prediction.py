@@ -33,10 +33,10 @@ class BayesianLSTM(PyroModule):
     def __init__(self, input_size=1, hidden_size=50, out_size=1):
         super().__init__()
         self.lstm = PyroModule[nn.LSTM](input_size, hidden_size, batch_first=True)
-        self.lstm.weight_ih_l0 = PyroSample(dist.Normal(torch.tensor(0.0, device="cuda"),  torch.tensor(1.0, device="cuda")).expand([4 * hidden_size, input_size]).to_event(2))
-        self.lstm.weight_hh_l0 = PyroSample(dist.Normal(torch.tensor(0.0, device="cuda"),  torch.tensor(1.0, device="cuda")).expand([4 * hidden_size, hidden_size]).to_event(2))
+        self.lstm.weight_ih_l0 = nn.PyroParam(dist.Normal(0,  1).expand([4 * hidden_size, input_size]).to_event(2))
+        self.lstm.weight_hh_l0 = nn.PyroParam(dist.Normal(0,  1).expand([4 * hidden_size, hidden_size]).to_event(2))
         self.linear = PyroModule[nn.Linear](hidden_size, out_size)
-        self.linear.weight = PyroSample(dist.Normal(torch.tensor(0.0, device="cuda"),  torch.tensor(1.0, device="cuda")).expand([out_size, hidden_size]).to_event(2))
+        self.linear.weight = nn.PyroParam(dist.Normal(0, 1).expand([out_size, hidden_size]).to_event(2))
         self.cuda()
     def forward(self, x, y=None):
         x, _ = self.lstm(x)
@@ -71,7 +71,7 @@ from pyro.infer import Predictive
 from pyro.infer.autoguide import AutoDiagonalNormal
 
 # 生成后验样本
-predictive = Predictive(model, guide=guide, num_samples=800,
+predictive = Predictive(model, guide=guide, num_samples=8000,
                         return_sites=("_RETURN",))
 samples = predictive(X_test)
 predictions = samples["_RETURN"]
