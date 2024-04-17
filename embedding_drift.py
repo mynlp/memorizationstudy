@@ -130,8 +130,8 @@ for token in range(2, continuation+1):
     #tsne_embeddings = pca.fit_transform(all_embeddings)
     umap = UMAP(n_components=2, random_state=42)
     tsne_embeddings = umap.fit_transform(all_embeddings)
-    plt.xlim(-60, 60)
-    plt.ylim(-60, 60)
+    plt.xlim(-20, 20)
+    plt.ylim(-20, 20)
     for i in range(continuation+1):
         plt.scatter(tsne_embeddings[i, 0], tsne_embeddings[i, 1], color=colors[i], label=f'{i}')
     for i in range(continuation+1):
