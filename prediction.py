@@ -36,7 +36,7 @@ class BayesianLSTM(PyroModule):
         self.linear.weight = PyroSample(dist.Normal(0., 1.).expand([out_size, hidden_size]).to_event(2))
 
     def forward(self, x, y=None):
-        x, _ = self.lstm(x)
+        x, _ = self.lstm(x.cuda())
         x = self.linear(x[:, -1, :])
         return x
 
@@ -50,9 +50,8 @@ from pyro.infer.autoguide import AutoDiagonalNormal
 def train(model, X_train, y_train, num_steps=30000):
     optim = AdagradRMSProp({"eta": 1e-2})
     svi = SVI(model, guide, optim, loss=Trace_ELBO())
-
     for step in range(num_steps):
-        loss = svi.step(X_train, y_train)
+        loss = svi.step(X_train.cuda(), y_train.cuda())
         if step % 100 == 0:
             print(f"Step {step} : loss = {loss}")
 
@@ -60,7 +59,7 @@ def train(model, X_train, y_train, num_steps=30000):
 model = BayesianLSTM()
 model = model.cuda()
 guide = AutoDiagonalNormal(model)
-train(model, X_train, y_train)
+train(model, X_train.cuda(), y_train.cuda())
 
 from pyro.infer import Predictive
 from pyro.infer.autoguide import AutoDiagonalNormal
