@@ -28,7 +28,7 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 datasets = {}
 for i in range(continuation_size+1):
-    if memorized_results[str(i)]["idx"].tolist() > 2000:
+    if len(memorized_results[str(i)]["idx"].tolist()) > 2000:
         idx = random.sample(memorized_results[str(i)]["idx"].tolist(), 2000)
     else:
         idx = random.sample(memorized_results[str(i)]["idx"].tolist())
