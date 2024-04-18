@@ -59,7 +59,7 @@ for model_size in model_size_list:
 
     num_points = 10000
     highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
-    highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
+    highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), context, continuation)
 
     plt.figure(figsize=(12, 8))  # 创建图像
     # by-line plot
