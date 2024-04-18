@@ -22,7 +22,7 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 random.seed(42)
 memorized_entropy_value = []
 unmemorized_entropy_value = []
-model_size_list = ["70m", "160m", "410m", "1b"]
+model_size_list = ["70m", "160m", "410m", "1b", "2.8b"]
 for model_size in model_size_list:
     model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
     CHECKPOINT = 143000
@@ -57,7 +57,7 @@ for model_size in model_size_list:
     idx_not_full_memorization = df_not_full_memorization["idx"].tolist()
     idx_half_memorization = df_half_memorization["idx"].tolist()
 
-    num_points = 1000
+    num_points = 10000
     highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
     highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
 
