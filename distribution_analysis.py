@@ -21,6 +21,7 @@ print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 random.seed(42)
 memorized_entropy_value = []
+half_memorized_entropy_value = []
 unmemorized_entropy_value = []
 model_size_list = ["70m", "160m", "410m", "1b", "2.8b"]
 for model_size in model_size_list:
@@ -59,6 +60,7 @@ for model_size in model_size_list:
 
     num_points = 1000
     highest_probability_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), context, continuation)
+    highest_probability_half_memorized = logits_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), context, continuation)
     highest_probability_unmemorized = logits_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), context, continuation)
 
     plt.figure(figsize=(12, 8))  # 创建图像
@@ -66,16 +68,26 @@ for model_size in model_size_list:
     memorized_values = [np.array([x[i].cpu() for x in highest_probability_memorized])
                         for i in range(num_points)]
     memorized_mean = np.mean(memorized_values, axis=0)
+    half_memorized_values = [np.array([x[i].cpu() for x in highest_probability_half_memorized]
+                                      ) for i in range(num_points)]
+    half_memorized_mean = np.mean(half_memorized_values, axis=0)
     unmemorized_values = [np.array([x[i].cpu() for x in highest_probability_unmemorized])
                           for i in range(num_points)]
     unmemorized_mean = np.mean(unmemorized_values, axis=0)
+
     memorized_entropy_value.append(memorized_mean)
+    half_memorized_entropy_value.append(half_memorized_mean)
     unmemorized_entropy_value.append(unmemorized_mean)
+
     memorized_rolling_means = [moving_average(values, window_size) for values in memorized_values]
+    half_memorized_rolling_means = [moving_average(values, window_size) for values in half_memorized_values]
     unmemorized_rolling_means = [moving_average(values, window_size) for values in unmemorized_values]
     # 用低透明度绘制每一条记忆化数据的线
     for values in memorized_rolling_means:
         plt.plot(range(len(memorized_rolling_means[0])), values, color='red', linestyle='-', alpha=0.1)
+
+    for values in half_memorized_rolling_means:
+        plt.plot(range(len(memorized_rolling_means[0])), values, color='green', linestyle='-', alpha=0.1)
 
     # 用低透明度绘制每一条未记忆化数据的线
     for values in unmemorized_rolling_means:
@@ -83,13 +95,16 @@ for model_size in model_size_list:
 
     # 绘制记忆化和未记忆化数据的平均线
     plt.plot(range(len(memorized_mean)), memorized_mean, color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
+    plt.plot(range(len(half_memorized_mean)), half_memorized_mean, color='darkgreen', linestyle='-', linewidth=2, label='Average Half Memorized')
     plt.plot(range(len(unmemorized_mean)), unmemorized_mean, color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
 
     # 创建图例来说明每个颜色和样式代表的类别
     # 这里解释了平均线的颜色和透明度较低的每条线
     plt.plot([], [], color='red', linestyle='-', alpha=0.1, label='Individual Memorized Instances')
     plt.plot([], [], color='blue', linestyle='-', alpha=0.1, label='Individual Unmemorized Instances')
+    plt.plot([], [], color='green', linestyle='-', alpha=0.1, label='Individual Half Memorized Instances')
     plt.plot([], [], color='darkred', linestyle='-', linewidth=2, label='Average Memorized')
+    plt.plot([], [], color='darkgreen', linestyle='-', linewidth=2, label='Average Half Memorized')
     plt.plot([], [], color='darkblue', linestyle='-', linewidth=2, label='Average Unmemorized')
     # 添加标题和坐标轴标签
     plt.title('Comparison of Memorized and Unmemorized Data Over Time')
@@ -100,6 +115,9 @@ for model_size in model_size_list:
     plt.show()
 f = open("memorized_entropy_value.pkl", "wb")
 pickle.dump(memorized_entropy_value, f)
+f.close()
+f = open("half_memorized_entropy_value.pkl", "wb")
+pickle.dump(half_memorized_entropy_value, f)
 f.close()
 f = open("unmemorized_entropy_value.pkl", "wb")
 pickle.dump(unmemorized_entropy_value, f)
@@ -114,15 +132,22 @@ plt.xlabel('Model Size')
 plt.ylabel('Entropy')
 plt.legend()
 plt.savefig(f'entropy_across_size.png')
+
 plt.figure(figsize=(12, 8))
-plt.plot(range(30, context+continuation), memorized_entropy_value[0][29:], color='red', label=f'70m_memorized')
-plt.plot(range(30, context+continuation), unmemorized_entropy_value[0][29:], color='blue', label=f'70m_unmemorized')
-plt.plot(range(30, context+continuation), memorized_entropy_value[1][29:], color='darkred', label=f'160m_memorized')
-plt.plot(range(30, context+continuation), unmemorized_entropy_value[1][29:], color='darkblue', label=f'160m_unmemorized')
-plt.plot(range(30, context+continuation), memorized_entropy_value[2][29:], color='green', label=f'410m_memorized')
-plt.plot(range(30, context+continuation), unmemorized_entropy_value[2][29:], color='yellow', label=f'410m_unmemorized')
-plt.plot(range(30, context+continuation), memorized_entropy_value[3][29:], color='purple', label=f'1b_memorized')
-plt.plot(range(30, context+continuation), unmemorized_entropy_value[3][29:], color='orange', label=f'1b_unmemorized')
+labels = ['70m', '160m', '410m', '1b', '2.8b']
+memorized_entropy_values = [memorized_entropy_value[i][19:] for i in range(5)]
+half_memorized_entropy_values = [half_memorized_entropy_value[i][19:] for i in range(5)]
+unmemorized_entropy_values = [unmemorized_entropy_value[i][19:] for i in range(5)]
+colors = ['red', 'green', 'blue', 'darkred', 'darkgreen', 'darkblue', 'purple', 'orange', 'yellow', 'brown', 'pink',
+          'gray', 'olive', 'cyan', 'magenta']
+x_values = range(20, context + continuation)
+
+for i in range(len(labels)):
+    plt.plot(x_values, memorized_entropy_values[i], color=colors[3 * i], label=f'{labels[i]}_memorized')
+    plt.plot(x_values, half_memorized_entropy_values[i], color=colors[3 * i + 1], label=f'{labels[i]}_half_memorized')
+    plt.plot(x_values, unmemorized_entropy_values[i], color=colors[3 * i + 2], label=f'{labels[i]}_unmemorized')
+
+plt.legend(loc='best')
 plt.title('Entropy at Each Token for Memorized and Unmemorized Data')
 plt.xlabel('Token Position')
 plt.ylabel('Entropy')
@@ -130,32 +155,6 @@ plt.legend()
 plt.savefig(f'entropy_across_steps.png')
 plt.show()
 
-# code for mean and std plot
-# # 使用不同的颜色和样式绘制两类数据
-
-#
-# # 计算平均值和方差
-#memorized_mean = np.mean(memorized_values, axis=0)
-# memorized_std = np.std(memorized_values, axis=0)
-#unmemorized_mean = np.mean(unmemorized_values, axis=0)
-# unmemorized_std = np.std(unmemorized_values, axis=0)
-#
-# # 绘制平均值
-
-#
-# # 添加阴影显示方差
-# plt.fill_between(range(16), memorized_mean - memorized_std, memorized_mean + memorized_std,
-#                  color='blue', alpha=0.2)
-# plt.fill_between(range(16), unmemorized_mean - unmemorized_std, unmemorized_mean + unmemorized_std,
-#                  color='red', alpha=0.2)
-#
-# # 创建图例来说明每个颜色和样式代表的类别
-# plt.plot([], [], color='blue', linestyle='-', label='Category 1')  # 类别1的图例
-# plt.plot([], [], color='red', linestyle='-', label='Category 2')  # 类别2的图例
-#
-# plt.legend()  # 显示图例
-# plt.savefig(f'distribution.png')
-# plt.show()  # 显示图像
 
 
 
