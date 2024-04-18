@@ -201,7 +201,6 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
                 model_outputs = model.generate(temp_context_tokens, temperature=0.0, top_k=0, top_p=0,
                                                max_length=idx + 1,
                                                min_length=idx + 1)
-                pdb.set_trace()
                 predicted_continuation[:, idx-context_size] = model_outputs[0][:,-1].squeeze()
                 logits = model_outputs["scores"]
                 probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
