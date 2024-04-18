@@ -203,7 +203,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
                                                min_length=idx + 1)
                 predicted_continuation[:, idx-context_size] = model_outputs[0][:,-1].squeeze()
                 logits = model_outputs["scores"]
-                probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
+                probability_scores = torch.nn.functional.softmax(logits[0], dim=1)
                 entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
                 batched_highest_entropy_at_idx.append(entropy_scores)
         # run model and get logits
