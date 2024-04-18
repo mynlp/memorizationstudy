@@ -198,11 +198,11 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
                 batched_highest_entropy_at_idx.append(entropy_scores)
             else:
                 temp_context_tokens = torch.cat((batch_context_tokens, predicted_continuation[:, :idx - context_size]), dim=1)
-                model_outputs = model.generate(batch_context_tokens, temperature=0.0, top_k=0, top_p=0,
+                model_outputs = model.generate(temp_context_tokens, temperature=0.0, top_k=0, top_p=0,
                                                max_length=idx + 1,
                                                min_length=idx + 1)
                 pdb.set_trace()
-                temp_context_tokens[:, idx-context_size] = model_outputs[0][:,0]
+                predicted_continuation[:, idx-context_size] = model_outputs[0][:,-1].squeeze()
                 logits = model_outputs["scores"]
                 probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
                 entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
