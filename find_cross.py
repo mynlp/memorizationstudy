@@ -34,7 +34,7 @@ for i in range(continuation_size+1):
         idx = random.sample(memorized_results[str(i)]["idx"].tolist())
     context_tokens = []
     for j in tqdm(idx):
-        data = mmap_ds[i]
+        data = mmap_ds[j]
         context_tokens.append(data[:context_size+continuation_size].tolist())
     datasets[str(i)] = torch.tensor(context_tokens)
     torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{continuation_size}_{i}_{model_size}.pt")
