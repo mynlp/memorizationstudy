@@ -13,7 +13,6 @@ def moving_average(data, window_size):
     window = np.ones(int(window_size)) / float(window_size)
     return np.convolve(data, window, 'same')
 
-
 prefix = 'deduped_merge/document.bin'
 print(prefix)
 buff_size = 2049*1024*2
@@ -134,7 +133,6 @@ plt.legend()
 plt.savefig(f'entropy_across_size.png')
 
 plt.figure(figsize=(12, 8))
-labels = ['70m', '160m', '410m', '1b', '2.8b']
 memorized_entropy_values = [memorized_entropy_value[i][19:] for i in range(5)]
 half_memorized_entropy_values = [half_memorized_entropy_value[i][19:] for i in range(5)]
 unmemorized_entropy_values = [unmemorized_entropy_value[i][19:] for i in range(5)]
@@ -142,10 +140,10 @@ colors = ['red', 'green', 'blue', 'darkred', 'darkgreen', 'darkblue', 'purple', 
           'gray', 'olive', 'cyan', 'magenta']
 x_values = range(20, context + continuation)
 
-for i in range(len(labels)):
-    plt.plot(x_values, memorized_entropy_values[i], color=colors[3 * i], label=f'{labels[i]}_memorized')
-    plt.plot(x_values, half_memorized_entropy_values[i], color=colors[3 * i + 1], label=f'{labels[i]}_half_memorized')
-    plt.plot(x_values, unmemorized_entropy_values[i], color=colors[3 * i + 2], label=f'{labels[i]}_unmemorized')
+for i in range(len(model_size_list)):
+    plt.plot(x_values, memorized_entropy_values[i], color=colors[3 * i], label=f'{model_size_list[i]}_memorized')
+    plt.plot(x_values, half_memorized_entropy_values[i], color=colors[3 * i + 1], label=f'{model_size_list[i]}_half_memorized')
+    plt.plot(x_values, unmemorized_entropy_values[i], color=colors[3 * i + 2], label=f'{model_size_list[i]}_unmemorized')
 
 plt.legend(loc='best')
 plt.title('Entropy at Each Token for Memorized and Unmemorized Data')
