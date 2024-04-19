@@ -60,7 +60,6 @@ for i in tqdm(range(continuation_size+1)):
                        max_length=context_size + continuation_size,
                        min_length=context_size + continuation_size)
         start = end
-        pdb.set_trace()
         embeddings =  model_outputs.hidden_states[-1][-1]
         embedding_list.append(embeddings)
     embeddings = torch.cat(embedding_list, dim=0)
