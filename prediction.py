@@ -8,9 +8,6 @@ from models import *
 from torch.utils.data import DataLoader
 
 def format_example(example, model):
-    model_outputs = model.generate(example["token"][:, :context], temperature=0.0, top_k=0, top_p=0, max_length=context + continuation,
-                   min_length=context + continuation)
-    embeddings = model_outputs.hidden_states[-1][-1]
     tokens, labels, embeddings = example['token'], example['label'], embeddings
     return {'input_ids': tokens, 'labels': labels, 'embeddings': embeddings}
 
@@ -46,8 +43,10 @@ from datasets import DatasetDict
 dataset = {"token": [], "label": []}
 for i in range(continuation):
     local_data = torch.load(f"cross_remembered/context_tokens_{continuation}_{i}_{model_size}.pt")
+    local_embedding = torch.load(f"cross_remembered/embeddings_{continuation}_{i}_{model_size}.pt")
     dataset["token"].append(local_data)
     dataset["label"].append(torch.zeros(local_data.shape[0])+ i/continuation)
+    dataset["embedding"].append(local_embedding)
 model = GPTNeoXForCausalLM.from_pretrained(
         model_name,
         use_cache=False,
@@ -63,6 +62,7 @@ model.generation_config.return_dict_in_generate = True
 
 dataset["token"] = torch.cat(dataset["token"])
 dataset["label"] = torch.cat(dataset["label"])
+dataset["embedding"] = torch.cat(dataset["embedding"])
 dataset = Dataset.from_dict(dataset)
 splited_dataset = dataset.train_test_split(test_size=0.2)
 embedding_size = model.config.hidden_size
@@ -81,16 +81,16 @@ test_dataloader = DataLoader(test_dataset.map(format_example, model), batch_size
 
 # Training loop
 for i, data in tqdm(enumerate(train_dataloader)):
-    with torch.no_grad():
-        prediciton_labels = data["label"].to(device)
-        tokens = torch.stack(data["token"], dim=1).to(device)
-        model_outputs = model.generate(tokens[:, :context], temperature=0.0, top_k=0, top_p=0, max_length=context + continuation, min_length=context + continuation)
-        embeddings = model_outputs.hidden_states[-1][-1]
+    # with torch.no_grad():
+    #     prediciton_labels = data["label"].to(device)
+    #     tokens = torch.stack(data["token"], dim=1).to(device)
+    #     model_outputs = model.generate(tokens[:, :context], temperature=0.0, top_k=0, top_p=0, max_length=context + continuation, min_length=context + continuation)
+        #embeddings = model_outputs.hidden_states[-1][-1]
         #context_embedding = model_outputs.hidden_states[0][-1]
         #embedding = torch.stack([x[-1] for x in model_outputs.hidden_states[1:]]).mean(0).squeeze()
         #embeddings = torch.concat([context_embedding, embedding], dim=1)
     # Forward pass through the predictor
-    scores = predictor(embeddings)
+    scores = predictor(data["embeddings"])
 
     # Compute the loss
     loss = loss_fn(scores.squeeze(), data["label"].float().to(device))
