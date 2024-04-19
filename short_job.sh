@@ -12,5 +12,5 @@ if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
 
-python distribution_analysis.py
+python find_across.py
 #python batch_generate.py
