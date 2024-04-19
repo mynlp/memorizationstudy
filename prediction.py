@@ -40,7 +40,7 @@ CHECKPOINT = 143000
 context = 32
 continuation = 16
 from datasets import DatasetDict
-dataset = {"token": [], "label": []}
+dataset = {"token": [], "label": [], "embedding": []}
 for i in range(continuation):
     local_data = torch.load(f"cross_remembered/context_tokens_{continuation}_{i}_{model_size}.pt")
     local_embedding = torch.load(f"cross_remembered/embeddings_{continuation}_{i}_{model_size}.pt")
