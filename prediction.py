@@ -90,7 +90,7 @@ for i, data in tqdm(enumerate(train_dataloader)):
     scores = predictor(embeddings)
 
     # Compute the loss
-    loss = loss_fn(scores.squeeze(), data["label"].to(device))
+    loss = loss_fn(scores.squeeze(), data["label"].float().to(device))
 
     # Backprop and optimize
     optimizer.zero_grad()
