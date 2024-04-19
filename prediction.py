@@ -8,8 +8,8 @@ from models import *
 from torch.utils.data import DataLoader
 
 def format_example(example):
-    tokens, labels, embeddings = example['token'], example['label'], embeddings
-    return {'input_ids': tokens, 'labels': labels, 'embeddings': embeddings}
+    tokens, labels, embeddings = example['token'], example['label'], example["embedding"]
+    return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings}
 
 def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
@@ -90,7 +90,7 @@ for i, data in tqdm(enumerate(train_dataloader)):
         #embedding = torch.stack([x[-1] for x in model_outputs.hidden_states[1:]]).mean(0).squeeze()
         #embeddings = torch.concat([context_embedding, embedding], dim=1)
     # Forward pass through the predictor
-    scores = predictor(data["embeddings"])
+    scores = predictor(data["embedding"])
 
     # Compute the loss
     loss = loss_fn(scores.squeeze(), data["label"].float().to(device))
