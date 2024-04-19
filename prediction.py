@@ -15,10 +15,13 @@ def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
     total_loss = 0
     with torch.no_grad():  # Do not calculate gradient since we are only evaluating
-        for tokens, labels in dataloader:
-            embeddings = model.generate(input_ids=tokens.cuda())
+        for data in dataloader:
+            tokens = torch.stack(data["token"], dim=1).to(device)
+            model_outputs = model.generate(tokens[:, :context], temperature=0.0, top_k=0, top_p=0,
+                                           max_length=context + continuation, min_length=context + continuation)
+            embeddings = model_outputs.hidden_states[-1][-1].to(device)
             scores = predictor(embeddings)
-            loss = loss_fn(scores.squeeze(), labels.float().cuda())
+            loss = loss_fn(scores.squeeze(), data["label"].to(device))
             total_loss += loss.item()
     return total_loss / len(dataloader)
 
@@ -31,6 +34,7 @@ def infer(predictor, tokens):
 
 random.seed(42)
 model_size = "70m"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT = 143000
 context = 32
@@ -47,7 +51,7 @@ model = GPTNeoXForCausalLM.from_pretrained(
         revision=f'step143000',
     ).eval()
 model = model.to_bettertransformer()
-model = model.cuda()
+model = model.to(device)
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
 model.generation_config.output_attentions = True
@@ -60,7 +64,7 @@ dataset = Dataset.from_dict(dataset)
 splited_dataset = dataset.train_test_split(test_size=0.2)
 embedding_size = model.config.hidden_size
 hidden_size = 64  # You can choose the hidden size according to your needs
-predictor = Predictor(embedding_size, hidden_size)
+predictor = Predictor(embedding_size, hidden_size).to(device)
 
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
@@ -75,8 +79,8 @@ test_dataloader = DataLoader(test_dataset.map(format_example), batch_size=32)
 # Training loop
 for i, data in tqdm(enumerate(train_dataloader)):
     with torch.no_grad():
-        prediciton_labels = data["label"]
-        tokens = torch.stack(data["token"], dim=1)
+        prediciton_labels = data["label"].to(device)
+        tokens = torch.stack(data["token"], dim=1).to(device)
         model_outputs = model.generate(tokens[:, :context], temperature=0.0, top_k=0, top_p=0, max_length=context + continuation, min_length=context + continuation)
         embeddings = model_outputs.hidden_states[-1][-1]
         #context_embedding = model_outputs.hidden_states[0][-1]
@@ -86,7 +90,7 @@ for i, data in tqdm(enumerate(train_dataloader)):
     scores = predictor(embeddings)
 
     # Compute the loss
-    loss = loss_fn(scores.squeeze(), data["label"])
+    loss = loss_fn(scores.squeeze(), data["label"].to(device))
 
     # Backprop and optimize
     optimizer.zero_grad()
