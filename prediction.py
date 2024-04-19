@@ -77,23 +77,14 @@ train_dataloader = DataLoader(train_dataset.map(format_example), shuffle=True, b
 
 # Prepare test dataloader
 test_dataset = splited_dataset['test']
-test_dataloader = DataLoader(test_dataset.map(format_example, model), batch_size=32)
+test_dataloader = DataLoader(test_dataset.map(format_example), batch_size=32)
 
 # Training loop
 for i, data in tqdm(enumerate(train_dataloader)):
-    # with torch.no_grad():
-    #     prediciton_labels = data["label"].to(device)
-    #     tokens = torch.stack(data["token"], dim=1).to(device)
-    #     model_outputs = model.generate(tokens[:, :context], temperature=0.0, top_k=0, top_p=0, max_length=context + continuation, min_length=context + continuation)
-        #embeddings = model_outputs.hidden_states[-1][-1]
-        #context_embedding = model_outputs.hidden_states[0][-1]
-        #embedding = torch.stack([x[-1] for x in model_outputs.hidden_states[1:]]).mean(0).squeeze()
-        #embeddings = torch.concat([context_embedding, embedding], dim=1)
-    # Forward pass through the predictor
-    scores = predictor(data["embedding"])
-
-    # Compute the loss
-    loss = loss_fn(scores.squeeze(), data["label"].float().to(device))
+    embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
+    scores = predictor(embedding.float().cuda())
+        # Compute the loss
+    loss = loss_fn(scores.squeeze(), data["labels"].float().to(device))
 
     # Backprop and optimize
     optimizer.zero_grad()
