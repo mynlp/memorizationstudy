@@ -7,9 +7,12 @@ from tqdm import tqdm
 from models import *
 from torch.utils.data import DataLoader
 
-def format_example(example):
-    tokens, labels = example['token'], example['label']
-    return {'input_ids': tokens, 'labels': labels}
+def format_example(example, model):
+    model_outputs = model.generate(example["token"][:, :context], temperature=0.0, top_k=0, top_p=0, max_length=context + continuation,
+                   min_length=context + continuation)
+    embeddings = model_outputs.hidden_states[-1][-1]
+    tokens, labels, embeddings = example['token'], example['label'], embeddings
+    return {'input_ids': tokens, 'labels': labels, 'embeddings': embeddings}
 
 def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
@@ -70,11 +73,11 @@ predictor = Predictor(embedding_size, hidden_size).to(device)
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.Adam(predictor.parameters())
 train_dataset = splited_dataset['train']
-train_dataloader = DataLoader(train_dataset.map(format_example), shuffle=True, batch_size=32)
+train_dataloader = DataLoader(train_dataset.map(format_example, model), shuffle=True, batch_size=32)
 
 # Prepare test dataloader
 test_dataset = splited_dataset['test']
-test_dataloader = DataLoader(test_dataset.map(format_example), batch_size=32)
+test_dataloader = DataLoader(test_dataset.map(format_example, model), batch_size=32)
 
 # Training loop
 for i, data in tqdm(enumerate(train_dataloader)):
