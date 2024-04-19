@@ -53,6 +53,7 @@ for i in tqdm(range(continuation_size+1)):
         context_tokens.append(data[:context_size+continuation_size].tolist())
     start = 0
     embedding_list = []
+    context_tokens = torch.tensor(context_tokens)
     for batch_idx in tqdm(range(0,num_samples, batch_size)):
         end = min(start+batch_size, num_samples)
         model_outputs = model.generate(context_tokens[start:end, :context_size], temperature=0.0, top_k=0, top_p=0,
@@ -63,7 +64,7 @@ for i in tqdm(range(continuation_size+1)):
         embeddings =  model_outputs.hidden_states[-1][-1]
         embedding_list.append(embeddings)
     embeddings = torch.cat(embedding_list, dim=0)
-    datasets[str(i)] = torch.tensor(context_tokens)
+    datasets[str(i)] = context_tokens
     torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{continuation_size}_{i}_{model_size}.pt")
     torch.save(embeddings, f"cross_remembered/embeddings_{continuation_size}_{i}_{model_size}.pt")
 #
