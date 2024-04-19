@@ -41,7 +41,7 @@ for i in range(continuation_size+1):
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 datasets = {}
-for i in range(continuation_size+1):
+for i in tqdm(range(continuation_size+1)):
     if len(memorized_results[str(i)]["idx"].tolist()) > num_samples:
         idx = random.sample(memorized_results[str(i)]["idx"].tolist(), num_samples)
     else:
@@ -52,7 +52,7 @@ for i in range(continuation_size+1):
         context_tokens.append(data[:context_size+continuation_size].tolist())
     start = 0
     embedding_list = []
-    for batch_idx in range(0,num_samples, batch_size):
+    for batch_idx in tqdm(range(0,num_samples, batch_size)):
         end = min(start+batch_size, num_samples)
         model_outputs = model.generate(context_tokens[start:end, :context_size], temperature=0.0, top_k=0, top_p=0,
                        max_length=context_size + continuation_size,
