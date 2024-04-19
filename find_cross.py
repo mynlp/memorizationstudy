@@ -5,7 +5,9 @@ import random
 from tqdm import tqdm
 from transformers import AutoTokenizer
 import argparse
+from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 random.seed(42)
 model_size = "70m"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
@@ -19,8 +21,20 @@ prefix = 'deduped_merge/document.bin'
 context_size = 32
 continuation_size = 16
 results = pd.read_csv(f"generate_results/memorization_evals_{model_size}-deduped-v0_{context_size}_{context_size+continuation_size}_143000.csv", index_col=0)
-
-
+model = GPTNeoXForCausalLM.from_pretrained(
+        model_name,
+        use_cache=False,
+        revision=f'step143000',
+    ).eval()
+batch_size = 100
+model = model.to_bettertransformer()
+model = model.to(device)
+model.generation_config.pad_token_id = model.generation_config.eos_token_id
+model.generation_config.output_hidden_states = True
+model.generation_config.output_attentions = True
+model.generation_config.output_scores = True
+model.generation_config.return_dict_in_generate = True
+num_samples = 2000
 memorized_results = {}
 for i in range(continuation_size+1):
     memorized_results[str(i)] = results[results['score'] == i/continuation_size]
@@ -28,16 +42,28 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 datasets = {}
 for i in range(continuation_size+1):
-    if len(memorized_results[str(i)]["idx"].tolist()) > 2000:
-        idx = random.sample(memorized_results[str(i)]["idx"].tolist(), 2000)
+    if len(memorized_results[str(i)]["idx"].tolist()) > num_samples:
+        idx = random.sample(memorized_results[str(i)]["idx"].tolist(), num_samples)
     else:
         idx = random.sample(memorized_results[str(i)]["idx"].tolist())
     context_tokens = []
     for j in tqdm(idx):
         data = mmap_ds[j]
         context_tokens.append(data[:context_size+continuation_size].tolist())
+    start = 0
+    embedding_list = []
+    for batch_idx in range(0,num_samples, batch_size):
+        end = min(start+batch_size, num_samples)
+        model_outputs = model.generate(context_tokens[start:end, :context_size], temperature=0.0, top_k=0, top_p=0,
+                       max_length=context_size + continuation_size,
+                       min_length=context_size + continuation_size)
+        start = end
+        embeddings =  model_outputs.hidden_states[-1][-1]
+        embedding_list.append(embeddings)
+    embeddings = torch.cat(embedding_list, dim=0)
     datasets[str(i)] = torch.tensor(context_tokens)
     torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{continuation_size}_{i}_{model_size}.pt")
+    torch.save(embeddings, f"cross_remembered/embeddings_{continuation_size}_{i}_{model_size}.pt")
 #
 # paser = argparse.ArgumentParser()
 # paser.add_argument("--distribution_idx", type=int, default=0)

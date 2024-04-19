@@ -73,7 +73,7 @@ predictor = Predictor(embedding_size, hidden_size).to(device)
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.Adam(predictor.parameters())
 train_dataset = splited_dataset['train']
-train_dataloader = DataLoader(train_dataset.map(format_example, model), shuffle=True, batch_size=32)
+train_dataloader = DataLoader(train_dataset.map(format_example), shuffle=True, batch_size=32)
 
 # Prepare test dataloader
 test_dataset = splited_dataset['test']
