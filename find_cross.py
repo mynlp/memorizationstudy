@@ -53,7 +53,7 @@ for i in tqdm(range(continuation_size+1)):
         context_tokens.append(data[:context_size+continuation_size].tolist())
     start = 0
     embedding_list = []
-    context_tokens = torch.tensor(context_tokens)
+    context_tokens = torch.tensor(context_tokens).to(device)
     for batch_idx in tqdm(range(0,num_samples, batch_size)):
         end = min(start+batch_size, num_samples)
         model_outputs = model.generate(context_tokens[start:end, :context_size], temperature=0.0, top_k=0, top_p=0,
