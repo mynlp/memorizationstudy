@@ -59,9 +59,9 @@ for i in tqdm(range(continuation_size+1)):
                        max_length=context_size + continuation_size,
                        min_length=context_size + continuation_size)
         start = end
+        pdb.set_trace()
         embeddings =  model_outputs.hidden_states[-1][-1]
         embedding_list.append(embeddings)
-        pdb.set_trace()
     embeddings = torch.cat(embedding_list, dim=0)
     datasets[str(i)] = torch.tensor(context_tokens)
     torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{continuation_size}_{i}_{model_size}.pt")
