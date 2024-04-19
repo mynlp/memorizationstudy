@@ -5,6 +5,7 @@ import random
 from tqdm import tqdm
 from transformers import AutoTokenizer
 import argparse
+import pdb
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -60,6 +61,7 @@ for i in tqdm(range(continuation_size+1)):
         start = end
         embeddings =  model_outputs.hidden_states[-1][-1]
         embedding_list.append(embeddings)
+        pdb.set_trace()
     embeddings = torch.cat(embedding_list, dim=0)
     datasets[str(i)] = torch.tensor(context_tokens)
     torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{continuation_size}_{i}_{model_size}.pt")
