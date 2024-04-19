@@ -42,7 +42,7 @@ dataset = Dataset.from_dict(dataset)
 splited_dataset = dataset.train_test_split(test_size=0.2)
 embedding_size = model.config.n_embd
 hidden_size = 64  # You can choose the hidden size according to your needs
-predictor = Predictor(embedding_size, hidden_size).cuda()
+predictor = Predictor(embedding_size, hidden_size)
 
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
@@ -61,12 +61,12 @@ for i, (tokens, labels) in tqdm(enumerate(train_dataloader), total=len(train_dat
                                        max_length=context + continuation, min_length=context + continuation)
         context_embedding = model_outputs.hidden_states[0][-1]
         embedding = torch.stack([x[-1] for x in model_outputs.hidden_states[1:]]).mean(0).squeeze()
-        embeddings = torch.concat([context_embedding, embedding], dim=1).cuda()
+        embeddings = torch.concat([context_embedding, embedding], dim=1)
     # Forward pass through the predictor
     scores = predictor(embeddings)
 
     # Compute the loss
-    loss = loss_fn(scores.squeeze(), labels.float().cuda())
+    loss = loss_fn(scores.squeeze(), labels.float())
 
     # Backprop and optimize
     optimizer.zero_grad()
