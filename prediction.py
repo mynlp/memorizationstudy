@@ -7,7 +7,7 @@ from tqdm import tqdm
 from models import *
 from torch.utils.data import DataLoader
 
-def format_example(example, model):
+def format_example(example):
     tokens, labels, embeddings = example['token'], example['label'], embeddings
     return {'input_ids': tokens, 'labels': labels, 'embeddings': embeddings}
 
