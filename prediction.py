@@ -86,7 +86,7 @@ loss_fn = nn.MSELoss()
 optimizer = torch.optim.Adam(predictor.parameters())
 train_dataset = splited_dataset['train']
 if f"{args.model_size}.arrow" not in os.listdir("train_cache"):
-    train_dataset = train_dataset.map(format_example, batched=True, num_proc=8, cache_file_name=f"train_cache/{args.model_size}.arrow")
+    train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
 else:
     train_dataset = Dataset.load_from_disk(f"train_cache/{args.model_size}.arrow")
 train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
