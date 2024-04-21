@@ -110,5 +110,6 @@ for i, data in tqdm(enumerate(train_dataloader)):
     loss.backward()
     optimizer.step()
 validation_loss, accuracy = evaluate(predictor, test_dataloader, )
+torch.save(predictor.state_dict(), f"saved_models/predictor_{args.model_size}.pt")
 print(f'Validation Loss: {validation_loss:.4f}')
 print(f'Accuracy: {accuracy:.4f}')
