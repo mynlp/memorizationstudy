@@ -85,11 +85,13 @@ predictor = Predictor(embedding_size, hidden_size).to(device)
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.Adam(predictor.parameters())
 train_dataset = splited_dataset['train']
-train_dataloader = DataLoader(train_dataset.map(format_example), shuffle=True, batch_size=32)
+train_dataset = train_dataset.map(format_example, batched=True, num_proc=8)
+train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
 
 # Prepare test dataloader
 test_dataset = splited_dataset['test']
-test_dataloader = DataLoader(test_dataset.map(format_example), batch_size=32)
+test_dataset = test_dataset.map(format_example, batched=True, num_proc=8)
+test_dataloader = DataLoader(test_dataset, batch_size=32)
 
 # Training loop
 for i, data in tqdm(enumerate(train_dataloader)):
