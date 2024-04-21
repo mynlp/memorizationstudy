@@ -54,8 +54,8 @@ context = 32
 from datasets import DatasetDict
 dataset = {"token": [], "label": [], "embedding": []}
 for i in range(args.continuation):
-    local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{model_size}.pt")
-    local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{model_size}.pt")
+    local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{model_size}.pt", map_location=device)
+    local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{model_size}.pt", map_location=device)
     dataset["token"].append(local_data)
     dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
     dataset["embedding"].append(local_embedding)
