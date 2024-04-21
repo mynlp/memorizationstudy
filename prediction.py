@@ -39,9 +39,8 @@ def infer(predictor, embeddings, repeats=10):
         for _ in range(repeats):
             scores = predictor.infer(embeddings.float().cuda())
             scores_list.append(scores.squeeze())
-    pdb.set_trace()
     scores_arr = torch.stack(scores_list, dim=1)
-    return scores_arr.mean(dim=0), scores_arr.var(dim=0)
+    return scores_arr.mean(dim=1), scores_arr.var(dim=1)
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="70m")
