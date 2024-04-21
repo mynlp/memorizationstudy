@@ -15,3 +15,11 @@ class Predictor(nn.Module):
         output = self.relu(output)
         scores = self.linear2(output)
         return scores
+
+    def infer(self, embeddings):
+        output, _ = self.lstm(embeddings)
+        output = nn.functional.dropout(output[:, -1, :], p=0.5)
+        output = self.linear1(output)
+        output = self.relu(output)
+        scores = self.linear2(output)
+        return scores
