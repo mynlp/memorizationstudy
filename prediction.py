@@ -25,6 +25,7 @@ def evaluate(predictor, dataloader, counter=0):
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             scores_mean, standard = infer(predictor, embedding)
             loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
+            pdb.set_trace()
             in_range = ((data["labels"].float() > (scores_mean - standard)) &
                         (data["labels"].float() < (scores_mean + standard))).float()
             counter += torch.sum(in_range).item()
@@ -38,9 +39,8 @@ def infer(predictor, embeddings, repeats=10):
         for _ in range(repeats):
             scores = predictor.infer(embeddings.float().cuda())
             scores_list.append(scores.squeeze())
-    pdb.set_trace()
-    scores_arr = torch.tensor(scores_list)
-    return scores_arr.mean(), scores_arr.var()
+    scores_arr = torch.stack(scores_list, dim=1)
+    return scores_arr.mean(dim=0), scores_arr.var(dim=0)
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="70m")
