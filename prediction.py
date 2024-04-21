@@ -34,7 +34,7 @@ def infer(predictor, embeddings, repeats=10):
     scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
         for _ in range(repeats):
-            scores = predictor.infer(embeddings)
+            scores = predictor.infer(embeddings.float().cuda())
             scores_list.append(scores.squeeze())
     scores_arr = torch.tensor(scores_list)
     return scores_arr.mean(), scores_arr.var()
