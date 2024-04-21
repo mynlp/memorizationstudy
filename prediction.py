@@ -88,7 +88,7 @@ train_dataset = splited_dataset['train']
 if f"{args.model_size}.arrow" not in os.listdir("train_cache"):
     train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
 else:
-    train_dataset = Dataset.load_from_disk(f"train_cache/{args.model_size}.arrow")
+    train_dataset = Dataset.from_file(f"train_cache/{args.model_size}.arrow")
 train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
 
 # Prepare test dataloader
@@ -96,7 +96,7 @@ test_dataset = splited_dataset['test']
 if f"{args.model_size}.arrow" not in os.listdir("test_cache"):
     test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}.arrow")
 else:
-    test_dataset = Dataset.load_from_disk(f"test_cache/{args.model_size}.arrow")
+    test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
 test_dataloader = DataLoader(test_dataset, batch_size=32)
 
 # Training loop
