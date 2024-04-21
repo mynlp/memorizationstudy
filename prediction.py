@@ -116,6 +116,7 @@ for _ in range(args.epoch):
         loss.backward()
         optimizer.step()
     validation_loss, accuracy = evaluate(predictor, test_dataloader)
+    predictor.train()
     print(f'Validation Loss: {validation_loss:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
     if accuracy > best_accuracy:
