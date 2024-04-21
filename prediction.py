@@ -24,7 +24,6 @@ def evaluate(predictor, dataloader, counter=0):
             data_size += len(data["labels"])
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             scores_mean, standard = infer(predictor, embedding)
-            pdb.set_trace()
             loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
             in_range = ((data["labels"].float().cuda() > (scores_mean - standard)) &(data["labels"].float().cuda() < (scores_mean + standard))).float()
             counter += torch.sum(in_range).item()
