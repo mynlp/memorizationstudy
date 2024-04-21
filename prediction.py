@@ -7,7 +7,7 @@ from tqdm import tqdm
 from models import *
 from torch.utils.data import DataLoader
 import argparse
-
+import os
 
 def format_example(example):
     tokens, labels, embeddings = example['token'], example['label'], example["embedding"]
@@ -85,12 +85,18 @@ predictor = Predictor(embedding_size, hidden_size).to(device)
 loss_fn = nn.MSELoss()
 optimizer = torch.optim.Adam(predictor.parameters())
 train_dataset = splited_dataset['train']
-train_dataset = train_dataset.map(format_example, batched=True, num_proc=8)
+if f"{args.model_size}.arrow" not in os.path.exists("train_cache"):
+    train_dataset = train_dataset.map(format_example, batched=True, num_proc=8, cache_file_name=f"train_cache/{args.model_size}.arrow")
+else:
+    train_dataset = Dataset.load_from_disk(f"train_cache/{args.model_size}.arrow")
 train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
 
 # Prepare test dataloader
 test_dataset = splited_dataset['test']
-test_dataset = test_dataset.map(format_example, batched=True, num_proc=8)
+if f"{args.model_size}.arrow" not in os.path.exists("test_cache"):
+    test_dataset = test_dataset.map(format_example, batched=True, num_proc=8, cache_file_name=f"test_cache/{args.model_size}.arrow")
+else:
+    test_dataset = Dataset.load_from_disk(f"test_cache/{args.model_size}.arrow")
 test_dataloader = DataLoader(test_dataset, batch_size=32)
 
 # Training loop
