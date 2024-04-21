@@ -26,8 +26,7 @@ def evaluate(predictor, dataloader, counter=0):
             scores_mean, standard = infer(predictor, embedding)
             pdb.set_trace()
             loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
-            in_range = ((data["labels"].float() > (scores_mean - standard)) &
-                        (data["labels"].float() < (scores_mean + standard))).float()
+            in_range = ((data["labels"].float().cuda() > (scores_mean - standard)) &(data["labels"].float().cuda() < (scores_mean + standard))).float()
             counter += torch.sum(in_range).item()
             total_loss += loss.item()
     return total_loss / len(dataloader), counter/data_size
@@ -48,6 +47,7 @@ args.add_argument("--context", type=int, default=32)
 args.add_argument("--continuation", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--seed", type=int, default=42)
+args.add_argument("--epoch", type=int, default=20)
 args = args.parse_args()
 random.seed(args.seed)
 model_size = "70m"
@@ -102,18 +102,25 @@ else:
     test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
 test_dataloader = DataLoader(test_dataset, batch_size=32)
 
-validation_loss, accuracy = evaluate(predictor, test_dataloader)
 
+best_accuracy = 0
+best_model_state = None
 # Training loop
-for i, data in tqdm(enumerate(train_dataloader)):
-    embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
-    scores = predictor(embedding.float().cuda())
-        # Compute the loss
-    loss = loss_fn(scores.squeeze(), data["labels"].float().to(device))
-    # Backprop and optimize
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-torch.save(predictor.state_dict(), f"saved_models/predictor_{args.model_size}.pt")
-print(f'Validation Loss: {validation_loss:.4f}')
-print(f'Accuracy: {accuracy:.4f}')
+for _ in range(args.epoch):
+    for i, data in tqdm(enumerate(train_dataloader)):
+        embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
+        scores = predictor(embedding.float().cuda())
+            # Compute the loss
+        loss = loss_fn(scores.squeeze(), data["labels"].float().to(device))
+        # Backprop and optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    validation_loss, accuracy = evaluate(predictor, test_dataloader)
+    print(f'Validation Loss: {validation_loss:.4f}')
+    print(f'Accuracy: {accuracy:.4f}')
+    if accuracy > best_accuracy:
+        best_accuracy = accuracy
+        best_model_state = predictor.state_dict()
+torch.save(best_model_state, f"saved_models/predictor_{args.model_size}.pt")
+
