@@ -1,3 +1,5 @@
+import pdb
+
 import numpy as np
 import torch
 import random
@@ -36,6 +38,7 @@ def infer(predictor, embeddings, repeats=10):
         for _ in range(repeats):
             scores = predictor.infer(embeddings.float().cuda())
             scores_list.append(scores.squeeze())
+    pdb.set_trace()
     scores_arr = torch.tensor(scores_list)
     return scores_arr.mean(), scores_arr.var()
 
@@ -99,6 +102,8 @@ else:
     test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
 test_dataloader = DataLoader(test_dataset, batch_size=32)
 
+validation_loss, accuracy = evaluate(predictor, test_dataloader)
+
 # Training loop
 for i, data in tqdm(enumerate(train_dataloader)):
     embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
@@ -109,7 +114,6 @@ for i, data in tqdm(enumerate(train_dataloader)):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-validation_loss, accuracy = evaluate(predictor, test_dataloader)
 torch.save(predictor.state_dict(), f"saved_models/predictor_{args.model_size}.pt")
 print(f'Validation Loss: {validation_loss:.4f}')
 print(f'Accuracy: {accuracy:.4f}')
