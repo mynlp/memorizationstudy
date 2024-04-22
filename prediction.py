@@ -85,7 +85,7 @@ predictor = Predictor(embedding_size, hidden_size).to(device)
 
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
-optimizer = torch.optim.Adam(predictor.parameters())
+optimizer = torch.optim.Adam(predictor.parameters(), lr=1e-4)
 train_dataset = splited_dataset['train']
 if f"{args.model_size}.arrow" not in os.listdir("train_cache"):
     train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
@@ -115,6 +115,8 @@ for _ in range(args.epoch):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        if i % 100 == 0:
+            print(f'Loss: {loss.item():.4f}')
     validation_loss, accuracy = evaluate(predictor, test_dataloader)
     predictor.train()
     print(f'Validation Loss: {validation_loss:.4f}')
