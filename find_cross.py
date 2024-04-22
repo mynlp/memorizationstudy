@@ -67,7 +67,7 @@ for i in tqdm(range(10, continuation_size+1)):
         logits = model_outputs["scores"]
         batched_entropy_at_idx = []
         for entropy_idx in range(continuation_size):
-            probability_scores = torch.nn.functional.softmax(logits[idx], dim=1)
+            probability_scores = torch.nn.functional.softmax(logits[entropy_idx], dim=1)
             entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
             batched_entropy_at_idx.append(entropy_scores)
         batched_entropy_at_idx = torch.stack(batched_entropy_at_idx)
