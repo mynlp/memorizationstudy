@@ -60,7 +60,6 @@ for i in tqdm(range(continuation_size+1)):
         model_outputs = model.generate(context_tokens[start:end, :context_size], temperature=0.0, top_k=0, top_p=0,
                        max_length=context_size + continuation_size,
                        min_length=context_size + continuation_size)
-        start = end
         embeddings =  model_outputs.hidden_states[-1][-1]
         generated_sequence = model_outputs.sequences
         embedding_list.append(embeddings.cpu())
@@ -68,6 +67,7 @@ for i in tqdm(range(continuation_size+1)):
         continuation_alignment = context_tokens[start:end, context_size:] == generated_sequence[:, context_size:]
         continuation_alignment = continuation_alignment.float()
         memorized_idx.append(continuation_alignment.cpu())
+        start = end
     embeddings = torch.cat(embedding_list, dim=0)
     memorized_idx = torch.cat(memorized_idx, dim=0)
     datasets[str(i)] = context_tokens
