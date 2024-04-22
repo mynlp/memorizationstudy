@@ -75,7 +75,6 @@ for i in tqdm(range(10, continuation_size+1)):
         continuation_alignment = continuation_alignment.float()
         memorized_idx.append(continuation_alignment.cpu())
         entropy.append(batched_entropy_at_idx.cpu())
-        pdb.set_trace()
         start = end
     embeddings = torch.cat(embedding_list, dim=0)
     memorized_idx = torch.cat(memorized_idx, dim=0)
@@ -84,6 +83,7 @@ for i in tqdm(range(10, continuation_size+1)):
     torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{continuation_size}_{i}_{model_size}.pt")
     torch.save(embeddings, f"cross_remembered/embeddings_{continuation_size}_{i}_{model_size}.pt")
     torch.save(memorized_idx, f"cross_remembered/memorized_idx_{continuation_size}_{i}_{model_size}.pt")
+    torch.save(entropy, f"cross_remembered/entropy_{continuation_size}_{i}_{model_size}.pt")
 #
 # paser = argparse.ArgumentParser()
 # paser.add_argument("--distribution_idx", type=int, default=0)
