@@ -64,6 +64,7 @@ for i in tqdm(range(continuation_size+1)):
         embeddings =  model_outputs.hidden_states[-1][-1]
         generated_sequence = model_outputs.sequences
         embedding_list.append(embeddings.cpu())
+        pdb.set_trace()
         continuation_alignment = context_tokens[start:end, context_size:] == generated_sequence[:, context_size:]
         continuation_alignment = continuation_alignment.float()
         memorized_idx.append(continuation_alignment.cpu())
