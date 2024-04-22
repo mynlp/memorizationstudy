@@ -25,12 +25,12 @@ def evaluate(predictor, dataloader, counter=0):
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             scores_mean, standard = infer(predictor, embedding)
             loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
-            in_range = ((data["labels"].float().cuda() > (scores_mean - standard)) &(data["labels"].float().cuda() < (scores_mean + standard))).float()
+            in_range = ((data["labels"].float().cuda() > (scores_mean - 3*standard)) &(data["labels"].float().cuda() < (scores_mean + 3*standard))).float()
             counter += torch.sum(in_range).item()
             total_loss += loss.item()
     return total_loss / len(dataloader), counter/data_size
 
-def infer(predictor, embeddings, repeats=10):
+def infer(predictor, embeddings, repeats=50):
     predictor.eval()  # Set the model to evaluation mode
     scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
