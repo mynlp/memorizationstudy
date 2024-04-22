@@ -70,12 +70,12 @@ for i in tqdm(range(10, continuation_size+1)):
             probability_scores = torch.nn.functional.softmax(logits[entropy_idx], dim=1)
             entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
             batched_entropy_at_idx.append(entropy_scores)
-        batched_entropy_at_idx = torch.stack(batched_entropy_at_idx)
-        pdb.set_trace()
+        batched_entropy_at_idx = torch.stack(batched_entropy_at_idx, dim=1)
         continuation_alignment = context_tokens[start:end, context_size:] == generated_sequence[:, context_size:]
         continuation_alignment = continuation_alignment.float()
         memorized_idx.append(continuation_alignment.cpu())
         entropy.append(batched_entropy_at_idx.cpu())
+        pdb.set_trace()
         start = end
     embeddings = torch.cat(embedding_list, dim=0)
     memorized_idx = torch.cat(memorized_idx, dim=0)
