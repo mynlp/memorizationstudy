@@ -75,7 +75,6 @@ dataset["prediction"] = torch.cat(dataset["prediction"])
 dataset["entropy"] = torch.cat(dataset["entropy"])
 dataset = Dataset.from_dict(dataset)
 splited_dataset = dataset.train_test_split(test_size=0.2)
-hidden_size = 64  # You can choose the hidden size according to your needs
 predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
 
 # Define a loss function and an optimizer
