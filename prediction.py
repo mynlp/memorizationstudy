@@ -47,7 +47,7 @@ args.add_argument("--continuation", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--seed", type=int, default=42)
 args.add_argument("--epoch", type=int, default=20)
-args.add_argument("--embedding_size", type=int, default=768)
+args.add_argument("--embedding_size", type=int, default=512)
 args.add_argument("--hidden_size", type=int, default=64)
 args = args.parse_args()
 random.seed(args.seed)
@@ -103,7 +103,7 @@ best_model_state = None
 for _ in range(args.epoch):
     for i, data in tqdm(enumerate(train_dataloader)):
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
-        scores = predictor(embedding.float().cuda())
+        scores, classes = predictor(embedding.float().cuda())
             # Compute the loss
         regression_loss = loss_fn(scores.squeeze(), data["entropy"].float().to(device))
         classification_loss = classification_loss_fn(scores.squeeze(), data["prediction"].float().to(device))

@@ -8,7 +8,6 @@ class Predictor(nn.Module):
         self.dropout = nn.Dropout(drop_prob)
         self.linear1 = nn.Linear(hidden_size, hidden_size)
         self.relu = nn.ReLU()
-        self.relu = nn.ReLU()
         self.linear2 = nn.Linear(hidden_size, 1)
         self.linear3 = nn.Linear(hidden_size, 2)
     def forward(self, embeddings):
