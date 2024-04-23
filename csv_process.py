@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 for file in [
-            "memorization_evals_70m-deduped-v0_96_112_143000.csv"
+            "memorization_evals_70m-deduped-v0_96_112_143000.csv",
             "memorization_evals_410m-deduped-v0_32_64_143000.csv",
             "memorization_evals_410m-deduped-v0_32_96_143000.csv",
             "memorization_evals_1b-deduped-v0_32_48_143000.csv",
