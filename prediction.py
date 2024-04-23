@@ -61,7 +61,7 @@ for i in range(10, args.continuation):
     local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{model_size}.pt", map_location=device)
     local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{model_size}.pt", map_location=device)
     local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{model_size}.pt", map_location=device)
-    local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.context}_{i}_{model_size}.pt", map_location=device)
+    local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.continuation}_{i}_{model_size}.pt", map_location=device)
     dataset["token"].append(local_data)
     dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
     dataset["embedding"].append(local_embedding)
