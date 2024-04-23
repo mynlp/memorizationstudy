@@ -23,22 +23,37 @@ def evaluate(predictor, dataloader, counter=0):
         for data in dataloader:
             data_size += len(data["labels"])
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
-            scores_mean, standard = infer(predictor, embedding)
-            loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
-            in_range = ((data["labels"].float().cuda() > (scores_mean - 3*standard)) &(data["labels"].float().cuda() < (scores_mean + 3*standard))).float()
-            counter += torch.sum(in_range).item()
+            entropy = torch.stack([x for x in data["entropy"]], dim=1)
+            prediction = torch.stack([x for x in data["prediction"]], dim=1)
+            scores, classes = infer(predictor, embedding)
+            regression_loss = loss_fn(scores.squeeze(), entropy.to(device))
+            classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2),
+                                                         prediction.type(torch.int64).view(-1).to(device))
+            classificaiton_results = classes.squeeze().view(-1, 2).argmax(dim=1) == prediction.type(torch.int64).view(-1).to(device)
+            classificaiton_results = classificaiton_results.float().sum()
+            loss = regression_loss + classification_loss
             total_loss += loss.item()
+            counter += classificaiton_results
     return total_loss / len(dataloader), counter/data_size
+    #         scores_mean, standard = infer(predictor, embedding)
+    #         loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
+    #         in_range = ((data["labels"].float().cuda() > (scores_mean - 3*standard)) &(data["labels"].float().cuda() < (scores_mean + 3*standard))).float()
+    #         counter += torch.sum(in_range).item()
+    #         total_loss += loss.item()
+    # return total_loss / len(dataloader), counter/data_size
 
 def infer(predictor, embeddings, repeats=50):
     predictor.eval()  # Set the model to evaluation mode
     scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
-        for _ in range(repeats):
-            scores, classes = predictor.infer(embeddings.float().cuda())
-            scores_list.append(scores.squeeze())
-    scores_arr = torch.stack(scores_list, dim=1)
-    return scores_arr.mean(dim=1), scores_arr.var(dim=1)
+        #for _ in range(repeats):
+        scores, classes = predictor.infer(embeddings.float().cuda())
+
+    return scores, classes
+        #scores, classes = predictor.infer(embeddings.float().cuda())
+        #scores_list.append(scores.squeeze())
+    #scores_arr = torch.stack(scores_list, dim=1)
+    #return scores_arr.mean(dim=1), scores_arr.var(dim=1)
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="70m")
