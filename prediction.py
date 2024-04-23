@@ -35,7 +35,7 @@ def infer(predictor, embeddings, repeats=50):
     scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
         for _ in range(repeats):
-            scores = predictor.infer(embeddings.float().cuda())
+            scores, classes = predictor.infer(embeddings.float().cuda())
             scores_list.append(scores.squeeze())
     scores_arr = torch.stack(scores_list, dim=1)
     return scores_arr.mean(dim=1), scores_arr.var(dim=1)
@@ -61,11 +61,11 @@ for i in range(10, args.continuation):
     local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{model_size}.pt", map_location=device)
     local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{model_size}.pt", map_location=device)
     local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{model_size}.pt", map_location=device)
-    local_context = torch.load(f"cross_remembered/context_tokens_{args.context}_{i}_{model_size}.pt", map_location=device)
+    local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.context}_{i}_{model_size}.pt", map_location=device)
     dataset["token"].append(local_data)
     dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
     dataset["embedding"].append(local_embedding)
-    dataset["prediction"].append(local_context)
+    dataset["prediction"].append(local_memorized)
     dataset["entropy"].append(local_entropy)
 
 dataset["token"] = torch.cat(dataset["token"])
@@ -79,6 +79,7 @@ predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
 
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
+classification_loss_fn = nn.BCELoss()
 optimizer = torch.optim.Adam(predictor.parameters(), lr=1e-4)
 train_dataset = splited_dataset['train']
 if f"{args.model_size}.arrow" not in os.listdir("train_cache"):
@@ -104,10 +105,11 @@ for _ in range(args.epoch):
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
         scores = predictor(embedding.float().cuda())
             # Compute the loss
-        loss = loss_fn(scores.squeeze(), data["labels"].float().to(device))
+        regression_loss = loss_fn(scores.squeeze(), data["entropy"].float().to(device))
+        classification_loss = classification_loss_fn(scores.squeeze(), data["prediction"].float().to(device))
         # Backprop and optimize
         optimizer.zero_grad()
-        loss.backward()
+        loss = regression_loss + classification_loss
         optimizer.step()
         if i % 100 == 0:
             print(f'Loss: {loss.item():.4f}')
