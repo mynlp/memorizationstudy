@@ -1,5 +1,5 @@
 import pdb
-
+from matplotlib import pyplot as plt
 import numpy as np
 import torch
 import random
@@ -111,7 +111,7 @@ else:
     test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
 test_dataloader = DataLoader(test_dataset, batch_size=32)
 
-
+train_loss = []
 best_accuracy = 0
 best_model_state = None
 # Training loop
@@ -127,6 +127,7 @@ for _ in range(args.epoch):
         # Backprop and optimize
         optimizer.zero_grad()
         loss = regression_loss + classification_loss
+        train_loss.append(loss.item())
         optimizer.step()
         if i % 100 == 0:
             print(f'Loss: {loss.item():.4f}')
@@ -138,4 +139,7 @@ for _ in range(args.epoch):
         best_accuracy = accuracy
         best_model_state = predictor.state_dict()
 torch.save(best_model_state, f"saved_models/predictor_{args.model_size}.pt")
+plt.plot(train_loss)
+plt.savefig(f"prediction_train_loss_{args.model_size}.png")
+plt.show()
 
