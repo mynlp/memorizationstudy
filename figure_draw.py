@@ -38,13 +38,37 @@ dedup12b_32_48 = [48241477, 34621975, 32916929, 7468693, 8047337, 2368123, 32652
 
 memorized_32_16 = [894809, 1309026, 1763621, 2197780, 2788505, 3300177, 3614267]
 unmemorized_32_16 = [64506233, 59464820, 55667725, 53337373, 50521557, 49156099, 48241477]
-half_memorized_32_16 = [1321896, 1584734, 1818303, 1978310, 2186161, 2292935,2368123]
-plt.plot(["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"], memorized_32_16, label="Memorized Sentence", color="blue",
-         marker="o", linestyle="-", linewidth=2)
-plt.plot(["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"], unmemorized_32_16, label="Unmemorized Sentence", color="red",
-         marker="o", linestyle="-", linewidth=2)
-plt.plot(["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"], half_memorized_32_16, label="Half Memorized Sentence",
-         color="green", marker="o", linestyle="-", linewidth=2)
+memorized_0_1_32_16 = [37841243, 37414987, 36772784, 36207822, 35429015, 34945652, 34621975]
+memorized_0_2_32_16 = [27559121, 29680540, 31082769, 31780490, 32545886, 32775559, 32916929]
+memorized_0_3_32_16 = [4910421, 5670919, 6294070, 6668892, 7126382, 7327698, 7468693]
+memorized_0_4_32_16 = [4754192, 5630038, 6398771, 6902386, 7536738, 7835542, 8047337]
+memorized_0_5_32_16 = [1321896, 1584734, 1818303, 1978310, 2186161, 2292935, 2368123]
+memorized_0_6_32_16 = [1784455, 2147099, 2477312, 2706078, 3005835, 3156483, 3265290]
+memorized_0_7_32_16 = [1179768, 1439956, 1673641, 1840521, 2062528, 2172148, 2253386]
+memorized_0_8_32_16 = [476356, 589894, 689333, 765859, 862821, 912410, 949157]
+memorized_0_9_32_16 = [823418, 1018286, 1208393, 1365831, 1561455, 1670842, 1745443]
+model_size = ["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"]
+
+# Create a list to store all data and labels for easy iteration
+data = [
+    (unmemorized_32_16, "Memorize Score 0", "red", "v", "--"),
+    (memorized_0_1_32_16, "Memorize Score 0.1", "green", "s", ":"),
+    (memorized_0_2_32_16, "Memorize Score 0.2", "purple", "^", "-."),
+    (memorized_0_3_32_16, "Memorize Score 0.3", "orange", "p", "-"),
+    (memorized_0_4_32_16, "Memorize Score 0.4", "pink", "*", "--"),
+    (memorized_0_5_32_16, "Memorize Score 0.5", "cyan", "H", ":"),
+    (memorized_0_6_32_16, "Memorize Score 0.6", "olive", "+", "-."),
+    (memorized_0_7_32_16, "Memorize Score 0.7", "darkgreen", "D", "-"),
+    (memorized_0_8_32_16, "Memorize Score 0.8", "yellow", "X", "--"),
+    (memorized_0_9_32_16, "Memorize Score 0.9", "black", ".", ":"),
+    (memorized_32_16, "Memorize Score 1", "blue", "o", "-")
+]
+
+# Plot each data series
+for info in data:
+    array, label, color, marker, linestyle = info
+    plt.plot(model_size, array, label=label, color=color, marker=marker, linestyle=linestyle, linewidth=2, alpha=0.7)
+
 plt.yscale('log')
 plt.xlabel("Model Size", fontsize=14)
 plt.ylabel("Number of Memorized Sentences", fontsize=14)
