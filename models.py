@@ -15,7 +15,7 @@ class Predictor(nn.Module):
         output = self.dropout(output)
         output = self.linear1(output)
         output = self.relu(output)
-        selected_output = output[:, self.context_size:, :]
+        selected_output = output[:, self.context_size-1:, :]
         scores = self.linear2(selected_output)  # continues output
 
         classes = self.linear3(selected_output)  # newly added for classes output
@@ -27,7 +27,7 @@ class Predictor(nn.Module):
         output = nn.functional.dropout(output, p=0.5)
         output = self.linear1(output)
         output = self.relu(output)
-        selected_output = output[:, self.context_size:, :]
+        selected_output = output[:, self.context_size-1:, :]
         scores = self.linear2(selected_output)  # continues output
         classes = self.linear3(selected_output)  # newly added for classes output
         classes = torch.sigmoid(classes)  # if you want output in [0, 1]
