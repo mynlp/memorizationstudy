@@ -45,6 +45,7 @@ plt.plot(["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"], unmemorized_32_16
          marker="o", linestyle="-", linewidth=2)
 plt.plot(["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"], half_memorized_32_16, label="Half Memorized Sentence",
          color="green", marker="o", linestyle="-", linewidth=2)
+plt.yscale('log')
 plt.xlabel("Model Size", fontsize=14)
 plt.ylabel("Number of Memorized Sentences", fontsize=14)
 plt.title("Number of Sentences Memorized by Model Size", fontsize=16)
