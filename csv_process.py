@@ -3,9 +3,18 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-for file in ["memorization_evals_70m-deduped-v0_48_64_143000.csv",
-            "memorization_evals_70m-deduped-v0_64_80_143000.csv",
+for file in [
             "memorization_evals_70m-deduped-v0_96_112_143000.csv"
+            "memorization_evals_410m-deduped-v0_32_64_143000.csv",
+            "memorization_evals_410m-deduped-v0_32_96_143000.csv",
+            "memorization_evals_1b-deduped-v0_32_48_143000.csv",
+            "memorization_evals_160m-deduped-v0_32_128_143000.csv",
+            "memorization_evals_160m-deduped-v0_32_64_143000.csv",
+            "memorization_evals_160m-deduped-v0_32_96_143000.csv",
+            "memorization_evals_1b-deduped-v0_32_64_143000.csv",
+            "memorization_evals_2.8b-deduped-v0_32_48_143000.csv",
+            "memorization_evals_6.9b-deduped-v0_32_48_143000.csv",
+            "memorization_evals_12b-deduped-v0_32_48_143000.csv"
                 ]:
     print(file)
     generate_results = pd.read_csv("generate_results/"+file, index_col=0)
@@ -22,7 +31,8 @@ for file in ["memorization_evals_70m-deduped-v0_48_64_143000.csv",
         results_list.append(results)
     results = generate_results[generate_results["score"] == 1.0]
     results_list.append(results)
-    [print(len(x)) for x in results_list]
+    length_list = [len(x) for x in results_list]
+    print(length_list)
 
 
 # def find_cross(df1, df2, value):
@@ -35,10 +45,10 @@ for file in ["memorization_evals_70m-deduped-v0_48_64_143000.csv",
 # df2 = read_csv("/work/gk77/k77025/memorizationstudy/generate_results/memorization_evals_70m-deduped-v0_32_64_143000.csv")
 #
 # cross = find_cross(df1, df2, 1)
-a = pd.read_csv("memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
-b = pd.read_csv("memorization_evals_70m-deduped-v0_32_96_143000.csv", index_col=0)
-c=a[a["score"]==1]
-d=b[b["score"]==1]
-c=set(c["idx"].tolist())
-d=set(d["idx"].tolist())
-e=d.intersection(c)
+# a = pd.read_csv("memorization_evals_70m-deduped-v0_32_48_143000.csv", index_col=0)
+# b = pd.read_csv("memorization_evals_70m-deduped-v0_32_96_143000.csv", index_col=0)
+# c=a[a["score"]==1]
+# d=b[b["score"]==1]
+# c=set(c["idx"].tolist())
+# d=set(d["idx"].tolist())
+# e=d.intersection(c)
