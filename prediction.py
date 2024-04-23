@@ -103,6 +103,8 @@ best_model_state = None
 for _ in range(args.epoch):
     for i, data in tqdm(enumerate(train_dataloader)):
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
+        entropy = torch.stack([x for x in data["entropy"]], dim=1)
+        prediction = torch.stack([x for x in data["prediction"]], dim=1)
         scores, classes = predictor(embedding.float().cuda())
             # Compute the loss
         regression_loss = loss_fn(scores.squeeze(), data["entropy"].float().to(device))
