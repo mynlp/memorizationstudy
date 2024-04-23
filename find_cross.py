@@ -42,7 +42,7 @@ for i in range(continuation_size+1):
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 datasets = {}
-for i in tqdm(range(10, continuation_size+1)):
+for i in tqdm(range(continuation_size+1)):
     if len(memorized_results[str(i)]["idx"].tolist()) > num_samples:
         idx = random.sample(memorized_results[str(i)]["idx"].tolist(), num_samples)
     else:
