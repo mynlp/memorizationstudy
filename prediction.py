@@ -108,7 +108,7 @@ for _ in range(args.epoch):
         scores, classes = predictor(embedding.float().cuda())
             # Compute the loss
         regression_loss = loss_fn(scores.squeeze(),entropy.to(device))
-        classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2), prediction.view(-1).to(device))
+        classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2), prediction.int().view(-1).to(device))
         # Backprop and optimize
         optimizer.zero_grad()
         loss = regression_loss + classification_loss
