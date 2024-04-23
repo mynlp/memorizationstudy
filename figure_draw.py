@@ -37,7 +37,7 @@ dedup12b_32_48 = [48241477, 34621975, 32916929, 7468693, 8047337, 2368123, 32652
 
 
 memorized_32_16 = [894809, 1309026, 1763621, 2197780, 2788505, 3300177, 3614267]
-unmemorized_32_16 = [64506233, 59464820, 55667725, 53337373, 50521557, 48241477]
+unmemorized_32_16 = [64506233, 59464820, 55667725, 53337373, 50521557, 49156099, 48241477]
 half_memorized_32_16 = [1321896, 1584734, 1818303, 1978310, 2186161, 2292935,2368123]
 plt.plot(["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"], memorized_32_16, label="Memorized Sentence", color="blue",
          marker="o", linestyle="-", linewidth=2)
@@ -57,7 +57,6 @@ memoirzed_70m_dynamic_complement = [894809, 411428, 262729, 167846, 90968]
 memoirzed_160m_dynamic_complement = [1309026, 583993, 251136]
 memoirzed_410m_dynamic_complement = [1763621, 802637, 361575]
 plt.plot(["16", "32", "64", "96"],memoirzed_70m_dynamic_complement, label="70m", color="blue", marker="o", linestyle="-", linewidth=2)
-plt.plot(["16", "32", "64", "96"],memoirzed_160m_dynamic_complement, label="160m", color="red", marker="o", linestyle="-", linewidth=2)
 plt.xlabel("Complement Size", fontsize=14)
 plt.ylabel("Number of Memorized Sentences", fontsize=14)
 plt.title("Number of Sentences Memorized vs Complement Size", fontsize=16)
