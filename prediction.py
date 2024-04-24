@@ -66,17 +66,15 @@ args.add_argument("--embedding_size", type=int, default=512)
 args.add_argument("--hidden_size", type=int, default=64)
 args = args.parse_args()
 random.seed(args.seed)
-model_size = "70m"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_name = f"EleutherAI/pythia-{args.model_size}-deduped-v0"
-context = 32
 from datasets import DatasetDict
 dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
-for i in range(10, args.continuation):
-    local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{model_size}.pt", map_location=device)
-    local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{model_size}.pt", map_location=device)
-    local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{model_size}.pt", map_location=device)
-    local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.continuation}_{i}_{model_size}.pt", map_location=device)
+for i in range(args.continuation):
+    local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+    local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+    local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+    local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
     dataset["token"].append(local_data)
     dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
     dataset["embedding"].append(local_embedding)
