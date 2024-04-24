@@ -1,8 +1,5 @@
 import pandas as pd
-from transformers import GPTNeoXForCausalLM, AutoTokenizer,  AutoModelForCausalLM,  LogitsProcessorList, MinLengthLogitsProcessor, StoppingCriteriaList,  MaxLengthCriteria
 from pythia.utils.mmap_dataset import MMapIndexedDataset
-from transformers import GPTNeoXForCausalLM, AutoTokenizer
-import torch
 from utils import *
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
@@ -28,11 +25,11 @@ df_large = pd.read_csv(f"generate_results/memorization_evals_{large_model_size}-
 df_small_memorized = df_small[df_small["score"] == 1]
 df_large_memorized = df_large[df_large["score"] == 1]
 scores = pd.concat([df_small["score"], df_large["score"]]).unique()
-df_small["id"] = df_small.index
-df_large["id"] = df_large.index
+df_small["idx"] = df_small.index
+df_large["idx"] = df_large.index
 
 # 连接 df_small 和 df_large
-df = pd.merge(df_small, df_large, on="id", suffixes=("_small", "_large"))
+df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
 
 # 创建转移矩阵
 transition_matrix = pd.crosstab(df["score_small"], df["score_large"])
