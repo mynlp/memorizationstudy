@@ -27,43 +27,41 @@ df_large = pd.read_csv(f"generate_results/memorization_evals_{large_model_size}-
 df_small_memorized = df_small[df_small["score"] == 1]
 df_large_memorized = df_large[df_large["score"] == 1]
 scores = pd.concat([df_small["score"], df_large["score"]]).unique()
+df_small["id"] = df_small.index
+df_large["id"] = df_large.index
+
+# 连接 df_small 和 df_large
+df = pd.merge(df_small, df_large, on="id", suffixes=("_small", "_large"))
+
+# 创建转移矩阵
+transition_matrix = pd.crosstab(df["score_small"], df["score_large"])
+
+# 为Sankey图生成必要的数据
+label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
 source = []
 target = []
 value = []
-label = []
-for i, score in enumerate(scores):
-    # 在每个数据框中找出所有这个score的部分
-    df_small_score = df_small[df_small["score"] == score]
-    df_large_score = df_large[df_large["score"] == score]
 
-    # 计算这个得分的数量并添加到source、target、value
-    score_count = len(df_small_score)
-    source += [i] * score_count
-    target += [i + len(scores)] * score_count
-    value += [score_count]
+for r, row in enumerate(transition_matrix.index):
+    for c, col in enumerate(transition_matrix.columns):
+        source.append(r)
+        target.append(c + len(transition_matrix.index))
+        value.append(transition_matrix.at[row, col])
 
-    # 添加label
-    label += [f"Small-Score {score}", f"Large-Score {score}"]
-
-# 现在source、target、value、label列表已经包含了所有得分的信息
-# 接下来创建sankey图
-
-fig = go.Figure(data=[
-    go.Sankey(
-        node=dict(
-            pad=15,
-            thickness=20,
-            line=dict(color="black", width=0.5),
-            label=label,
-            color="blue"
-        ),
-        link=dict(
-            source=source,
-            target=target,
-            value=value
-        ),
-    )
-])
+# 创建Sankey图
+fig = go.Figure(data=[go.Sankey(
+    node=dict(
+        pad=15,
+        thickness=20,
+        line=dict(color="black", width=0.5),
+        label=label,
+        color="blue"
+    ),
+    link=dict(
+        source=source,
+        target=target,
+        value=value,
+    ))])
 fig.pio.write_image(fig, 'sankey_diagram.png')
 fig.show()
 
