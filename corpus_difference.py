@@ -60,6 +60,6 @@ fig = go.Figure(data=[go.Sankey(
         target=target,
         value=value,
     ))])
-fig.pio.write_image(fig, 'sankey_diagram.png')
+pio.write_image(fig, 'sankey_diagram.png')
 fig.show()
 
