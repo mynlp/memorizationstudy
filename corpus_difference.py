@@ -20,7 +20,7 @@ prefix = 'deduped_merge/document.bin'
 print(prefix)
 buff_size = 2049*1024*2
 print("Building dataset")
-mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
+#mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
 df_large = pd.read_csv(f"generate_results/memorization_evals_{large_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
