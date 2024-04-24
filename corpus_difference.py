@@ -10,6 +10,7 @@ import random
 import plotly.graph_objects as go
 import pandas as pd
 import plotly.io as pio
+from tqdm import tqdm
 
 random.seed(42)
 small_model_size = "70m"
@@ -42,7 +43,7 @@ source = []
 target = []
 value = []
 
-for r, row in enumerate(transition_matrix.index):
+for r, row in tqdm(enumerate(transition_matrix.index)):
     for c, col in enumerate(transition_matrix.columns):
         source.append(r)
         target.append(c + len(transition_matrix.index))
