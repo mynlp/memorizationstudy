@@ -9,6 +9,18 @@ import pandas as pd
 import plotly.io as pio
 from tqdm import tqdm
 
+def redefine_score(score):
+    if score <= 0.2:
+        return 'very low'
+    elif score <= 0.4:
+        return 'low'
+    elif score <= 0.6:
+        return 'medium'
+    elif score <= 0.8:
+        return 'high'
+    else:
+        return 'very high'
+
 random.seed(42)
 small_model_size = "70m"
 large_model_size = "410m"
@@ -28,14 +40,18 @@ scores = pd.concat([df_small["score"], df_large["score"]]).unique()
 df_small["idx"] = df_small.index
 df_large["idx"] = df_large.index
 
+df_small['score'] = df_small['score'].apply(redefine_score)
+df_large['score'] = df_large['score'].apply(redefine_score)
+
 # 连接 df_small 和 df_large
 df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
 
 # 创建转移矩阵
-transition_matrix = pd.crosstab(df["score_small"], df["score_large"])
+transition_matrix = pd.crosstab(df_small["score_small"], df_small["score_large"])
+label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
 
 # 为Sankey图生成必要的数据
-label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
+#label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
 source = []
 target = []
 value = []
@@ -50,7 +66,7 @@ for r, row in tqdm(enumerate(transition_matrix.index)):
 fig = go.Figure(data=[go.Sankey(
     node=dict(
         pad=15,
-        thickness=20,
+        thickness=30,
         line=dict(color="black", width=0.5),
         label=label,
         color="blue"
@@ -59,7 +75,8 @@ fig = go.Figure(data=[go.Sankey(
         source=source,
         target=target,
         value=value,
+        color='rgba(255, 0, 0, 0.5)'  # 使用半透明的红色，提高易读性
     ))])
+
 pio.write_image(fig, 'sankey_diagram.png')
 fig.show()
-
