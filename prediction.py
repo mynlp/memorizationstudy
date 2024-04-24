@@ -80,7 +80,6 @@ for i in range(args.continuation):
     dataset["embedding"].append(local_embedding)
     dataset["prediction"].append(local_memorized)
     dataset["entropy"].append(local_entropy)
-
 dataset["token"] = torch.cat(dataset["token"])
 dataset["label"] = torch.cat(dataset["label"])
 dataset["embedding"] = torch.cat(dataset["embedding"])
