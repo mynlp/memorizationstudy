@@ -47,7 +47,7 @@ df_large['score'] = df_large['score'].apply(redefine_score)
 df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
 
 # 创建转移矩阵
-transition_matrix = pd.crosstab(df_small["score_small"], df_small["score_large"])
+transition_matrix = pd.crosstab(df_small["score"], df_large["score"])
 label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
 
 # 为Sankey图生成必要的数据
@@ -65,17 +65,16 @@ for r, row in tqdm(enumerate(transition_matrix.index)):
 # 创建Sankey图
 fig = go.Figure(data=[go.Sankey(
     node=dict(
-        pad=15,
-        thickness=30,
+        pad=10,
+        thickness=20,
         line=dict(color="black", width=0.5),
         label=label,
-        color="blue"
+        color=["blue", "red", "green", "yellow", "purple"]
     ),
     link=dict(
         source=source,
         target=target,
-        value=value,
-        color='rgba(255, 0, 0, 0.5)'  # 使用半透明的红色，提高易读性
+        value=value
     ))])
 
 pio.write_image(fig, 'sankey_diagram.png')
