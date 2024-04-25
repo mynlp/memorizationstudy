@@ -57,7 +57,7 @@ df_new = pd.merge(df_large, df_extra_large, left_on="idx", right_on="idx", suffi
 transition_matrix = pd.crosstab(df_small["score"], df_large["score"])
 transition_matrix_value = transition_matrix.values
 transition_matrix_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
-transition_matrix_value_extra_large = transition_matrix_large_extra_large.values
+transition_matrix_value_extra_large = transition_matrix_extra_large.values
 
 transition_prob_matrix_small_large = transition_matrix_value / transition_matrix_value.sum(axis=1,keepdims=True)
 transition_prob_matrix_large_extra_large = transition_matrix_value_extra_large / transition_matrix_value_extra_large.sum(
