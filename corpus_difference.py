@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import random
 import pandas as pd
 import json
+import tqdm
 
 def redefine_score(score):
     if score <= 0.2:
@@ -44,7 +45,7 @@ unique_in_large = large_memorized_idx - small_memorized_idx
 batched_context_tokens = []
 batched_true_continuation = []
 all_token = []
-for idx in unique_in_large:
+for idx in tqdm(unique_in_large):
     data = mmap_ds[idx]
     context_tokens = data[:context].tolist()
     true_continuation = data[context:context + continuation].tolist()
@@ -52,7 +53,7 @@ for idx in unique_in_large:
     batched_context_tokens.append(context_tokens)
     batched_true_continuation.append(true_continuation)
 step_frequency = [0 for i in range(context + continuation)]
-for sent in all_token:
+for sent in tqdm(all_token):
     for idx in sent:
         step_frequency[idx] += one_gram[sent["idx"]]
 step_frequency = [x / len(all_token) for x in step_frequency]

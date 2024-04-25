@@ -69,17 +69,17 @@ plt.subplot(1, 2, 1)
 sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=df_large["score"].unique(),
             yticklabels=df_small["score"].unique())
-plt.title('Transition Probability Matrix Small to Large - Heatmap')
-plt.xlabel('df_large')
-plt.ylabel('df_small')
+plt.title('Transition Probability Matrix 410m to 2.8b - Heatmap')
+plt.xlabel('2.8b Model')
+plt.ylabel('410m Model')
 
 plt.subplot(1, 2, 2)
 sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=df_extra_large["score"].unique(),
             yticklabels=df_large["score"].unique())
-plt.title('Transition Probability Matrix Large to Extra_Large - Heatmap')
-plt.xlabel('df_extra_large')
-plt.ylabel('df_large')
+plt.title('Transition Probability 2.8b to 12b - Heatmap')
+plt.xlabel('12b Model')
+plt.ylabel('2.8b Model')
 plt.savefig("transition_matrix.png")
 plt.show()
 # label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
