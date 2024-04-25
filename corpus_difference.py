@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import random
 import pandas as pd
 import json
-import tqdm
+from tqdm import tqdm
 
 def redefine_score(score):
     if score <= 0.2:
