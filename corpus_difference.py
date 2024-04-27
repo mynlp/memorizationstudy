@@ -49,14 +49,14 @@ for idx in tqdm(unique_in_large):
     data = mmap_ds[idx]
     context_tokens = data[:context].tolist()
     true_continuation = data[context:context + continuation].tolist()
-    all_token.extend(data[:context + continuation])
+    all_token.append(data[:context + continuation])
     batched_context_tokens.append(context_tokens)
     batched_true_continuation.append(true_continuation)
 step_frequency = [0 for i in range(context + continuation)]
-for sent in tqdm(all_token):
-    for idx in sent:
-        step_frequency[idx] += one_gram[sent["idx"]]
-step_frequency = [x / len(all_token) for x in step_frequency]
+for sent in tqdm(sequence_matrix):
+    for idx, token in enumerate(sent):
+        step_frequency[idx] += one_gram[str(int(token.item()))]
+step_frequency = [x / len(unique_in_large) for x in step_frequency]
 
 
 
