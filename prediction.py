@@ -46,7 +46,7 @@ def infer(predictor, embeddings, entropy, repeats=50):
     scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
         #for _ in range(repeats):
-        classes = predictor(embeddings.float().cuda(), entropy.float().cuda()
+        classes = predictor(embeddings.float().cuda(), entropy.float().cuda())
     return classes
         #scores, classes = predictor.infer(embeddings.float().cuda())
         #scores_list.append(scores.squeeze())
