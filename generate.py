@@ -1,12 +1,12 @@
 from transformers import GPTNeoXForCausalLM, AutoTokenizer,  AutoModelForCausalLM,  LogitsProcessorList, MinLengthLogitsProcessor, StoppingCriteriaList,  MaxLengthCriteria
 model = GPTNeoXForCausalLM.from_pretrained(
-  "EleutherAI/pythia-160m-deduped",
+  "EleutherAI/pythia-70m-deduped",
   revision="step143000",
   cache_dir="./pythia-160m-deduped/step143000",
 )
 
 tokenizer = AutoTokenizer.from_pretrained(
-  "EleutherAI/pythia-160m-deduped",
+  "EleutherAI/pythia-70m-deduped",
   revision="step143000",
   cache_dir="./pythia-160m-deduped/step143000",
 )
@@ -28,9 +28,11 @@ model.eval()
 
 
 
-inputs = tokenizer(["Hello, I am Joe Biden Mail Re", "Hello, I am Joe Biden Mail Re"], return_tensors="pt", truncation=True)
+inputs = tokenizer(["Hello", "Hello"], return_tensors="pt", truncation=True)
+model = model.to_bettertransformer()
 
-generations = model.generate(inputs["input_ids"], temperature = 0.0, top_k = 0, top_p = 0, max_length = 40, min_length = 40)
+generations = model.generate(inputs["input_ids"], temperature = 0.0, top_k = 0, top_p = 0,
+                             max_length = 40, min_length = 40)
 
 #hidden states of last word at the last layer
 embedding = generations.hidden_states[-1][-1]

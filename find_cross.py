@@ -28,7 +28,7 @@ model = GPTNeoXForCausalLM.from_pretrained(
         revision=f'step143000',
     ).eval()
 batch_size = 100
-model = model.to_bettertransformer()
+#model = model.to_bettertransformer()
 model = model.to(device)
 model.generation_config.pad_token_id = model.generation_config.eos_token_id
 model.generation_config.output_hidden_states = True
@@ -61,7 +61,7 @@ for i in tqdm(range(continuation_size+1)):
         model_outputs = model.generate(context_tokens[start:end, :context_size], temperature=0.0, top_k=0, top_p=0,
                        max_length=context_size + continuation_size,
                        min_length=context_size + continuation_size)
-        embeddings =  model_outputs.hidden_states[-1][-1]
+        embeddings = model_outputs.hidden_states[-1][-1]
         pdb.set_trace()
         generated_sequence = model_outputs.sequences
         embedding_list.append(embeddings.cpu())
@@ -85,57 +85,6 @@ for i in tqdm(range(continuation_size+1)):
     torch.save(embeddings, f"cross_remembered/embeddings_{continuation_size}_{i}_{model_size}.pt")
     torch.save(memorized_idx, f"cross_remembered/memorized_idx_{continuation_size}_{i}_{model_size}.pt")
     torch.save(entropy, f"cross_remembered/entropy_{continuation_size}_{i}_{model_size}.pt")
-#
-# paser = argparse.ArgumentParser()
-# paser.add_argument("--distribution_idx", type=int, default=0)
-# args = paser.parse_args()
-#
-# idx_70 = set(memorized_results_70["idx"].tolist())
-#
-# mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
-#
-# # context_tokens = []
-# # for i in tqdm(list(cross_all)):
-# #     data = mmap_ds[i]
-# #     context_tokens.extend(data.tolist())
-# #     i += len(context_tokens)
-# # context_tokens = torch.tensor(context_tokens)
-# # torch.save(context_tokens, "cross_remembered/context_tokens.pt")
-#
-# context_tokens = []
-# idx = 0
-# # 举例，这是你不想包括的idx
-# unmemorized = random.sample(unmemorized_idx, len(cross_all)*10)
-# part_size = len(unmemorized) // 5
-#
-# # 创建3个子列表
-# part1 = unmemorized[0:part_size]
-# part2 = unmemorized[part_size:1*part_size]
-# part3 = unmemorized[2*part_size:3*part_size]
-# part4 = unmemorized[3*part_size:4*part_size]
-# part5 = unmemorized[4*part_size:]
-#
-#
-# # 第2步: 创建可用于抽样的索引列表
-# # if args.distribution_idx == 0:
-# #     excluded_idx = part1
-# # elif args.distribution_idx == 1:
-# #     excluded_idx = part2
-# # elif args.distribution_idx == 2:
-# #     excluded_idx = part3
-# # elif args.distribution_idx == 3:
-# #     excluded_idx = part4
-# # elif args.distribution_idx == 4:
-# #     excluded_idx = part5
-# #
-# # available_idx = [i for i in unmemorized_idx if i not in set(excluded_idx)]
-# for i in tqdm(part1):
-#     data = mmap_ds[i]
-#     idx += 1
-#     text = tokenizer.decode(data)
-#     context_tokens.append([idx, text])
-# df = pd.DataFrame(context_tokens, columns=["idx", "text"])
-# df.to_json(f"cross_remembered/unmemorized_text_{args.distribution_idx}.json", index=False, orient='records', lines=True)
 
 
 
