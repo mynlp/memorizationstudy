@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 import pdb
 class Predictor(nn.Module):
-    def __init__(self, embedding_size, hidden_size, context_size=32,  num_layers=2, drop_prob=0.5):
+    def __init__(self, embedding_size, hidden_size, context_size=32,  num_layers=3, drop_prob=0.5):
         super(Predictor, self).__init__()
         self.lstm = nn.LSTM(embedding_size, hidden_size, num_layers=num_layers, batch_first=True, dropout=drop_prob)
         self.context_size = context_size
