@@ -109,8 +109,10 @@ test_dataloader = DataLoader(test_dataset, batch_size=32)
 train_loss = []
 best_accuracy = 0
 best_model_state = None
+accumulated_loss = 0
 # Training loop
 for _ in range(args.epoch):
+    predictor.train()
     for i, data in tqdm(enumerate(train_dataloader)):
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
         entropy = torch.stack([x for x in data["entropy"]], dim=1)
@@ -119,13 +121,14 @@ for _ in range(args.epoch):
             # Compute the loss
         loss = classification_loss_fn(classes.squeeze().view(-1, 2), prediction.type(torch.int64).view(-1).to(device))
         # Backprop and optimize
+        accumulated_loss += loss.item()
         optimizer.zero_grad()
         train_loss.append(loss.item())
         optimizer.step()
         if i % 100 == 0:
-            print(f'Loss: {loss.item():.4f}')
+            print(f'Loss: {accumulated_loss/100:.4f}')
+            accumulated_loss = 0
     validation_loss, accuracy = evaluate(predictor, test_dataloader)
-    predictor.train()
     print(f'Validation Loss: {validation_loss:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
     if accuracy > best_accuracy:
