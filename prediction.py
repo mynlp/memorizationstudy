@@ -104,7 +104,7 @@ predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
 classification_loss_fn = nn.NLLLoss()
-optimizer = torch.optim.Adam(predictor.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(predictor.parameters(), lr=0.0005)
 
 train_loss = []
 best_accuracy = 0
