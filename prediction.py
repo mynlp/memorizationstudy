@@ -89,7 +89,7 @@ predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
 
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
-classification_loss_fn = nn.CrossEntropyLoss()
+classification_loss_fn = nn.NLLLoss()
 optimizer = torch.optim.Adam(predictor.parameters(), lr=0.001)
 train_dataset = splited_dataset['train']
 if f"{args.model_size}.arrow" not in os.listdir("train_cache"):
