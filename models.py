@@ -16,8 +16,7 @@ class Predictor(nn.Module):
         output = self.linear1(output)
         output = self.relu(output)
         selected_output = output[:, self.context_size-1:, :]
-        pdb.set_trace()
-        selected_output = torch.cat((selected_output, entropy.unsqueeze(1)), dim=2)
+        selected_output = torch.cat((selected_output, entropy.unsqueeze(2)), dim=2)
         classes = self.linear3(selected_output)  # newly added for classes output
         classes = torch.sigmoid(classes)  # if you want output in [0, 1]
 
