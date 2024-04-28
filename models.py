@@ -12,7 +12,7 @@ class Predictor(nn.Module):
         self.linear3 = nn.Linear(hidden_size+1, 2)
     def forward(self, embeddings, entropy):
         output, _ = self.lstm(embeddings)
-        output = self.dropout(output)
+        #output = self.dropout(output)
         output = self.linear1(output)
         output = self.relu(output)
         selected_output = output[:, self.context_size-1:, :]
