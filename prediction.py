@@ -100,7 +100,7 @@ else:
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
     test_dataloader = DataLoader(test_dataset, batch_size=32)
 
-predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
+predictor = LSTMPredictor(args.embedding_size, args.hidden_size).to(device)
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
 classification_loss_fn = nn.NLLLoss()
