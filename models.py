@@ -41,6 +41,6 @@ class TransformerPredictor(nn.Module):
         selected_output = output[:, self.context_size - 1:, :]
         selected_output = torch.cat((selected_output, entropy.unsqueeze(2)), dim=2)
         classes = self.linear3(selected_output)
-        classes = torch.nn.functional.log_softmax(classes, dim=1)
+        classes = torch.nn.functional.log_softmax(classes, dim=2)
 
         return classes
