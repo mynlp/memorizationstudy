@@ -62,49 +62,49 @@ args.add_argument("--seed", type=int, default=42)
 args.add_argument("--epoch", type=int, default=20)
 args.add_argument("--embedding_size", type=int, default=512)
 args.add_argument("--hidden_size", type=int, default=64)
+args.add_argument("--load_cache", type=bool, default=True)
+
 args = args.parse_args()
 random.seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model_name = f"EleutherAI/pythia-{args.model_size}-deduped-v0"
 from datasets import DatasetDict
-dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
-for i in range(args.continuation):
-    local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-    local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-    local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-    local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-    dataset["token"].append(local_data)
-    dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
-    dataset["embedding"].append(local_embedding)
-    dataset["prediction"].append(local_memorized)
-    dataset["entropy"].append(local_entropy)
-dataset["token"] = torch.cat(dataset["token"])
-dataset["label"] = torch.cat(dataset["label"])
-dataset["embedding"] = torch.cat(dataset["embedding"])
-dataset["prediction"] = torch.cat(dataset["prediction"])
-dataset["entropy"] = torch.cat(dataset["entropy"])
-dataset = Dataset.from_dict(dataset)
-splited_dataset = dataset.train_test_split(test_size=0.2)
-predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
+if args.load_cache == False:
+    dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
+    for i in range(args.continuation):
+        local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+        local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+        local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+        local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+        dataset["token"].append(local_data)
+        dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
+        dataset["embedding"].append(local_embedding)
+        dataset["prediction"].append(local_memorized)
+        dataset["entropy"].append(local_entropy)
+    dataset["token"] = torch.cat(dataset["token"])
+    dataset["label"] = torch.cat(dataset["label"])
+    dataset["embedding"] = torch.cat(dataset["embedding"])
+    dataset["prediction"] = torch.cat(dataset["prediction"])
+    dataset["entropy"] = torch.cat(dataset["entropy"])
+    dataset = Dataset.from_dict(dataset)
+    splited_dataset = dataset.train_test_split(test_size=0.2)
+    train_dataset = splited_dataset['train']
+    test_dataset = splited_dataset['test']
+    train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
+    test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}.arrow")
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
+    test_dataloader = DataLoader(test_dataset, batch_size=32)
+else:
+    train_dataset = Dataset.from_file(f"train_cache/{args.model_size}.arrow")
+    test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
+    test_dataloader = DataLoader(test_dataset, batch_size=32)
 
+predictor = Predictor(args.embedding_size, args.hidden_size).to(device)
 # Define a loss function and an optimizer
 loss_fn = nn.MSELoss()
 classification_loss_fn = nn.NLLLoss()
 optimizer = torch.optim.Adam(predictor.parameters(), lr=0.001)
-train_dataset = splited_dataset['train']
-if f"{args.model_size}.arrow" not in os.listdir("train_cache"):
-    train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
-else:
-    train_dataset = Dataset.from_file(f"train_cache/{args.model_size}.arrow")
-train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
-
-# Prepare test dataloader
-test_dataset = splited_dataset['test']
-if f"{args.model_size}.arrow" not in os.listdir("test_cache"):
-    test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}.arrow")
-else:
-    test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
-test_dataloader = DataLoader(test_dataset, batch_size=32)
 
 train_loss = []
 best_accuracy = 0
