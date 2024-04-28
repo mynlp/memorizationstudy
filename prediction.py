@@ -64,7 +64,7 @@ args.add_argument("--epoch", type=int, default=20)
 args.add_argument("--embedding_size", type=int, default=512)
 args.add_argument("--hidden_size", type=int, default=64)
 args.add_argument("--load_cache", type=bool, default=True)
-
+args.add_argument("--model_type", type=str, default="lstm")
 args = args.parse_args()
 random.seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -105,7 +105,10 @@ else:
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
     test_dataloader = DataLoader(test_dataset, batch_size=32)
 
-predictor = LSTMPredictor(args.embedding_size, args.hidden_size)
+if args.model_type == "lstm":
+    predictor = LSTMPredictor(args.embedding_size, args.hidden_size)
+elif args.model_type == "transformer":
+    predictor = TransformerPredictor(args.embedding_size, args.hidden_size)
 if num_gpus > 1:
     predictor = nn.DataParallel(predictor)
 predictor.to(device)# Define a loss function and an optimizer
