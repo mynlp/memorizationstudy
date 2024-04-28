@@ -8,27 +8,15 @@ class Predictor(nn.Module):
         self.dropout = nn.Dropout(drop_prob)
         self.linear1 = nn.Linear(hidden_size, hidden_size)
         self.relu = nn.ReLU()
-        self.linear2 = nn.Linear(hidden_size, 1)
-        self.linear3 = nn.Linear(hidden_size, 2)
-    def forward(self, embeddings):
+        self.linear3 = nn.Linear(hidden_size+1, 2)
+    def forward(self, embeddings, entropy):
         output, _ = self.lstm(embeddings)
         output = self.dropout(output)
         output = self.linear1(output)
         output = self.relu(output)
         selected_output = output[:, self.context_size-1:, :]
-        scores = self.linear2(selected_output)  # continues output
-
+        selected_output = torch.cat((selected_output, entropy.unsqueeze(1)), dim=2)
         classes = self.linear3(selected_output)  # newly added for classes output
         classes = torch.sigmoid(classes)  # if you want output in [0, 1]
 
-        return scores, classes
-    def infer(self, embeddings):
-        output, _ = self.lstm(embeddings)
-        output = nn.functional.dropout(output, p=0.5)
-        output = self.linear1(output)
-        output = self.relu(output)
-        selected_output = output[:, self.context_size-1:, :]
-        scores = self.linear2(selected_output)  # continues output
-        classes = self.linear3(selected_output)  # newly added for classes output
-        classes = torch.sigmoid(classes)  # if you want output in [0, 1]
-        return scores, classes
+        return classes

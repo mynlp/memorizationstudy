@@ -117,13 +117,11 @@ for _ in range(args.epoch):
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
         entropy = torch.stack([x for x in data["entropy"]], dim=1)
         prediction = torch.stack([x for x in data["prediction"]], dim=1)
-        scores, classes = predictor(embedding.float().cuda())
+        classes = predictor(embedding.float().cuda(), entropy.float().cuda())
             # Compute the loss
-        regression_loss = loss_fn(scores.squeeze(),entropy.to(device))
-        classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2), prediction.type(torch.int64).view(-1).to(device))
+        loss = classification_loss_fn(classes.squeeze().view(-1, 2), prediction.type(torch.int64).view(-1).to(device))
         # Backprop and optimize
         optimizer.zero_grad()
-        loss = regression_loss + classification_loss
         train_loss.append(loss.item())
         optimizer.step()
         if i % 100 == 0:
