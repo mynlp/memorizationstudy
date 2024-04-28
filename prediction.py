@@ -10,6 +10,7 @@ from models import *
 from torch.utils.data import DataLoader
 import argparse
 import os
+from datasets import DatasetDict
 
 def format_example(example):
     tokens, labels, embeddings, prediction, entropy = example['token'], example['label'], example["embedding"], example["prediction"], example["entropy"]
@@ -67,8 +68,12 @@ args.add_argument("--load_cache", type=bool, default=True)
 args = args.parse_args()
 random.seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+num_gpus = torch.cuda.device_count()
 model_name = f"EleutherAI/pythia-{args.model_size}-deduped-v0"
-from datasets import DatasetDict
+if num_gpus > 1:
+    print("Number of available GPUs: ", num_gpus)
+else:
+    print("Number of available GPU: ", num_gpus)
 if args.load_cache == False:
     dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
     for i in range(args.continuation):
@@ -100,11 +105,13 @@ else:
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
     test_dataloader = DataLoader(test_dataset, batch_size=32)
 
-predictor = LSTMPredictor(args.embedding_size, args.hidden_size).to(device)
-# Define a loss function and an optimizer
-loss_fn = nn.MSELoss()
+predictor = LSTMPredictor(args.embedding_size, args.hidden_size)
+if num_gpus > 1:
+    predictor = nn.DataParallel(predictor)
+predictor.to(device)# Define a loss function and an optimizer
+#loss_fn = nn.MSELoss()
 classification_loss_fn = nn.NLLLoss()
-optimizer = torch.optim.Adam(predictor.parameters(), lr=0.0005)
+optimizer = torch.optim.Adam(predictor.parameters(), lr=0.001)
 
 train_loss = []
 best_accuracy = 0
