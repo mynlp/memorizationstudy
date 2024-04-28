@@ -56,7 +56,7 @@ def infer(predictor, embeddings, entropy, repeats=50):
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="70m")
-args.add_argument("--context", type=int, default=32)
+args.add_argument("--context", type=int, default=128)
 args.add_argument("--continuation", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--seed", type=int, default=42)
@@ -65,6 +65,7 @@ args.add_argument("--embedding_size", type=int, default=512)
 args.add_argument("--hidden_size", type=int, default=512)
 args.add_argument("--load_cache", type=bool, default=True)
 args.add_argument("--model_type", type=str, default="transformer")
+args.add_argument("--batch_size", type=int, default=32)
 args = args.parse_args()
 random.seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -97,13 +98,13 @@ if args.load_cache == False:
     test_dataset = splited_dataset['test']
     train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
     test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}.arrow")
-    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
-    test_dataloader = DataLoader(test_dataset, batch_size=32)
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
+    test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
 else:
     train_dataset = Dataset.from_file(f"train_cache/{args.model_size}.arrow")
     test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
-    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=32)
-    test_dataloader = DataLoader(test_dataset, batch_size=32)
+    train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
+    test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
 
 if args.model_type == "lstm":
     predictor = LSTMPredictor(args.embedding_size, args.hidden_size)
