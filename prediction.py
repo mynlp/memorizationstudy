@@ -25,13 +25,12 @@ def evaluate(predictor, dataloader, counter=0):
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             entropy = torch.stack([x for x in data["entropy"]], dim=1)
             prediction = torch.stack([x for x in data["prediction"]], dim=1)
-            scores, classes = infer(predictor, embedding)
-            regression_loss = loss_fn(scores.squeeze(), entropy.to(device))
+            classes = infer(predictor, embedding)
             classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2),
                                                          prediction.type(torch.int64).view(-1).to(device))
             classificaiton_results = classes.squeeze().view(-1, 2).argmax(dim=1) == prediction.type(torch.int64).view(-1).to(device)
             classificaiton_results = classificaiton_results.float().sum()
-            loss = regression_loss + classification_loss
+            loss = classification_loss
             total_loss += loss.item()
             counter += classificaiton_results
     return total_loss / len(dataloader), counter/data_size
@@ -42,14 +41,13 @@ def evaluate(predictor, dataloader, counter=0):
     #         total_loss += loss.item()
     # return total_loss / len(dataloader), counter/data_size
 
-def infer(predictor, embeddings, repeats=50):
+def infer(predictor, embeddings, entropy, repeats=50):
     predictor.eval()  # Set the model to evaluation mode
     scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
         #for _ in range(repeats):
-        scores, classes = predictor.infer(embeddings.float().cuda())
-
-    return scores, classes
+        classes = predictor(embeddings.float().cuda(), entropy.float().cuda()
+    return classes
         #scores, classes = predictor.infer(embeddings.float().cuda())
         #scores_list.append(scores.squeeze())
     #scores_arr = torch.stack(scores_list, dim=1)
