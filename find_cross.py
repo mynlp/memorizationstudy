@@ -62,6 +62,7 @@ for i in tqdm(range(continuation_size+1)):
                        max_length=context_size + continuation_size,
                        min_length=context_size + continuation_size)
         embeddings =  model_outputs.hidden_states[-1][-1]
+        pdb.set_trace()
         generated_sequence = model_outputs.sequences
         embedding_list.append(embeddings.cpu())
         logits = model_outputs["scores"]
