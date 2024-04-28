@@ -128,6 +128,7 @@ for _ in range(args.epoch):
         if i % 100 == 0:
             print(f'Loss: {accumulated_loss/100:.4f}')
             accumulated_loss = 0
+    predictor.eval()
     validation_loss, accuracy = evaluate(predictor, test_dataloader)
     print(f'Validation Loss: {validation_loss:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
