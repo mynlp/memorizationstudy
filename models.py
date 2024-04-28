@@ -14,11 +14,11 @@ class Predictor(nn.Module):
         output, _ = self.lstm(embeddings)
         #output = self.dropout(output)
         output = self.linear1(output)
-        output = self.relu(output)
+        #output = self.relu(output)
         selected_output = output[:, self.context_size-1:, :]
         selected_output = torch.cat((selected_output, entropy.unsqueeze(2)), dim=2)
         classes = self.linear3(selected_output)  # newly added for classes output
-        pdb.set_trace()
-        classes = torch.nn.LogSoftmax(classes)  # if you want output in [0, 1]
+        #pdb.set_trace()
+        classes = torch.nn.functional.log_softmax(classes, dim=1)  # if you want output in [0, 1]
 
         return classes
