@@ -25,7 +25,7 @@ def evaluate(predictor, dataloader, counter=0):
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             entropy = torch.stack([x for x in data["entropy"]], dim=1)
             prediction = torch.stack([x for x in data["prediction"]], dim=1)
-            classes = infer(predictor, embedding)
+            classes = infer(predictor, embedding, entropy)
             classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2),
                                                          prediction.type(torch.int64).view(-1).to(device))
             classificaiton_results = classes.squeeze().view(-1, 2).argmax(dim=1) == prediction.type(torch.int64).view(-1).to(device)
