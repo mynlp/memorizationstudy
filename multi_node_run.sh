@@ -1,5 +1,5 @@
 #!/bin/zsh
-#PJM -L rscgrp=medium-a
+#PJM -L rscgrp=regular-a
 #PJM -L node=4
 #PJM -L elapse=48:00:00
 #PJM --mpi proc=4
