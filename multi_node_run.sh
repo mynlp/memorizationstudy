@@ -1,13 +1,13 @@
 #!/bin/zsh
 #PJM -L rscgrp=regular-a
-#PJM -L node=8
+#PJM -L node=4
 #PJM -L elapse=24:00:00
-#PJM --mpi proc=8
+#PJM --mpi proc=4
 #PJM -g gk77
 #PJM -j
-#PJM -N de1bm3264
-#PJM -o de1bm3264
-#PJM -e de1bm3264
+#PJM -N de6.9bm3264
+#PJM -o de6.9bm3264
+#PJM -e de6.9bm3264
 #if [ -z "$RUN_ON_REMOTE" ]; then
 #    source /work/gk77/k77025/.zshrc
 #fi
@@ -27,4 +27,4 @@ cat $PJM_O_NODEINF >> /work/gk77/share/log
 #CONTINUATION_SIZE=$4
 #BATCH_SIZE=$5
 #MODEL=$6
-mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 8 8 32 64 1024 1b-deduped-v0
+mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 4 8 32 64 1024 6.9b-deduped-v0
