@@ -5,9 +5,9 @@
 #PJM --mpi proc=8
 #PJM -g gk77
 #PJM -j
-#PJM -N de6.9bm3232
-#PJM -o de6.9bm3232
-#PJM -e de6.9bm3232
+#PJM -N de1bm3264
+#PJM -o de1bm3264
+#PJM -e de1bm3264
 #if [ -z "$RUN_ON_REMOTE" ]; then
 #    source /work/gk77/k77025/.zshrc
 #fi
