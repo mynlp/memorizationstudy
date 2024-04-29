@@ -1,8 +1,8 @@
 #!/bin/zsh
 #PJM -L rscgrp=regular-a
-#PJM -L node=4
+#PJM -L node=8
 #PJM -L elapse=24:00:00
-#PJM --mpi proc=4
+#PJM --mpi proc=8
 #PJM -g gk77
 #PJM -j
 #PJM -N de6.9bm3232
@@ -27,4 +27,4 @@ cat $PJM_O_NODEINF >> /work/gk77/share/log
 #CONTINUATION_SIZE=$4
 #BATCH_SIZE=$5
 #MODEL=$6
-mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 4 8 32 32 1024 6.9b-deduped-v0
+mpirun -machinefile $PJM_O_NODEINF -np $PJM_MPI_PROC -map-by node ./paralle.sh 8 8 32 64 1024 1b-deduped-v0
