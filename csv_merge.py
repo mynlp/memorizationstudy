@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 import os
 
 args = ArgumentParser()
-args.add_argument("--model_name", type=str, default="410m-deduped-v0")
+args.add_argument("--model_name", type=str, default="160m-deduped-v0")
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--rank_size", type=int, default=64)
 args.add_argument("--context_size", type=int, default=32)
