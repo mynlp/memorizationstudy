@@ -118,7 +118,7 @@ if num_gpus > 1:
 predictor.to(device)# Define a loss function and an optimizer
 #loss_fn = nn.MSELoss()
 classification_loss_fn = nn.NLLLoss()
-optimizer = torch.optim.Adam(predictor.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(predictor.parameters(), lr=0.0001)
 
 train_loss = []
 best_accuracy = 0
