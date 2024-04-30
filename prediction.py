@@ -32,7 +32,7 @@ def evaluate(predictor, dataloader):
                                                          prediction.type(torch.int64).view(-1).to(device))
             data_size = prediction.shape[0]*prediction.shape[1]
             pdb.set_trace()
-            classificaiton_results = classes.squeeze().view(-1, 2).argmax(dim=2) == prediction.type(torch.int64).view(-1).to(device)
+            classificaiton_results = classes.squeeze().argmax(dim=2) == prediction.type(torch.int64).view(-1).to(device)
             classificaiton_results = classificaiton_results.float().sum()
             loss = classification_loss
             total_loss += loss.item()
@@ -126,8 +126,8 @@ best_model_state = None
 accumulated_loss = 0
 # Training loop
 for _ in range(args.epoch):
-    predictor.train()
     evaluate(predictor, test_dataloader)
+    predictor.train()
     for i, data in tqdm(enumerate(train_dataloader)):
         predictor.zero_grad()
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
