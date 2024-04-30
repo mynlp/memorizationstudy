@@ -24,7 +24,6 @@ def evaluate(predictor, dataloader):
     counter = 0
     with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for data in dataloader:
-            pdb.set_trace()
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             entropy = torch.stack([x for x in data["entropy"]], dim=1)
             prediction = torch.stack([x for x in data["prediction"]], dim=1)
