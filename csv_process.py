@@ -7,8 +7,7 @@ for file in [
     "memorization_evals_160m-deduped-v0_32_80_143000.csv",
     "memorization_evals_410m-deduped-v0_32_80_143000.csv",
     "memorization_evals_1b-deduped-v0_32_80_143000.csv",
-        "memorization_evals_1b-deduped-v0_32_96_143000.csv",
-
+    "memorization_evals_1b-deduped-v0_32_96_143000.csv",
                 ]:
     print(file)
     generate_results = pd.read_csv("generate_results/"+file, index_col=0)
