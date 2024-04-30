@@ -16,10 +16,11 @@ def format_example(example):
     tokens, labels, embeddings, prediction, entropy = example['token'], example['label'], example["embedding"], example["prediction"], example["entropy"]
     return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings, 'prediction': prediction, 'entropy': entropy}
 
-def evaluate(predictor, dataloader, counter=0):
+def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
     total_loss = 0
     data_size = 0
+    counter = 0
     with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for data in dataloader:
             data_size += len(data["labels"])
