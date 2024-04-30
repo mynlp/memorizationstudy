@@ -24,7 +24,6 @@ def evaluate(predictor, dataloader):
     counter = 0
     with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for data in dataloader:
-            data_size += len(data["labels"])
             pdb.set_trace()
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             entropy = torch.stack([x for x in data["entropy"]], dim=1)
@@ -32,7 +31,8 @@ def evaluate(predictor, dataloader):
             classes = infer(predictor, embedding, entropy)
             classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2),
                                                          prediction.type(torch.int64).view(-1).to(device))
-            classificaiton_results = classes.squeeze().view(-1, 2).argmax(dim=1) == prediction.type(torch.int64).view(-1).to(device)
+            data_size = prediction.shape[0]*prediction.shape[1]
+            classificaiton_results = classes.squeeze().view(-1, 2).argmax(dim=2) == prediction.type(torch.int64).view(-1).to(device)
             classificaiton_results = classificaiton_results.float().sum()
             loss = classification_loss
             total_loss += loss.item()
