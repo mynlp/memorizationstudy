@@ -9,6 +9,7 @@ from tqdm import tqdm
 from models import *
 from torch.utils.data import DataLoader
 import argparse
+import pdb
 import os
 from datasets import DatasetDict
 
@@ -24,6 +25,7 @@ def evaluate(predictor, dataloader):
     with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for data in dataloader:
             data_size += len(data["labels"])
+            pdb.set_trace()
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
             entropy = torch.stack([x for x in data["entropy"]], dim=1)
             prediction = torch.stack([x for x in data["prediction"]], dim=1)
