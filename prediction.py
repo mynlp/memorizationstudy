@@ -127,6 +127,7 @@ accumulated_loss = 0
 # Training loop
 for _ in range(args.epoch):
     predictor.train()
+    predictor.eval()
     for i, data in tqdm(enumerate(train_dataloader)):
         predictor.zero_grad()
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
