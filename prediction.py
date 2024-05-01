@@ -64,12 +64,13 @@ args.add_argument("--continuation", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--seed", type=int, default=42)
 args.add_argument("--epoch", type=int, default=40)
-args.add_argument("--embedding_size", type=int, default=512)
 args.add_argument("--hidden_size", type=int, default=512)
 args.add_argument("--load_cache", type=bool, default=True)
 args.add_argument("--model_type", type=str, default="transformer")
 args.add_argument("--batch_size", type=int, default=128)
 args = args.parse_args()
+embedding_size_dict = {"70m": 512, "160m": 768, "410m": 1024, "1b": 2048, "2.8b": 2560, "6.9b": 4096, "12b": 5120}
+embedding_size = embedding_size_dict[args.model_size]
 random.seed(args.seed)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_gpus = torch.cuda.device_count()
@@ -110,9 +111,9 @@ else:
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
 
 if args.model_type == "lstm":
-    predictor = LSTMPredictor(args.embedding_size, args.hidden_size)
+    predictor = LSTMPredictor(embedding_size, args.hidden_size)
 elif args.model_type == "transformer":
-    predictor = TransformerPredictor(args.embedding_size, args.hidden_size)
+    predictor = TransformerPredictor(embedding_size, args.hidden_size)
 if num_gpus > 1:
     predictor = nn.DataParallel(predictor)
 predictor.to(device)# Define a loss function and an optimizer
