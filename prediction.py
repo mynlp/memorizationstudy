@@ -38,24 +38,14 @@ def evaluate(predictor, dataloader):
             total_loss += loss.item()
             counter += classificaiton_results
     return total_loss / len(dataloader), counter/data_size
-    #         scores_mean, standard = infer(predictor, embedding)
-    #         loss = loss_fn(scores_mean.squeeze(), data["labels"].float().to(device))
-    #         in_range = ((data["labels"].float().cuda() > (scores_mean - 3*standard)) &(data["labels"].float().cuda() < (scores_mean + 3*standard))).float()
-    #         counter += torch.sum(in_range).item()
-    #         total_loss += loss.item()
-    # return total_loss / len(dataloader), counter/data_size
+
 
 def infer(predictor, embeddings, entropy, repeats=50):
     predictor.eval()  # Set the model to evaluation mode
-    scores_list = []
     with torch.no_grad():  # Do not calculate gradient since we are only inferring
-        #for _ in range(repeats):
         classes = predictor(embeddings.float().cuda(), entropy.float().cuda())
     return classes
-        #scores, classes = predictor.infer(embeddings.float().cuda())
-        #scores_list.append(scores.squeeze())
-    #scores_arr = torch.stack(scores_list, dim=1)
-    #return scores_arr.mean(dim=1), scores_arr.var(dim=1)
+
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="70m")
@@ -68,6 +58,7 @@ args.add_argument("--hidden_size", type=int, default=512)
 args.add_argument("--load_cache", type=bool, default=True)
 args.add_argument("--model_type", type=str, default="transformer")
 args.add_argument("--batch_size", type=int, default=128)
+args.add_argument("--lr", type=float, default=5e-4)
 args = args.parse_args()
 embedding_size_dict = {"70m": 512, "160m": 768, "410m": 1024, "1b": 2048, "2.8b": 2560, "6.9b": 4096, "12b": 5120}
 embedding_size = embedding_size_dict[args.model_size]
@@ -119,12 +110,13 @@ if num_gpus > 1:
 predictor.to(device)# Define a loss function and an optimizer
 #loss_fn = nn.MSELoss()
 classification_loss_fn = nn.NLLLoss()
-optimizer = torch.optim.Adam(predictor.parameters(), lr=0.0001)
+optimizer = torch.optim.Adam(predictor.parameters(), lr=args.lr)
 
 train_loss = []
 best_accuracy = 0
 best_model_state = None
 accumulated_loss = 0
+f = open(f"prediction_result/{args.model_size}.txt", "w")
 # Training loop
 for _ in range(args.epoch):
     evaluate(predictor, test_dataloader)
@@ -149,11 +141,15 @@ for _ in range(args.epoch):
     validation_loss, accuracy = evaluate(predictor, test_dataloader)
     print(f'Validation Loss: {validation_loss:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
+    f.write(f'Validation Loss: {validation_loss:.4f}\n')
+    f.write(f'Accuracy: {accuracy:.4f}\n')
     if accuracy > best_accuracy:
         best_accuracy = accuracy
         best_model_state = predictor.state_dict()
-torch.save(best_model_state, f"saved_models/predictor_{args.model_size}.pt")
+f.close()
+torch.save(best_model_state, f"saved_models/predictor_{args.model_size}_{args.model_type}.pt")
 plt.plot(train_loss)
-plt.savefig(f"prediction_train_loss_{args.model_size}.png")
+plt.savefig(f"prediction_train_loss_{args.model_size}_{args.model_type}.png")
 plt.show()
+
 
