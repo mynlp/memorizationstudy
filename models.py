@@ -24,7 +24,7 @@ class LSTMPredictor(nn.Module):
         return classes
 
 class TransformerPredictor(nn.Module):
-    def __init__(self, embedding_size, hidden_size, context_size=32, num_layers=3, drop_prob=0.5):
+    def __init__(self, embedding_size, hidden_size, context_size=32, num_layers=4, drop_prob=0.5):
         super(TransformerPredictor, self).__init__()
         transformer_layer = nn.TransformerEncoderLayer(d_model=embedding_size, nhead=8)
         self.transformer = nn.TransformerEncoder(transformer_layer, num_layers=num_layers)
