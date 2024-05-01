@@ -10,14 +10,9 @@ from transformers import GPTNeoXForCausalLM, AutoTokenizer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 random.seed(42)
-model_size = "70m"
+model_size = "410m"
 model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
 CHECKPOINT = 143000
-tokenizer = AutoTokenizer.from_pretrained(
-  model_name,
-  revision=f"step{CHECKPOINT}",
-  cache_dir=f"./pythia-160m-deduped/step{CHECKPOINT}",
-)
 prefix = 'deduped_merge/document.bin'
 context_size = 32
 continuation_size = 16
