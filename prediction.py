@@ -117,8 +117,13 @@ best_accuracy = 0
 best_model_state = None
 accumulated_loss = 0
 f = open(f"prediction_result/{args.model_size}.txt", "w")
+early_stop_counter = 0
+prev_accuracy = 0
 # Training loop
 for _ in range(args.epoch):
+    if early_stop_counter >= 5:  # Stop training if accuracy has decreased 5 times in a row
+        print("Early stopping")
+        break
     evaluate(predictor, test_dataloader)
     predictor.train()
     for i, data in tqdm(enumerate(train_dataloader)):
@@ -146,6 +151,12 @@ for _ in range(args.epoch):
     if accuracy > best_accuracy:
         best_accuracy = accuracy
         best_model_state = predictor.state_dict()
+        early_stop_counter = 0
+    elif accuracy < prev_accuracy:
+        early_stop_counter += 1  # Increase counter if accuracy decreased
+    prev_accuracy = accuracy
+print(f'Best Accuracy: {best_accuracy:.4f}')
+f.write(f'Best Accuracy: {best_accuracy:.4f}\n')
 f.close()
 torch.save(best_model_state, f"saved_models/predictor_{args.model_size}_{args.model_type}.pt")
 plt.plot(train_loss)
