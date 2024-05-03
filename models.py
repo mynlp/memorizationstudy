@@ -30,7 +30,7 @@ class TransformerPredictor(nn.Module):
         self.transformer = nn.TransformerEncoder(transformer_layer, num_layers=num_layers)
         self.context_size = context_size
         self.dropout = nn.Dropout(drop_prob)
-        self.linear1 = nn.Linear(hidden_size, hidden_size)
+        self.linear1 = nn.Linear(embedding_size, hidden_size)
         self.relu = nn.ReLU()
         self.linear3 = nn.Linear(hidden_size + 1, 2)
 
