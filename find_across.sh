@@ -4,9 +4,9 @@
 #PJM -L elapse=24:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N findacross2.8
-#PJM -o findacross2.8
-#PJM -e findacross2.8
+#PJM -N findacross6.9
+#PJM -o findacross6.9
+#PJM -e findacross6.9
 
 #env
 #export RANK=1pjs
@@ -16,4 +16,4 @@
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-python find_cross.py --model_size 2.8b  --batch_size 25 --context_size 32 --continuation_size 16 --num_samples 2000
+python find_cross.py --model_size 6.9b  --batch_size 25 --context_size 32 --continuation_size 16 --num_samples 2000

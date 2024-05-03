@@ -10,7 +10,7 @@ from transformers import GPTNeoXForCausalLM, AutoTokenizer
 import argparse
 
 args = argparse.ArgumentParser()
-args.add_argument("--model_size", type=str, default="2.8b")
+args.add_argument("--model_size", type=str, default="6.9b")
 args.add_argument("--context_size", type=int, default=128)
 args.add_argument("--continuation_size", type=int, default=16)
 args.add_argument("--seed", type=int, default=42)
