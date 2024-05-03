@@ -16,4 +16,4 @@
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
-python find_cross.py --model_size 2.8b  --batch_size 100 --context_size 32 --continuation_size 16 --num_samples 2000
+python find_cross.py --model_size 2.8b  --batch_size 50 --context_size 32 --continuation_size 16 --num_samples 2000
