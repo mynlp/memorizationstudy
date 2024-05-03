@@ -70,53 +70,90 @@ data = [
     (memorized_32_16, "Memorize Score 1", "blue", "o", "-")
 ]
 
-# Plot each data series
+fig, axs = plt.subplots(1, 3, figsize=(18, 6))# Plot each data series
 for info in data:
     array, label, color, marker, linestyle = info
-    plt.plot(model_size, array, label=label, color=color, marker=marker, linestyle=linestyle, linewidth=2, alpha=0.7)
+    axs[0].plot(model_size, array, label=label, color=color, marker=marker, linestyle=linestyle, linewidth=2, alpha=0.7)
+# plt.yscale('log')
+# plt.xlabel("Model Size", fontsize=14)
+# plt.ylabel("Number of Memorized Sentences", fontsize=14)
+# plt.title("Number of Sentences Memorized by Model Size", fontsize=16)
+# plt.legend(fontsize=10, loc='upper left')
+# plt.grid(True)
+# plt.savefig("memorized.png", bbox_inches='tight', dpi=600)
+# plt.show()
+axs[0].set_yscale('log')
+axs[0].set_xlabel("Model Size", fontsize=14)
+axs[0].set_ylabel("Number of Sentences", fontsize=14)
+axs[0].set_title("Sentences of Different Memorization Score vs Model Size", fontsize=14)
+axs[0].grid(True, linestyle='--', alpha=0.5)
+axs[0].legend(fontsize=10, loc='upper left')
+fig.savefig('memorized_sentences.png', bbox_inches='tight', dpi=600)
 
-plt.yscale('log')
-plt.xlabel("Model Size", fontsize=14)
-plt.ylabel("Number of Memorized Sentences", fontsize=14)
-plt.title("Number of Sentences Memorized by Model Size", fontsize=16)
-plt.legend(fontsize=12)
-plt.grid(True)
-plt.savefig("memorized.png")
-plt.show()
+x_labels = ["32", "48", "64", "96"]
+memorized_70m_dynamic_complement = [894809, 411428, 262729, 167846]
+memorized_160m_dynamic_complement = [1309026, 583993, 375560, 251136]
+memorized_410m_dynamic_complement = [1763621, 802637, 521767, 361575]
+memorized_1b_dynamic_complement = [2197780, 1019401, 667172, 474351]
+memorized_2_8b_dynamic_complement = [2788505, 1297351, 877233, 631442]
+memorized_6_9b_dynamic_complement = [3300177, 1584084, 1106232, 818611]
+memorized_12b_dynamic_complement = [3614267, 1732833, 1247639, 935722]
+SUBSETS = ['70m', '160m', '410m', '1b', '2_8b', '6_9b', '12b']
+COLOURS = ["blue", "red", "green", "purple", "orange", "brown", "black"]
+MARKERS = ["o", "v", "s", "p", "*", "+", "x"]
+for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
+    axs[1].plot(x_labels, eval(f"memorized_{subset}_dynamic_complement"), label=subset, color=colour, marker=marker, linestyle=":", linewidth=2)
+# plt.plot(x_labels, memoirzed_70m_dynamic_complement, label="70m", color="blue", marker="o", linestyle=":", linewidth=2)
+# plt.plot(x_labels, memoirzed_160m_dynamic_complement, label="160m", color="red", marker="v", linestyle=":", linewidth=2)
+# plt.plot(x_labels, memoirzed_410m_dynamic_complement, label="410m", color="green", marker="s", linestyle="-.", linewidth=2)
+# plt.plot(x_labels, memoirzed_1b_dynamic_complement, label="1b", color="purple", marker="p", linestyle="--", linewidth=2)
+# plt.plot(x_labels, memoirzed_2_8b_dynamic_complement, label="2.8b", color="orange", marker="*", linestyle="--", linewidth=2)
+# plt.plot(x_labels, memoirzed_6_9b_dynamic_complement, label="6.9b", color="brown", marker="+", linestyle="-.", linewidth=2)
+# plt.plot(x_labels, memoirzed_12b_dynamic_complement, label="12b", color="black", marker="x", linestyle=":", linewidth=2)
+# plt.xlabel("Complement Size", fontsize=14)
+# plt.ylabel("Number of Memorized Sentences", fontsize=14)
+# plt.title("Number of Sentences Memorized vs Complement Size", fontsize=16)
+# plt.legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+axs[1].set_xlabel("(b) Complement Size", fontsize=14)
+axs[1].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
+axs[1].set_title("Number of Sentences Memorized vs Complement Size", fontsize=14)
+axs[1].legend(title='(a) Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+axs[1].grid(True, linestyle='--', alpha=0.5)
+fig.savefig('memorized_dynamic_complement.png', bbox_inches='tight', dpi=600)
 
-memoirzed_70m_dynamic_complement = [894809, 411428, 262729, 167846, 90968]
-memoirzed_160m_dynamic_complement = [1309026, 583993, 251136]
-memoirzed_410m_dynamic_complement = [1763621, 802637, 361575]
-plt.plot(["16", "32", "64", "96"],memoirzed_70m_dynamic_complement, label="70m", color="blue", marker="o", linestyle="-", linewidth=2)
-plt.xlabel("Complement Size", fontsize=14)
-plt.ylabel("Number of Memorized Sentences", fontsize=14)
-plt.title("Number of Sentences Memorized vs Complement Size", fontsize=16)
-plt.legend(fontsize=12)
-plt.grid(True)
-plt.savefig("memorized_dynamic_complement.png")
-plt.show()
+# plt.savefig("memorized_dynamic_context.png", bbox_inches='tight', dpi=600)
+# plt.show()
 
-memorized_70m_dynamic_context = [1273552, 1591431, 2079244, 2079244]
-memorized_160m_dynamic_context = [1309026]
-memorized_410m_dynamic_context = [1763621]
-memorized_1b_dynamic_context = [2197780]
-memorized_2_8b_dynamic_context = [2788505]
-memorized_6_9b_dynamic_context = [3300177]
-memorized_12b_dynamic_context = [3614267]
+memorized_70m_dynamic_context = [1273552, 1591431, 2079244, 3105332]
+memorized_160m_dynamic_context = [1309026, 1675521, 2204431, 3388421]
+memorized_410m_dynamic_context = [1763621, 2291931, 3094105, 4641115]
+memorized_1b_dynamic_context = [2197780, 2923047, 4033804,  6131382]
+memorized_2_8b_dynamic_context = [2788505, 3848136,5348909, 8023383 ]
+memorized_6_9b_dynamic_context = [3300177, 4648803, 6415035,  9611496]
+memorized_12b_dynamic_context = [3614267, 5096116, 7033750, 10523472]
+for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
+    axs[2].plot(x_labels, eval(f"memorized_{subset}_dynamic_context"), label=subset, color=colour, marker=marker, linestyle=":", linewidth=2)
+# plt.plot(x_labels, memorized_70m_dynamic_context, label="70m", color="blue", marker="o", linestyle=":", linewidth=2)
+# plt.plot(x_labels, memorized_160m_dynamic_context, label="160m", color="red", marker="v", linestyle=":", linewidth=2)
+# plt.plot(x_labels, memorized_410m_dynamic_context, label="410m", color="green", marker="s", linestyle="-.", linewidth=2)
+# plt.plot(x_labels, memorized_1b_dynamic_context, label="1b", color="purple", marker="p", linestyle="--", linewidth=2)
+# plt.plot(x_labels, memorized_2_8b_dynamic_context, label="2.8b", color="orange", marker="*", linestyle="--", linewidth=2)
+# plt.plot(x_labels, memorized_6_9b_dynamic_context, label="6.9b", color="brown", marker="+", linestyle="-.", linewidth=2)
+# plt.plot(x_labels, memorized_12b_dynamic_context, label="12b", color="black", marker="x", linestyle=":", linewidth=2)
+axs[2].set_xlabel("(c) Context Size", fontsize=14)
+axs[2].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
+axs[2].set_title("Number of Sentences Memorized vs Context Size", fontsize=14)
+axs[2].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+axs[2].grid(True, linestyle='--', alpha=0.5)
+# plt.xlabel("Context Size", fontsize=14)
+# plt.ylabel("Number of Memorized Sentences", fontsize=14)
+# plt.title("Number of Sentences Memorized vs Context Size", fontsize=16)
+# plt.legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+# plt.grid(True, linestyle='--', alpha=0.5)
+fig.savefig('memorized_dynamic_context.png', bbox_inches='tight', dpi=600)
 
-plt.plot(["32", "48", "64", "96"],memorized_70m_dynamic_context, label="70m", color="blue", marker="o", linestyle="-", linewidth=2)
-plt.plot(["32"],memorized_160m_dynamic_context, label="160m", color="red", marker="o", linestyle="-", linewidth=2)
-plt.plot(["32"],memorized_410m_dynamic_context, label="410m", color="green", marker="o", linestyle="-", linewidth=2)
-plt.plot(["32"],memorized_1b_dynamic_context, label="1b", color="purple", marker="o", linestyle="-", linewidth=2)
-plt.plot(["32"],memorized_2_8b_dynamic_context, label="2.8b", color="orange", marker="o", linestyle="-", linewidth=2)
-plt.plot(["32"],memorized_6_9b_dynamic_context, label="6.9b", color="brown", marker="o", linestyle="-", linewidth=2)
-plt.plot(["32"],memorized_12b_dynamic_context, label="12b", color="black", marker="o", linestyle="-", linewidth=2)
-plt.xlabel("Context Size", fontsize=14)
-plt.ylabel("Number of Memorized Sentences", fontsize=14)
-plt.title("Number of Sentences Memorized vs Context Size", fontsize=16)
-plt.legend(fontsize=12)
-plt.grid(True)
-plt.savefig("memorized_dynamic_context.png")
+plt.tight_layout()  # adjust subplot params to give specified padding
+plt.savefig("memorized.png", bbox_inches='tight', dpi=600)
 plt.show()
 
 

@@ -145,12 +145,14 @@ for i in range(len(model_size_list)):
     plt.plot(x_values, half_memorized_entropy_values[i], color=colors[3 * i + 1], label=f'{model_size_list[i]}_half_memorized')
     plt.plot(x_values, unmemorized_entropy_values[i], color=colors[3 * i + 2], label=f'{model_size_list[i]}_unmemorized')
 
-plt.legend(loc='best')
+plt.legend(loc='best', fontsize='10')
 plt.title('Entropy at Each Token for Memorized and Unmemorized Data')
 plt.xlabel('Token Position')
 plt.ylabel('Entropy')
+plt.grid(True, linestyle='--', alpha=0.5)
 plt.legend()
-plt.savefig(f'entropy_across_steps.png')
+plt.tight_layout()
+plt.savefig(f'entropy_across_steps.png', bbox_inches='tight', dpi=600)
 plt.show()
 
 
