@@ -33,6 +33,7 @@ model = GPTNeoXForCausalLM.from_pretrained(
 #model = model.to(device)
 if torch.cuda.is_available():
     device_ids = list(range(torch.cuda.device_count()))
+    print(device_ids)
     model = torch.nn.DataParallel(model, device_ids=device_ids)
 model.module.generation_config.pad_token_id = model.module.generation_config.eos_token_id
 model.module.generation_config.output_hidden_states = True
