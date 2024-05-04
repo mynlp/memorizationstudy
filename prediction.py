@@ -92,12 +92,12 @@ if args.load_cache == False:
     train_dataset = splited_dataset['train']
     test_dataset = splited_dataset['test']
     train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
-    test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}.arrow")
+    test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
 else:
-    train_dataset = Dataset.from_file(f"train_cache/{args.model_size}.arrow")
-    test_dataset = Dataset.from_file(f"test_cache/{args.model_size}.arrow")
+    train_dataset = Dataset.from_file(f"train_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
+    test_dataset = Dataset.from_file(f"test_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
 
