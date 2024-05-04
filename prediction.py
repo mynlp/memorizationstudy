@@ -49,8 +49,8 @@ def infer(predictor, embeddings, entropy, repeats=50):
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="2.8b")
-args.add_argument("--context", type=int, default=128)
-args.add_argument("--continuation", type=int, default=16)
+args.add_argument("--context_size", type=int, default=128)
+args.add_argument("--continuation_size", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--seed", type=int, default=42)
 args.add_argument("--epoch", type=int, default=30)
@@ -73,12 +73,12 @@ else:
 if args.load_cache == False:
     dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
     for i in range(args.continuation):
-        local_data = torch.load(f"cross_remembered/context_tokens_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-        local_embedding = torch.load(f"cross_remembered/embeddings_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-        local_entropy = torch.load(f"cross_remembered/entropy_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
-        local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.continuation}_{i}_{args.model_size}.pt", map_location=device)
+        local_data = torch.load(f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
+        local_embedding = torch.load(f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
+        local_entropy = torch.load(f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
+        local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
         dataset["token"].append(local_data)
-        dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation)
+        dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation_size)
         dataset["embedding"].append(local_embedding)
         dataset["prediction"].append(local_memorized)
         dataset["entropy"].append(local_entropy)
@@ -91,7 +91,7 @@ if args.load_cache == False:
     splited_dataset = dataset.train_test_split(test_size=0.2)
     train_dataset = splited_dataset['train']
     test_dataset = splited_dataset['test']
-    train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}.arrow")
+    train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
     test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}.arrow")
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
     test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
