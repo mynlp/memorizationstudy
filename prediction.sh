@@ -4,9 +4,9 @@
 #PJM -L elapse=24:00:00
 #PJM -g gk77
 #PJM -j
-#PJM -N prediction2.8b
-#PJM -o prediction2.8b
-#PJM -e prediction2.8b
+#PJM -N prediction6.9b
+#PJM -o prediction6.9b
+#PJM -e prediction6.9b
 
 if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
