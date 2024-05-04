@@ -20,8 +20,10 @@ def format_example(example):
 def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
     total_loss = 0
-    data_size = 0
+    token_data_size = 0
+    row_data_size = 0
     counter = 0
+    full＿acc_counter = 0
     with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for data in dataloader:
             embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
@@ -30,14 +32,17 @@ def evaluate(predictor, dataloader):
             classes = infer(predictor, embedding, entropy)
             classification_loss = classification_loss_fn(classes.squeeze().view(-1, 2),
                                                          prediction.type(torch.int64).view(-1).to(device))
-            data_size += prediction.shape[0]*prediction.shape[1]
+            row_data_size += prediction.shape[0]
+            token_data_size += prediction.shape[0]*prediction.shape[1]
             #pdb.set_trace()
             classificaiton_results = classes.squeeze().argmax(dim=2) == prediction.type(torch.int64).to(device)
+            row_eq_res = torch.all(classificaiton_results, dim=1)
             classificaiton_results = classificaiton_results.float().sum()
             loss = classification_loss
             total_loss += loss.item()
             counter += classificaiton_results
-    return total_loss / len(dataloader), counter/data_size
+            full＿acc_counter += row_eq_res.float().sum()
+    return total_loss / len(dataloader), counter/token_data_size, full＿acc_counter/row_data_size
 
 
 def infer(predictor, embeddings, entropy, repeats=50):
@@ -114,6 +119,7 @@ optimizer = torch.optim.Adam(predictor.parameters(), lr=args.lr)
 
 train_loss = []
 best_accuracy = 0
+best_full_accuracy = 0
 best_model_state = None
 accumulated_loss = 0
 f = open(f"prediction_result/{args.model_size}.txt", "w")
@@ -143,20 +149,25 @@ for _ in range(args.epoch):
             print(f'Loss: {accumulated_loss/100:.4f}')
             accumulated_loss = 0
     predictor.eval()
-    validation_loss, accuracy = evaluate(predictor, test_dataloader)
+    validation_loss, accuracy, full_acc = evaluate(predictor, test_dataloader)
     print(f'Validation Loss: {validation_loss:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
+    print(f'Full Accuracy: {full_acc:.4f}')
     f.write(f'Validation Loss: {validation_loss:.4f}\n')
     f.write(f'Accuracy: {accuracy:.4f}\n')
+    f.write(f'Full Accuracy: {full_acc:.4f}\n')
     if accuracy > best_accuracy:
         best_accuracy = accuracy
+        best_full_accuracy = full_acc
         best_model_state = predictor.state_dict()
         early_stop_counter = 0
     elif accuracy < prev_accuracy:
         early_stop_counter += 1  # Increase counter if accuracy decreased
     prev_accuracy = accuracy
 print(f'Best Accuracy: {best_accuracy:.4f}')
+print(f'Best Full Accuracy: {best_full_accuracy:.4f}')
 f.write(f'Best Accuracy: {best_accuracy:.4f}\n')
+f.write(f'Best Full Accuracy: {best_full_accuracy:.4f}\n')
 f.close()
 torch.save(best_model_state, f"saved_models/predictor_{args.model_size}_{args.model_type}_{args.context_size}_{args.continuation_size}.pt")
 plt.plot(train_loss)
