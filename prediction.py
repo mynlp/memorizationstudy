@@ -72,7 +72,7 @@ else:
     print("Number of available GPU: ", num_gpus)
 if args.load_cache == False:
     dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
-    for i in range(args.continuation):
+    for i in range(args.continuation_size):
         local_data = torch.load(f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
         local_embedding = torch.load(f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
         local_entropy = torch.load(f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
