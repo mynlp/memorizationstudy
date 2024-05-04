@@ -34,11 +34,11 @@ model = GPTNeoXForCausalLM.from_pretrained(
 if torch.cuda.is_available():
     device_ids = list(range(torch.cuda.device_count()))
     model = torch.nn.DataParallel(model, device_ids=device_ids)
-model.generation_config.pad_token_id = model.generation_config.eos_token_id
-model.generation_config.output_hidden_states = True
-model.generation_config.output_attentions = True
-model.generation_config.output_scores = True
-model.generation_config.return_dict_in_generate = True
+model.module.generation_config.pad_token_id = model.generation_config.eos_token_id
+model.module.generation_config.output_hidden_states = True
+model.module.generation_config.output_attentions = True
+model.module.generation_config.output_scores = True
+model.module.generation_config.return_dict_in_generate = True
 memorized_results = {}
 for i in range(args.continuation_size+1):
     memorized_results[str(i)] = results[results['score'] == i/args.continuation_size]
