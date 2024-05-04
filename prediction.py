@@ -158,9 +158,9 @@ for _ in range(args.epoch):
 print(f'Best Accuracy: {best_accuracy:.4f}')
 f.write(f'Best Accuracy: {best_accuracy:.4f}\n')
 f.close()
-torch.save(best_model_state, f"saved_models/predictor_{args.model_size}_{args.model_type}.pt")
+torch.save(best_model_state, f"saved_models/predictor_{args.model_size}_{args.model_type}_{args.context_size}_{args.continuation_size}.pt")
 plt.plot(train_loss)
-plt.savefig(f"prediction_train_loss_{args.model_size}_{args.model_type}.png")
+plt.savefig(f"prediction_train_loss_{args.model_size}_{args.model_type}_{args.context_size}_{args.continuation_size}.png")
 plt.show()
 
 
