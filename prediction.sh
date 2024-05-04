@@ -12,5 +12,5 @@ if [ -z "$RUN_ON_REMOTE" ]; then
     source /work/gk77/k77025/.zshrc
 fi
 
-python prediction.py --model_size 6.9b
+python prediction.py --model_size 6.9b --context_size 32 --continuation_size 16
 #python batch_generate.py
