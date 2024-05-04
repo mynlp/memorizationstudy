@@ -73,10 +73,10 @@ else:
 if args.load_cache == False:
     dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
     for i in range(args.continuation):
-        local_data = torch.load(f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
-        local_embedding = torch.load(f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
-        local_entropy = torch.load(f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
-        local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location=device)
+        local_data = torch.load(f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
+        local_embedding = torch.load(f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
+        local_entropy = torch.load(f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
+        local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
         dataset["token"].append(local_data)
         dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation_size)
         dataset["embedding"].append(local_embedding)
@@ -128,9 +128,9 @@ for _ in range(args.epoch):
     predictor.train()
     for i, data in tqdm(enumerate(train_dataloader)):
         predictor.zero_grad()
-        embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
-        entropy = torch.stack([x for x in data["entropy"]], dim=1)
-        prediction = torch.stack([x for x in data["prediction"]], dim=1)
+        embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1).cuda()
+        entropy = torch.stack([x for x in data["entropy"]], dim=1).cuda()
+        prediction = torch.stack([x for x in data["prediction"]], dim=1).cuda()
         classes = predictor(embedding.float().cuda(), entropy.float().cuda())
             # Compute the loss
         loss = classification_loss_fn(classes.squeeze().view(-1, 2), prediction.type(torch.int64).view(-1).to(device))
