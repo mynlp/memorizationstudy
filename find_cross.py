@@ -80,10 +80,10 @@ for i in tqdm(range(args.continuation_size+1)):
     memorized_idx = torch.cat(memorized_idx, dim=0)
     entropy = torch.cat(entropy, dim=0)
     datasets[str(i)] = context_tokens
-    torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{args.continuation_size}_{i}_{args.model_size}.pt")
-    torch.save(embeddings, f"cross_remembered/embeddings_{args.continuation_size}_{i}_{args.model_size}.pt")
-    torch.save(memorized_idx, f"cross_remembered/memorized_idx_{args.continuation_size}_{i}_{args.model_size}.pt")
-    torch.save(entropy, f"cross_remembered/entropy_{args.continuation_size}_{i}_{args.model_size}.pt")
+    torch.save(datasets[str(i)], f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt")
+    torch.save(embeddings, f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt")
+    torch.save(memorized_idx, f"cross_remembered/memorized_idx_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt")
+    torch.save(entropy, f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt")
 
 
 
