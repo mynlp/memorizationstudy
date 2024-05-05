@@ -46,8 +46,10 @@ model.module.generation_config.output_attentions = True
 model.module.generation_config.output_scores = True
 model.module.generation_config.return_dict_in_generate = True
 memorized_results = {}
-for i in range(args.continuation_size+1):
-    memorized_results[str(i)] = results[results['score'] == i/args.continuation_size]
+score_list=list(set(results["score"].tolist()))
+score_list.sort()
+for score in score_list:
+    memorized_results[str(i)] = results[results['score'] == score]
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 datasets = {}
