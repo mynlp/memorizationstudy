@@ -48,7 +48,7 @@ model.module.generation_config.return_dict_in_generate = True
 memorized_results = {}
 score_list=list(set(results["score"].tolist()))
 score_list.sort()
-for score in score_list:
+for i, score in enumerate(score_list):
     memorized_results[str(i)] = results[results['score'] == score]
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
