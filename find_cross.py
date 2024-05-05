@@ -33,7 +33,7 @@ model = GPTNeoXForCausalLM.from_pretrained(
 #model = model.to(device)
 if torch.cuda.is_available():
     device = torch.device("cuda")
-    model = model.to(device)
+    #model = model.to(device)
     device_ids = list(range(torch.cuda.device_count()))
     print(device_ids)
     model = torch.nn.DataParallel(model, device_ids=device_ids)
