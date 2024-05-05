@@ -65,6 +65,7 @@ args.add_argument("--model_type", type=str, default="transformer")
 args.add_argument("--batch_size", type=int, default=128)
 args.add_argument("--lr", type=float, default=1e-4)
 args = args.parse_args()
+print(args)
 embedding_size_dict = {"70m": 512, "160m": 768, "410m": 1024, "1b": 2048, "2.8b": 2560, "6.9b": 4096, "12b": 5120}
 embedding_size = embedding_size_dict[args.model_size]
 random.seed(args.seed)
