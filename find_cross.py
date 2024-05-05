@@ -36,7 +36,7 @@ model = GPTNeoXForCausalLM.from_pretrained(
 #model = model.to(device)
 if torch.cuda.is_available():
     device = torch.device("cuda")
-    #model = model.to(device)
+    model = model.to(device)
     device_ids = list(range(torch.cuda.device_count()))
     print(device_ids)
     model = torch.nn.DataParallel(model, device_ids=device_ids)
@@ -67,12 +67,12 @@ for i in tqdm(range(args.continuation_size+1)):
     entropy = []
     for batch_idx in tqdm(range(0, args.num_samples, args.batch_size)):
         end = min(start+args.batch_size, args.num_samples)
-        model_outputs = accelerator.unwrap_model(model).generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
-                       max_length=args.context_size + args.continuation_size,
-                       min_length=args.context_size + args.continuation_size)
-        # model_outputs = model.module.generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
+        # model_outputs = accelerator.unwrap_model(model).generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
         #                max_length=args.context_size + args.continuation_size,
         #                min_length=args.context_size + args.continuation_size)
+        model_outputs = model.module.generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
+                       max_length=args.context_size + args.continuation_size,
+                       min_length=args.context_size + args.continuation_size)
         embeddings = model_outputs.hidden_states[-1][-1]
         generated_sequence = model_outputs.sequences
         embedding_list.append(embeddings.cpu())
