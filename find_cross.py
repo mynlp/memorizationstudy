@@ -69,7 +69,7 @@ for i in tqdm(range(args.continuation_size+1)):
         end = min(start+args.batch_size, args.num_samples)
         model_outputs = accelerator.unwrap_model(model).generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
                        max_length=args.context_size + args.continuation_size,
-                       mign_length=args.context_size + args.continuation_size)
+                       min_length=args.context_size + args.continuation_size)
         # model_outputs = model.module.generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
         #                max_length=args.context_size + args.continuation_size,
         #                min_length=args.context_size + args.continuation_size)
