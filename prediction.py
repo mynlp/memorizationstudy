@@ -123,7 +123,7 @@ best_accuracy = 0
 best_full_accuracy = 0
 best_model_state = None
 accumulated_loss = 0
-f = open(f"prediction_result/{args.model_size}.txt", "w")
+f = open(f"prediction_result/{args.model_size}_{args.context_size}_{args.continuation_size}.txt", "w")
 early_stop_counter = 0
 prev_accuracy = 0
 # Training loop
