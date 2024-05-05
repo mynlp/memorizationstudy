@@ -55,7 +55,7 @@ for i in tqdm(range(args.continuation_size+1)):
     if len(memorized_results[str(i)]["idx"].tolist()) > args.num_samples:
         idx = random.sample(memorized_results[str(i)]["idx"].tolist(), args.num_samples)
     else:
-        idx = random.sample(memorized_results[str(i)]["idx"].tolist())
+        idx = memorized_results[str(i)]["idx"].tolist()
     context_tokens = []
     for j in tqdm(idx):
         data = mmap_ds[j]
