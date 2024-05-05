@@ -8,6 +8,8 @@ import argparse
 import pdb
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 import argparse
+import accelerate
+from accelerate import Accelerator
 
 args = argparse.ArgumentParser()
 args.add_argument("--model_size", type=str, default="410m")
@@ -20,6 +22,7 @@ args.add_argument("--batch_size", type=int, default=20)
 args.add_argument("--num_samples", type=int, default=2000)
 args = args.parse_args()
 random.seed(args.seed)
+accelerator = Accelerator()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 random.seed(42)
 model_name = f"EleutherAI/pythia-{args.model_size}-deduped-v0"
@@ -64,9 +67,12 @@ for i in tqdm(range(args.continuation_size+1)):
     entropy = []
     for batch_idx in tqdm(range(0, args.num_samples, args.batch_size)):
         end = min(start+args.batch_size, args.num_samples)
-        model_outputs = model.module.generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
+        model_outputs = accelerator.unwrap_model(model).generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
                        max_length=args.context_size + args.continuation_size,
-                       min_length=args.context_size + args.continuation_size)
+                       mign_length=args.context_size + args.continuation_size)
+        # model_outputs = model.module.generate(context_tokens[start:end, :args.context_size].to('cuda'), temperature=0.0, top_k=0, top_p=0,
+        #                max_length=args.context_size + args.continuation_size,
+        #                min_length=args.context_size + args.continuation_size)
         embeddings = model_outputs.hidden_states[-1][-1]
         generated_sequence = model_outputs.sequences
         embedding_list.append(embeddings.cpu())
