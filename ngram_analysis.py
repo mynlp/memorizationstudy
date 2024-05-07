@@ -14,8 +14,8 @@ num_points = 10000
 
 memorized, half_memorized, forgotten = dict(), dict(), dict()
 index_set = set()
-n_gram_dict = json.load("/work/gk77/share/memorizationstudy_freq/tokenid_frequency.1gram.json")
-
+with open("/work/gk77/share/memorizationstudy_freq/tokenid_frequency.1gram.json") as file:
+    n_gram_dict = json.load(file)
 def read_by_idx(mmap_ds, idx_list):
     by_index_frequency_batched = []
     for idx in idx_list:
