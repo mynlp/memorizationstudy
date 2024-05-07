@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 sizes = ["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"]
 context_length = ["32"]
 target_length = ["48"]
-num_points = 10000
+num_points = 20000
 
 memorized, half_memorized, forgotten = dict(), dict(), dict()
 index_set = set()
