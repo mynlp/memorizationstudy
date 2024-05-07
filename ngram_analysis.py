@@ -21,7 +21,7 @@ def read_by_idx(mmap_ds, idx_list):
     for idx in idx_list:
         sent_tokens = mmap_ds[int(idx)]
         by_index_frequency = []
-        for token in sent_tokens:
+        for token in sent_tokens[:80]:
             by_index_frequency.append(n_gram_dict[str(token)])
         by_index_frequency_batched.append(by_index_frequency)
     return by_index_frequency_batched
@@ -41,9 +41,10 @@ for size in sizes:
     memorized_batched = read_by_idx(mmap_ds, memorized_index)
     half_memorized_batched = read_by_idx(mmap_ds, half_memorized_index)
     forgotten_batched = read_by_idx(mmap_ds, forgotten_index)
-    averaged_memorized = torch.tensor(memorized_batched).mean(1)
-    averaged_half_memorized = torch.tensor(half_memorized_batched).mean(1)
-    averaged_forgotten = torch.tensor(forgotten_batched).mean(1)
+    averaged_memorized = torch.Tensor(memorized_batched).mean(1)
+    averaged_half_memorized = torch.Tensor(half_memorized_batched).mean(1)
+    averaged_forgotten = torch.Tensor(forgotten_batched).mean(1)
+    print("size: ", size)
     print(averaged_memorized[:48])
     print(averaged_half_memorized[:48])
     print(averaged_forgotten[:48])
