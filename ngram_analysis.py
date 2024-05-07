@@ -22,7 +22,7 @@ def read_by_idx(mmap_ds, idx_list):
         sent_tokens = mmap_ds[int(idx)]
         by_index_frequency = []
         for token in sent_tokens:
-            by_index_frequency.append(n_gram_dict[token])
+            by_index_frequency.append(n_gram_dict[str(token)])
         by_index_frequency_batched.append(by_index_frequency)
     return by_index_frequency_batched
 
