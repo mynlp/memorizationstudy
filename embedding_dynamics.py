@@ -50,7 +50,7 @@ idx_not_full_memorization = memorized_dict["0"].tolist()
 idx_half_memorization = memorized_dict["0.5"].tolist()
 
 stragety = "dynamics"
-num_points = 500
+num_points = 20000
 generations_full_memo, accuracies_full_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_full_memorization,num_points), 32, 16)
 generations_not_full, accuracies_not_full = embedding_obtain(mmap_ds, model,  random.sample(idx_not_full_memorization,num_points), 32, 16)
 generations_half_memo, accuracies_half_memo = embedding_obtain(mmap_ds, model,  random.sample(idx_half_memorization,num_points), 32, 16)
