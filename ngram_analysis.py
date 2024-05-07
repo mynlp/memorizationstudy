@@ -32,9 +32,9 @@ for size in sizes:
     memorized = df[df['score'] == 1]
     half_memorized = df[df['score'] == 0.5]
     forgotten = df[df['score'] == 0]
-    idx_full_memorization = memorized.tolist()
-    idx_not_full_memorization = half_memorized.tolist()
-    idx_half_memorization = forgotten.tolist()
+    idx_full_memorization = memorized["1"].tolist()
+    idx_not_full_memorization = half_memorized["0.5"].tolist()
+    idx_half_memorization = forgotten["0"].tolist()
     memorized_index = random.sample(idx_full_memorization, num_points)
     half_memorized_index = random.sample(idx_not_full_memorization, num_points)
     forgotten_index = random.sample(idx_half_memorization, num_points)
