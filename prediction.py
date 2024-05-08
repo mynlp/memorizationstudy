@@ -53,8 +53,8 @@ def infer(predictor, embeddings, entropy, repeats=50):
 
 
 args = argparse.ArgumentParser()
-args.add_argument("--model_size", type=str, default="2.8b")
-args.add_argument("--context_size", type=int, default=16)
+args.add_argument("--model_size", type=str, default="70m")
+args.add_argument("--context_size", type=int, default=32)
 args.add_argument("--continuation_size", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
 args.add_argument("--seed", type=int, default=42)
