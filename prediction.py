@@ -97,10 +97,13 @@ if args.load_cache == False:
         dataset["embedding"] = torch.cat((dataset["embedding"], local_embedding))
         dataset["prediction"] = torch.cat((dataset["prediction"], local_memorized))
         dataset["entropy"] = torch.cat((dataset["entropy"], local_entropy))
+    print("data load finished")
     dataset = Dataset.from_dict(dataset)
     splited_dataset = dataset.train_test_split(test_size=0.2)
+    print("split finished")
     train_dataset = splited_dataset['train']
     test_dataset = splited_dataset['test']
+    print("processing")
     train_dataset = train_dataset.map(format_example, batched=True,  cache_file_name=f"train_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
     test_dataset = test_dataset.map(format_example, batched=True, cache_file_name=f"test_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)

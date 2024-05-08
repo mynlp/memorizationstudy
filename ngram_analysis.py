@@ -50,8 +50,6 @@ for size in sizes:
     print(averaged_half_memorized[:48])
     print(averaged_forgotten[:48])
 
-
-plt.figure(figsize=(12, 12))
 size_70m_memorized=[1.7204e+09, 1.7526e+09, 1.7298e+09, 1.7660e+09, 1.6903e+09, 1.7650e+09,
         1.7450e+09, 1.7416e+09, 1.6979e+09, 1.7181e+09, 1.7516e+09, 1.7057e+09,
         1.7135e+09, 1.6907e+09, 1.7173e+09, 1.6473e+09, 1.6855e+09, 1.7032e+09,
@@ -220,34 +218,73 @@ size_12b_unmemorized = [1.7532e+09, 1.7599e+09, 1.7556e+09, 1.7798e+09, 1.7592e+
         1.8184e+09, 2.0058e+09, 9.8933e+08, 1.4179e+09, 1.5926e+09, 1.6359e+09,
         1.6431e+09, 1.6992e+09, 1.6792e+09, 1.6948e+09, 1.7172e+09, 1.7213e+09,
         1.6997e+09, 1.7020e+09, 1.7159e+09, 1.6961e+09, 1.7247e+09, 1.6756e+09]
-plt.plot(range(48), size_70m_memorized, label='70m_memorized')
-# plt.plot(range(48), sized_70m_half_memorized, label='70m_half_memorized')
-plt.plot(range(48), size_70m_unmemorized, label='70m_unmemorized')
-#plt.plot(range(48), size_160m_memorized, label='160m_memorized')
-#plt.plot(range(48), size_160m_half_memorized, label='160m_half_memorized')
-#plt.plot(range(48), size_160m_unmemorized, label='160m_unmemorized')
-# plt.plot(range(48), size_410m_memorized, label='410m_memorized')
-# plt.plot(range(48), size_410m_half_memorized, label='410m_half_memorized')
-# plt.plot(range(48), size_410m_unmemorized, label='410m_unmemorized')
-plt.plot(range(48), size_1b_memorized, label='1b_memorized')
-# plt.plot(range(48), size_1b_half_memorized, label='1b_half_memorized')
-plt.plot(range(48), size_1b_unmemorized, label='1b_unmemorized')
-#plt.plot(range(48), size_2_8b_memorized, label='2.8b_memorized')
-#plt.plot(range(48), size_2_8b_half_memorized, label='2.8b_half_memorized')
-#plt.plot(range(48), size_2_8b_unmemorized, label='2.8b_unmemorized')
-# plt.plot(range(48), size_6_9b_memorized, label='6.9b_memorized')
-# plt.plot(range(48), size_6_9b_half_memorized, label='6.9b_half_memorized')
-# plt.plot(range(48), size_6_9b_unmemorized, label='6.9b_unmemorized')
-plt.plot(range(48), size_12b_memorized, label='12b_memorized')
-# plt.plot(range(48), size_12b_half_memorized, label='12b_half_memorized')
-plt.plot(range(48), size_12b_unmemorized, label='12b_unmemorized')
+import numpy as np
+plt.figure(figsize=(12, 12))
+plt.rcParams['axes.labelsize'] = 14
+plt.rcParams['xtick.labelsize'] = 12
+plt.rcParams['ytick.labelsize'] = 12
+plt.rcParams['legend.fontsize'] = 10
+plt.rcParams['figure.titlesize'] = 16
+begin = 28
+end = 48
+memorized_data = np.array(
+    [size_410m_memorized[begin:end], size_2_8b_memorized[begin:end], size_12b_memorized[begin:end]])
+half_memorized_data = np.array(
+    [size_410m_half_memorized[begin:end], size_2_8b_half_memorized[begin:end], size_12b_half_memorized[begin:end]])
+unmemorized_data = np.array(
+    [size_410m_unmemorized[begin:end], size_2_8b_unmemorized[begin:end], size_12b_unmemorized[begin:end]])
+avg_memorized = np.average(memorized_data, axis=0)
+min_memorized = np.min(memorized_data, axis=0)
+max_memorized = np.max(memorized_data, axis=0)
+min_half_memorized = np.min(half_memorized_data, axis=0)
+max_half_memorized = np.max(half_memorized_data, axis=0)
+min_unmemorized = np.min(unmemorized_data, axis=0)
+max_unmemorized = np.max(unmemorized_data, axis=0)
+# plt.plot(range(begin,end), size_70m_memorized[begin:end], label='70m_memorized')
+# plt.plot(range(begin,end), sized_70m_half_memorized[begin:end], label='70m_half_memorized')
+# plt.plot(range(begin,end), size_70m_unmemorized[begin:end], label='70m_unmemorized')
+# plt.plot(range(end), size_160m_memorized, label='160m_memorized')
+# plt.plot(range(end), size_160m_half_memorized, label='160m_half_memorized')
+# plt.plot(range(end), size_160m_unmemorized, label='160m_unmemorized')
+plt.plot(range(begin,end), size_410m_memorized[begin:end], label='410m_memorized')
+plt.plot(range(begin,end), size_410m_half_memorized[begin:end], label='410m_half_memorized')
+plt.plot(range(begin,end), size_410m_unmemorized[begin:end], label='410m_unmemorized')
+# plt.plot(range(begin,end), size_1b_memorized[begin:end], label='1b_memorized')
+# plt.plot(range(begin,end), size_1b_half_memorized[begin:end], label='1b_half_memorized')
+# plt.plot(range(begin,end), size_1b_unmemorized[begin:end], label='1b_unmemorized')
+plt.plot(range(begin,end), size_2_8b_memorized[begin:end], label='2.8b_memorized')
+plt.plot(range(begin,end), size_2_8b_half_memorized[begin:end], label='2.8b_half_memorized')
+plt.plot(range(begin,end), size_2_8b_unmemorized[begin:end], label='2.8b_unmemorized')
+# plt.plot(range(end), size_6_9b_memorized, label='6.9b_memorized')
+# plt.plot(range(end), size_6_9b_half_memorized, label='6.9b_half_memorized')
+# plt.plot(range(end), size_6_9b_unmemorized, label='6.9b_unmemorized')
+plt.plot(range(begin,end), size_12b_memorized[begin:end], label='12b_memorized')
+plt.plot(range(begin,end), size_12b_half_memorized[begin:end], label='12b_half_memorized')
+plt.plot(range(begin,end), size_12b_unmemorized[begin:end], label='12b_unmemorized')
 
+plt.fill_between(range(begin, end), min_memorized, max_memorized, color="blue", alpha=0.35, label='memorized')
+plt.fill_between(range(begin, end), min_half_memorized, max_half_memorized, color="orange", alpha=0.35, label='half memorized')
+plt.fill_between(range(begin, end), min_unmemorized, max_unmemorized, color="green", alpha=0.35, label='unmemorized')
+
+# Add vertical line at context points
+plt.axvline(x=31, color='red', linestyle='--')
+plt.text(31-1.8, 2*1e9, 'Context\nEnd Point', rotation=0, size=12)
+plt.axvline(x=32, color='blue', linestyle='--')
+plt.text(32+0.3, 2*1e9, 'Decoding\nStart Point', rotation=0, size=12)
+
+# calculate min, max and plot shaded area for other categories as before
 
 # Label the graph
-plt.title('Comparison of Memorization Rates')
-plt.xlabel('Time')
-plt.ylabel('Rate')
-plt.legend()
-
+plt.title('One-gram Frequency Memorization Analysis at Each Sentence Index', fontsize=16)
+plt.xlabel('Index of the Sentence', fontsize=16)
+plt.ylabel('Frequency', fontsize=16)
+plt.legend(fontsize=12)
+plt.grid(True)
+#plt.yscale('log')
+# plt.title('Comparison of Memorization Rates', fontsize=16)
+# plt.xlabel('Time', fontsize=14)
+# plt.ylabel('Rate', fontsize=14)
+# plt.legend(fontsize=10)
 # Display the graph
+plt.savefig("one-gram.png", dpi=600)
 plt.show()
