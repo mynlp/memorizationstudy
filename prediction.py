@@ -77,22 +77,26 @@ if num_gpus > 1:
 else:
     print("Number of available GPU: ", num_gpus)
 if args.load_cache == False:
-    dataset = {"token": [], "label": [], "embedding": [], "prediction":[], "entropy":[]}
+    dataset = {"token": torch.empty((0,)), "label": torch.empty((0,)), "embedding": torch.empty((0,)),
+               "prediction": torch.empty((0,)), "entropy": torch.empty((0,))}
     for i in range(args.continuation_size):
-        local_data = torch.load(f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
-        local_embedding = torch.load(f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
-        local_entropy = torch.load(f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
-        local_memorized = torch.load(f"cross_remembered/memorized_idx_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt", map_location="cpu")
-        dataset["token"].append(local_data)
-        dataset["label"].append(torch.zeros(local_data.shape[0])+ i/args.continuation_size)
-        dataset["embedding"].append(local_embedding)
-        dataset["prediction"].append(local_memorized)
-        dataset["entropy"].append(local_entropy)
-    dataset["token"] = torch.cat(dataset["token"])
-    dataset["label"] = torch.cat(dataset["label"])
-    dataset["embedding"] = torch.cat(dataset["embedding"])
-    dataset["prediction"] = torch.cat(dataset["prediction"])
-    dataset["entropy"] = torch.cat(dataset["entropy"])
+        local_data = torch.load(
+            f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt",
+            map_location="cpu")
+        local_embedding = torch.load(
+            f"cross_remembered/embeddings_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt",
+            map_location="cpu")
+        local_entropy = torch.load(
+            f"cross_remembered/entropy_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt",
+            map_location="cpu")
+        local_memorized = torch.load(
+            f"cross_remembered/memorized_idx_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt",
+            map_location="cpu")
+        dataset["token"] = torch.cat((dataset["token"], local_data))
+        dataset["label"] = torch.cat((dataset["label"], torch.zeros(local_data.shape[0]) + i / args.continuation_size))
+        dataset["embedding"] = torch.cat((dataset["embedding"], local_embedding))
+        dataset["prediction"] = torch.cat((dataset["prediction"], local_memorized))
+        dataset["entropy"] = torch.cat((dataset["entropy"], local_entropy))
     dataset = Dataset.from_dict(dataset)
     splited_dataset = dataset.train_test_split(test_size=0.2)
     train_dataset = splited_dataset['train']
