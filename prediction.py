@@ -79,7 +79,7 @@ else:
 if args.load_cache == False:
     dataset = {"token": torch.empty((0,)), "label": torch.empty((0,)), "embedding": torch.empty((0,)),
                "prediction": torch.empty((0,)), "entropy": torch.empty((0,))}
-    for i in range(args.continuation_size):
+    for i in tqdm(range(args.continuation_size)):
         local_data = torch.load(
             f"cross_remembered/context_tokens_{args.context_size}_{args.continuation_size}_{i}_{args.model_size}.pt",
             map_location="cpu")
