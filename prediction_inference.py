@@ -133,7 +133,7 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
                     else:
                         print(token)
                         print(f"Unmemorized Probability:{probs[idx][sent_idx][0]}")
-                print(tokenizer.decode(data["token"][idx]))
+                print(tokenizer.decode(tokens[idx]))
             else:
                 pass
         #classificaiton_results = classificaiton_results.float().sum()
