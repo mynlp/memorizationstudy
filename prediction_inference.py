@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import random
 from datasets import Dataset
-from transformers import GPTNeoXForCausalLM
+from transformers import GPTNeoXForCausalLM, AutoTokenizer
 from tqdm import tqdm
 from models import *
 from torch.utils.data import DataLoader
@@ -75,6 +75,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_gpus = torch.cuda.device_count()
 model_name = f"EleutherAI/pythia-{args.model_size}-deduped-v0"
 
+tokenizer = AutoTokenizer.from_pretrained(
+  model_name,
+  revision=f"step{143000}",
+  cache_dir=f"./pythia-{args.model_size}-deduped/step{143000}",
+)
 if num_gpus > 1:
     print("Number of available GPUs: ", num_gpus)
 else:
@@ -104,6 +109,7 @@ token_data_size = 0
 row_data_size = 0
 counter = 0
 full＿acc_counter = 0
+succeded = {"tokens":[],"probability":[]}
 with torch.no_grad():  # Do not calculate gradient since we are only evaluating
     for data in test_dataloader:
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
@@ -113,6 +119,22 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         probs = torch.exp(classes)
         classificaiton_results = classes.squeeze().argmax(dim=2) == prediction.type(torch.int64).to(device)
         row_eq_res = torch.all(classificaiton_results, dim=1)
-        classificaiton_results = classificaiton_results.float().sum()
+        for idx, row in enumerate(row_eq_res):
+            if row:
+                succeded["tokens"].append(data["token"])
+                succeded["probability"].append(probs)
+                probs[idx]
+                sent = tokenizer.decode(data["token"])
+                for sent_idx, token in enumerate(sent):
+                    if prediction[idx][sent_idx] == 1:
+                        print(token)
+                        print(f"Memorized Probability:{probs[idx][sent_idx][0]}")
+                    else:
+                        print(token)
+                        print(f"Unmemorized Probability:{probs[idx][sent_idx][1]}")
+                print(sent)
+            else:
+                pass
+        #classificaiton_results = classificaiton_results.float().sum()
         pdb.set_trace()
 
