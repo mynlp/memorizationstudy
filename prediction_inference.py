@@ -18,7 +18,7 @@ def format_example(example):
     tokens, labels, embeddings, prediction, entropy = example['token'], example['label'], example["embedding"], example["prediction"], example["entropy"]
     return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings, 'prediction': prediction, 'entropy': entropy}
 
-def output_probability(idx, tokens, probs, prediction, tokenizer):
+def output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results):
     print("\n###Begining of Sentence###\n")
     sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
     succeded["tokens"].append(sent_token)
@@ -27,8 +27,12 @@ def output_probability(idx, tokens, probs, prediction, tokenizer):
     for sent_idx, token in enumerate(sent_token[args.context_size:]):
         if prediction[idx][sent_idx] == 1:
             print(f"Memorized Probability of token {token} at {idx}:{probs[idx][sent_idx][1]}")
+            if classificaiton_results[idx][sent_idx] == 0:
+                print("The actual label should be unmemorized")
         else:
             print(f"Unmemorized Probability of token {token} at {idx}:{probs[idx][sent_idx][0]}")
+            if classificaiton_results[idx][sent_idx] == 0:
+                print("The actual label should be memorized")
     print(tokenizer.decode(tokens[idx]))
     print("\n###End of Sentence###\n")
 def evaluate(predictor, dataloader):
@@ -136,10 +140,10 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for idx, score in enumerate(classificaiton_results.sum(dim=1)/16):
             if score == 1:
                 print("Prediction Score: 1")
-                output_probability(idx, tokens, probs, prediction, tokenizer)
+                output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results)
             elif score == 0.5:
                 print("Prediction Score: 0.5")
-                output_probability(idx, tokens, probs, prediction, tokenizer)
+                output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results)
         #classificaiton_results = classificaiton_results.float().sum()
         pdb.set_trace()
 
