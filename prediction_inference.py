@@ -18,7 +18,7 @@ def format_example(example):
     tokens, labels, embeddings, prediction, entropy = example['token'], example['label'], example["embedding"], example["prediction"], example["entropy"]
     return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings, 'prediction': prediction, 'entropy': entropy}
 
-def output_probability(idx, tokens, probs):
+def output_probability(idx, tokens, probs, prediction, tokenizer):
     sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
     succeded["tokens"].append(sent_token)
     succeded["probability"].append(probs)
@@ -136,9 +136,9 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         row_eq_res = torch.all(classificaiton_results, dim=1)
         for idx, score in enumerate(classificaiton_results.sum(dim=1)/16):
             if score == 1:
-                output_probability(idx, tokens, probs)
+                output_probability(idx, tokens, probs, prediction, tokenizer)
             elif score == 0.5:
-                output_probability(idx, tokens, probs)
+                output_probability(idx, tokens, probs, prediction, tokenizer)
         #classificaiton_results = classificaiton_results.float().sum()
         pdb.set_trace()
 
