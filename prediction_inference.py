@@ -80,9 +80,9 @@ if num_gpus > 1:
 else:
     print("Number of available GPU: ", num_gpus)
 
-train_dataset = Dataset.from_file(f"train_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
+#train_dataset = Dataset.from_file(f"train_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
 test_dataset = Dataset.from_file(f"test_cache/{args.model_size}_{args.context_size}_{args.continuation_size}.arrow")
-train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
+#train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=args.batch_size)
 test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size)
 
 if args.model_type == "lstm":
