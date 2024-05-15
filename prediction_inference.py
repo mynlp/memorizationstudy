@@ -18,8 +18,9 @@ def format_example(example):
     tokens, labels, embeddings, prediction, entropy = example['token'], example['label'], example["embedding"], example["prediction"], example["entropy"]
     return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings, 'prediction': prediction, 'entropy': entropy}
 
-def output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, predcited):
+def output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, predcited, f):
     print("\n###Begining of Sentence###\n")
+    f.write("\n###Begining of Sentence###\n")
     sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
     succeded["tokens"].append(sent_token)
     succeded["probability"].append(probs)
@@ -27,14 +28,19 @@ def output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton
     for sent_idx, token in enumerate(sent_token[args.context_size:]):
         if predcited[idx][sent_idx] == 1:
             print(f"Memorized Probability of token {token} at {idx}:{probs[idx][sent_idx][1]}")
+            f.write(f"Memorized Probability of token {token} at {idx}:{probs[idx][sent_idx][1]}\n")
             if classificaiton_results[idx][sent_idx] == 0:
                 print("The actual label should be unmemorized")
+                f.write("The actual label should be unmemorized\n")
         else:
             print(f"Unmemorized Probability of token {token} at {idx}:{probs[idx][sent_idx][0]}")
+            f.write(f"Unmemorized Probability of token {token} at {idx}:{probs[idx][sent_idx][0]}\n")
             if classificaiton_results[idx][sent_idx] == 0:
                 print("The actual label should be memorized")
+                f.write("The actual label should be memorized\n")
     print(tokenizer.decode(tokens[idx]))
     print("\n###End of Sentence###\n")
+    f.write(tokenizer.decode(tokens[idx]))
 def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
     total_loss = 0
@@ -127,6 +133,7 @@ row_data_size = 0
 counter = 0
 full＿acc_counter = 0
 succeded = {"tokens":[],"probability":[]}
+f = open("visulization.txt", "w")
 with torch.no_grad():  # Do not calculate gradient since we are only evaluating
     for data in test_dataloader:
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
@@ -140,10 +147,10 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         for idx, score in enumerate(classificaiton_results.sum(dim=1)/16):
             if score == 1:
                 print("Prediction Score: 1")
-                output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2))
+                f.write(f"Prediction Score: 1\n")
+                output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2), f)
             elif score == 0.5:
                 print("Prediction Score: 0.5")
-                output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2))
+                output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2), f)
         #classificaiton_results = classificaiton_results.float().sum()
-        pdb.set_trace()
 
