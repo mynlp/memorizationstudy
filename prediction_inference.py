@@ -133,6 +133,7 @@ row_data_size = 0
 counter = 0
 full＿acc_counter = 0
 succeded = {"tokens":[],"probability":[]}
+memorized_dict = {}
 f = open("visulization.txt", "w")
 with torch.no_grad():  # Do not calculate gradient since we are only evaluating
     for data in test_dataloader:
@@ -144,13 +145,19 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         probs = torch.exp(classes)
         classificaiton_results = classes.squeeze().argmax(dim=2) == prediction.type(torch.int64).to(device)
         row_eq_res = torch.all(classificaiton_results, dim=1)
+        mem_score = prediction.sum(dim=1)/16
         for idx, score in enumerate(classificaiton_results.sum(dim=1)/16):
             if score == 1:
                 print("Prediction Score: 1")
+                print(f"Memorization Score:{mem_score[idx]}")
+                if mem_score[idx] not in memorized_dict:
+                    memorized_dict[mem_score[idx]] = 1
+                else:
+                    memorized_dict[mem_score[idx]] += 1
                 f.write(f"Prediction Score: 1\n")
                 output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2), f)
             elif score == 0.5:
                 print("Prediction Score: 0.5")
                 output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2), f)
         #classificaiton_results = classificaiton_results.float().sum()
-
+print(memorized_dict)
