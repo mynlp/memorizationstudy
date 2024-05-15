@@ -18,6 +18,20 @@ def format_example(example):
     tokens, labels, embeddings, prediction, entropy = example['token'], example['label'], example["embedding"], example["prediction"], example["entropy"]
     return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings, 'prediction': prediction, 'entropy': entropy}
 
+def output_probability(idx, tokens, probs):
+    sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
+    succeded["tokens"].append(sent_token)
+    succeded["probability"].append(probs)
+    probs[idx]
+    for sent_idx, token in enumerate(sent_token[args.context_size:]):
+        if prediction[idx][sent_idx] == 1:
+            print(token)
+            print(f"Memorized Probability:{probs[idx][sent_idx][1]}")
+        else:
+            print(token)
+            print(f"Unmemorized Probability:{probs[idx][sent_idx][0]}")
+    print(tokenizer.decode(tokens[idx]))
+
 def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
     total_loss = 0
@@ -120,22 +134,11 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         probs = torch.exp(classes)
         classificaiton_results = classes.squeeze().argmax(dim=2) == prediction.type(torch.int64).to(device)
         row_eq_res = torch.all(classificaiton_results, dim=1)
-        for idx, row in enumerate(row_eq_res):
-            if row:
-                sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
-                succeded["tokens"].append(sent_token)
-                succeded["probability"].append(probs)
-                probs[idx]
-                for sent_idx, token in enumerate(sent_token[args.context_size:]):
-                    if prediction[idx][sent_idx] == 1:
-                        print(token)
-                        print(f"Memorized Probability:{probs[idx][sent_idx][1]}")
-                    else:
-                        print(token)
-                        print(f"Unmemorized Probability:{probs[idx][sent_idx][0]}")
-                print(tokenizer.decode(tokens[idx]))
-            else:
-                pass
+        for idx, score in enumerate(classificaiton_results.sum(dim=1)/16):
+            if score == 1:
+                output_probability(idx, tokens, probs)
+            elif score == 0.5:
+                output_probability(idx, tokens, probs)
         #classificaiton_results = classificaiton_results.float().sum()
         pdb.set_trace()
 
