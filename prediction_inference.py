@@ -121,18 +121,18 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         row_eq_res = torch.all(classificaiton_results, dim=1)
         for idx, row in enumerate(row_eq_res):
             if row:
-                succeded["tokens"].append(data["token"])
+                sent_token = [tokenizer.decode(token_id) for token_id in data["token"][idx]]
+                succeded["tokens"].append(sent_token)
                 succeded["probability"].append(probs)
                 probs[idx]
-                sent = tokenizer.decode(data["token"])
-                for sent_idx, token in enumerate(sent):
+                for sent_idx, token in enumerate(sent_token):
                     if prediction[idx][sent_idx] == 1:
                         print(token)
                         print(f"Memorized Probability:{probs[idx][sent_idx][0]}")
                     else:
                         print(token)
                         print(f"Unmemorized Probability:{probs[idx][sent_idx][1]}")
-                print(sent)
+                print(tokenizer.decode(data["token"][idx]))
             else:
                 pass
         #classificaiton_results = classificaiton_results.float().sum()
