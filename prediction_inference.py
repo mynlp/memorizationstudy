@@ -19,19 +19,18 @@ def format_example(example):
     return {'input_ids': tokens, 'labels': labels, 'embedding': embeddings, 'prediction': prediction, 'entropy': entropy}
 
 def output_probability(idx, tokens, probs, prediction, tokenizer):
+    print("\n###Begining of Sentence###\n")
     sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
     succeded["tokens"].append(sent_token)
     succeded["probability"].append(probs)
     probs[idx]
     for sent_idx, token in enumerate(sent_token[args.context_size:]):
         if prediction[idx][sent_idx] == 1:
-            print(token)
-            print(f"Memorized Probability:{probs[idx][sent_idx][1]}")
+            print(f"Memorized Probability of token {token} at {idx}:{probs[idx][sent_idx][1]}")
         else:
-            print(token)
-            print(f"Unmemorized Probability:{probs[idx][sent_idx][0]}")
+            print(f"Unmemorized Probability of token {token} at {idx}:{probs[idx][sent_idx][0]}")
     print(tokenizer.decode(tokens[idx]))
-
+    print("\n###End of Sentence###\n")
 def evaluate(predictor, dataloader):
     predictor.eval()  # Set the model to evaluation mode
     total_loss = 0
@@ -136,8 +135,10 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         row_eq_res = torch.all(classificaiton_results, dim=1)
         for idx, score in enumerate(classificaiton_results.sum(dim=1)/16):
             if score == 1:
+                print("Prediction Score: 1")
                 output_probability(idx, tokens, probs, prediction, tokenizer)
             elif score == 0.5:
+                print("Prediction Score: 0.5")
                 output_probability(idx, tokens, probs, prediction, tokenizer)
         #classificaiton_results = classificaiton_results.float().sum()
         pdb.set_trace()
