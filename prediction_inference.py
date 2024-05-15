@@ -125,7 +125,7 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
                 succeded["tokens"].append(sent_token)
                 succeded["probability"].append(probs)
                 probs[idx]
-                for sent_idx, token in enumerate(sent_token):
+                for sent_idx, token in enumerate(sent_token[args.context_size:]):
                     if prediction[idx][sent_idx] == 1:
                         print(token)
                         print(f"Memorized Probability:{probs[idx][sent_idx][0]}")
