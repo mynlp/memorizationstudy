@@ -150,10 +150,10 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
             if score == 1:
                 print("Prediction Score: 1")
                 print(f"Memorization Score:{mem_score[idx]}")
-                if mem_score[idx] not in memorized_dict:
-                    memorized_dict[mem_score[idx]] = 1
+                if mem_score[idx].item() not in memorized_dict:
+                    memorized_dict[mem_score[idx].item()] = 1
                 else:
-                    memorized_dict[mem_score[idx]] += 1
+                    memorized_dict[mem_score[idx].item()] += 1
                 f.write(f"Prediction Score: 1\n")
                 output_probability(idx, tokens, probs, prediction, tokenizer, classificaiton_results, classes.squeeze().argmax(dim=2), f)
             elif score == 0.5:
