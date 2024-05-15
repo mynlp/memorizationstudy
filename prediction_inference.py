@@ -90,12 +90,12 @@ if args.model_type == "lstm":
 elif args.model_type == "transformer":
     predictor = TransformerPredictor(embedding_size, args.hidden_size)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+if torch.cuda.device_count() >= 1:
+    print("Using", torch.cuda.device_count(), "GPUs!")
+    predictor = nn.DataParallel(predictor)
 predictor.load_state_dict(torch.load(
     f"saved_models/predictor_{args.model_size}_{args.model_type}_{args.context_size}_{args.continuation_size}.pt",
     map_location=device))
-if torch.cuda.device_count() > 1:
-    print("Using", torch.cuda.device_count(), "GPUs!")
-    predictor = nn.DataParallel(predictor)
 predictor = predictor.to(device)
 
 predictor.eval()  # Set the model to evaluation mode
