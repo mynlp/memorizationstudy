@@ -113,6 +113,7 @@ succeded = {"tokens":[],"probability":[]}
 with torch.no_grad():  # Do not calculate gradient since we are only evaluating
     for data in test_dataloader:
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
+        tokens = torch.stack([x for x in data["token"]], dim=1)
         entropy = torch.stack([x for x in data["entropy"]], dim=1)
         prediction = torch.stack([x for x in data["prediction"]], dim=1)
         classes = predictor(embedding.float().cuda(), entropy.float().cuda())
@@ -121,17 +122,17 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         row_eq_res = torch.all(classificaiton_results, dim=1)
         for idx, row in enumerate(row_eq_res):
             if row:
-                sent_token = [tokenizer.decode(token_id) for token_id in data["token"][idx]]
+                sent_token = [tokenizer.decode(token_id) for token_id in tokens[idx]]
                 succeded["tokens"].append(sent_token)
                 succeded["probability"].append(probs)
                 probs[idx]
                 for sent_idx, token in enumerate(sent_token[args.context_size:]):
                     if prediction[idx][sent_idx] == 1:
                         print(token)
-                        print(f"Memorized Probability:{probs[idx][sent_idx][0]}")
+                        print(f"Memorized Probability:{probs[idx][sent_idx][1]}")
                     else:
                         print(token)
-                        print(f"Unmemorized Probability:{probs[idx][sent_idx][1]}")
+                        print(f"Unmemorized Probability:{probs[idx][sent_idx][0]}")
                 print(tokenizer.decode(data["token"][idx]))
             else:
                 pass
