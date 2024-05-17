@@ -82,7 +82,7 @@ def infer(predictor, embeddings, entropy, repeats=50):
 
 
 args = argparse.ArgumentParser()
-args.add_argument("--model_size", type=str, default="70m")
+args.add_argument("--model_size", type=str, default="6.9")
 args.add_argument("--context_size", type=int, default=32)
 args.add_argument("--continuation_size", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
@@ -172,27 +172,42 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
                                    classes.squeeze().argmax(dim=2), f)
         #classificaiton_results = classificaiton_results.float().sum()
 f.close()
-print(memorized_dict)
+# print(memorized_dict)
+#
 # prediction_results = {0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12,
 #                       0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
 # prediction_results_1b = {0.75: 19, 0.1875: 17, 0.5625: 11, 0.0625: 60, 0.0: 93, 0.3125: 21, 0.9375: 22, 0.125: 28,
 #                          0.4375: 17, 0.875: 29, 0.25: 19, 0.8125: 24, 0.5: 21, 0.625: 19, 0.375: 25, 0.6875: 18, 1.0: 2}
+# prediction_results_70m = {0.5625: 20, 0.8125: 36, 0.0: 131, 0.875: 45, 0.3125: 16, 0.25: 17, 0.75: 35, 0.625: 38,
+#                           0.0625: 76, 0.4375: 20, 0.375: 21, 0.125: 45, 0.6875: 27, 0.5: 24, 0.9375: 59, 1.0: 9,
+#                           0.1875: 18}
 #
 # sorted_keys = sorted(prediction_results)
-# sorted_values_1 = [prediction_results[key] for key in sorted_keys]
-# sorted_values_2 = [prediction_results_1b[key] for key in sorted_keys]
+#
+# # Normalize the results
+# total_1 = sum(prediction_results.values())
+# total_2 = sum(prediction_results_1b.values())
+# total_3 = sum(prediction_results_70m.values())
+#
+# sorted_values_1 = [prediction_results[key] / total_1 for key in sorted_keys]
+# sorted_values_2 = [prediction_results_1b[key] / total_2 for key in sorted_keys]
+# sorted_values_3 = [prediction_results_70m[key] / total_3 for key in sorted_keys]
 #
 # # Create bar width
-# bar_width = 0.35
+# bar_width = 0.2
 # index = np.arange(len(prediction_results))
 #
-# plt.figure(figsize=[10, 8])
-# plt.bar(index, sorted_values_1, bar_width, color='skyblue', alpha=1, label='prediction_results')
-# plt.bar(index + bar_width, sorted_values_2, bar_width, color='orange', alpha=1, label='prediction_results_1b')
-# plt.xlabel('Score', fontsize=16)
-# plt.xticks(index + bar_width / 2, sorted_keys, rotation=90)  # re-position x-ticks location at the center of two bars
-# plt.ylabel('Count', fontsize=16)
-# plt.title('Full Accuracy Distribution over Memorization Score on 2.8b Model', fontsize=18)
+# plt.figure(figsize=[12, 8])
+#
+# plt.bar(index, sorted_values_1, bar_width, color='skyblue', alpha=1, label='2.8b')
+# plt.bar(index + bar_width, sorted_values_2, bar_width, color='orange', alpha=1, label='1b')
+# plt.bar(index + 2 * bar_width, sorted_values_3, bar_width, color='green', alpha=1, label='70m')
+#
+# plt.xlabel('Memorization Score', fontsize=16)
+# plt.xticks(index + bar_width * 2, sorted_keys, rotation=90)  # reposition x-ticks location
+# plt.ylabel('Proportion', fontsize=16)  # Change y label to "Proportion"
+# plt.title('Normalized Full Accuracy Count Distribution over Memorization Score',
+#           fontsize=18)  # Change title to indicate it's normalized
 # plt.legend()
 # plt.grid(True)
 # plt.tight_layout()
