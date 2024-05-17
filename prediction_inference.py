@@ -82,7 +82,7 @@ def infer(predictor, embeddings, entropy, repeats=50):
 
 
 args = argparse.ArgumentParser()
-args.add_argument("--model_size", type=str, default="1b")
+args.add_argument("--model_size", type=str, default="70m")
 args.add_argument("--context_size", type=int, default=32)
 args.add_argument("--continuation_size", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
@@ -173,16 +173,27 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         #classificaiton_results = classificaiton_results.float().sum()
 f.close()
 print(memorized_dict)
-prediction_results={0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12, 0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
-sorted_keys = sorted(prediction_results)
-sorted_values = [prediction_results[key] for key in sorted_keys]
-
-plt.figure(figsize=[10, 8])
-plt.bar(range(len(prediction_results)), sorted_values, tick_label=sorted_keys, color='skyblue', alpha=1)
-plt.xlabel('Score', fontsize=16)
-plt.xticks(rotation=90)
-plt.ylabel('Count', fontsize=16)
-plt.title('Full Accuracy Distribution over Memorization Score on 2.8b Model', fontsize=18)
-plt.grid(True)
-plt.tight_layout()
-plt.show()
+# prediction_results = {0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12,
+#                       0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
+# prediction_results_1b = {0.75: 19, 0.1875: 17, 0.5625: 11, 0.0625: 60, 0.0: 93, 0.3125: 21, 0.9375: 22, 0.125: 28,
+#                          0.4375: 17, 0.875: 29, 0.25: 19, 0.8125: 24, 0.5: 21, 0.625: 19, 0.375: 25, 0.6875: 18, 1.0: 2}
+#
+# sorted_keys = sorted(prediction_results)
+# sorted_values_1 = [prediction_results[key] for key in sorted_keys]
+# sorted_values_2 = [prediction_results_1b[key] for key in sorted_keys]
+#
+# # Create bar width
+# bar_width = 0.35
+# index = np.arange(len(prediction_results))
+#
+# plt.figure(figsize=[10, 8])
+# plt.bar(index, sorted_values_1, bar_width, color='skyblue', alpha=1, label='prediction_results')
+# plt.bar(index + bar_width, sorted_values_2, bar_width, color='orange', alpha=1, label='prediction_results_1b')
+# plt.xlabel('Score', fontsize=16)
+# plt.xticks(index + bar_width / 2, sorted_keys, rotation=90)  # re-position x-ticks location at the center of two bars
+# plt.ylabel('Count', fontsize=16)
+# plt.title('Full Accuracy Distribution over Memorization Score on 2.8b Model', fontsize=18)
+# plt.legend()
+# plt.grid(True)
+# plt.tight_layout()
+# plt.show()
