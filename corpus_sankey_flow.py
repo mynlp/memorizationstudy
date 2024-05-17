@@ -64,17 +64,18 @@ transition_prob_matrix_large_extra_large = transition_matrix_value_extra_large /
     axis=1, keepdims=True)
 
 plt.figure(figsize=(20, 8))
+plt.rcParams.update({'font.size': 14})
 plt.subplot(1, 2, 1)
 sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=df_large["score"].unique(),
-            yticklabels=df_small["score"].unique())
+            yticklabels=df_small["score"].unique(), annot_kws={"size": 16})
 plt.title('Transition Matrix 410m to 2.8b')
 plt.xlabel('2.8b Model')
 plt.ylabel('410m Model')
 plt.subplot(1, 2, 2)
 sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=df_extra_large["score"].unique(),
-            yticklabels=df_large["score"].unique())
+            yticklabels=df_large["score"].unique(), annot_kws={"size": 16})
 plt.title('Transition Matrix 2.8b to 12b')
 plt.xlabel('12b Model')
 plt.ylabel('2.8b Model')
