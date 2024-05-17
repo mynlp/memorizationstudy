@@ -23,7 +23,7 @@ memorized_entropy_value = []
 half_memorized_entropy_value = []
 unmemorized_entropy_value = []
 #model_size_list = ["70m","410m", "1b", "2.8b", "6.9b", "12b"]
-model_size_list = ["70m","410m", "1b", "2.8b", "6.9b", "12b"]
+model_size_list = ["70m","410m", "1b", "2.8b", "6.9b"]
 for model_size in model_size_list:
     model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
     CHECKPOINT = 143000
