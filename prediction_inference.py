@@ -82,7 +82,7 @@ def infer(predictor, embeddings, entropy, repeats=50):
 
 
 args = argparse.ArgumentParser()
-args.add_argument("--model_size", type=str, default="2.8b")
+args.add_argument("--model_size", type=str, default="410m")
 args.add_argument("--context_size", type=int, default=32)
 args.add_argument("--continuation_size", type=int, default=16)
 args.add_argument("--checkpoint", type=int, default=143000)
@@ -139,7 +139,7 @@ counter = 0
 full＿acc_counter = 0
 succeded = {"tokens": [], "probability": []}
 memorized_dict = {}
-f = open("visulization.txt", "w")
+f = open(f"visulization_{args.model_size}.txt", "w")
 with torch.no_grad():  # Do not calculate gradient since we are only evaluating
     for data in test_dataloader:
         embedding = torch.stack([torch.stack(x, dim=1) for x in data["embedding"]], dim=1)
@@ -173,5 +173,16 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         #classificaiton_results = classificaiton_results.float().sum()
 f.close()
 print(memorized_dict)
+prediction_results={0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12, 0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
+sorted_keys = sorted(prediction_results)
+sorted_values = [prediction_results[key] for key in sorted_keys]
 
-#{0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12, 0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
+plt.figure(figsize=[10, 8])
+plt.bar(range(len(prediction_results)), sorted_values, tick_label=sorted_keys, color='skyblue', alpha=1)
+plt.xlabel('Score', fontsize=16)
+plt.xticks(rotation=90)
+plt.ylabel('Count', fontsize=16)
+plt.title('Full Accuracy Distribution over Memorization Score on 2.8b Model', fontsize=18)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
