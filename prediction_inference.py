@@ -172,7 +172,7 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
                                    classes.squeeze().argmax(dim=2), f)
         #classificaiton_results = classificaiton_results.float().sum()
 f.close()
-# print(memorized_dict)
+print(memorized_dict)
 #
 # prediction_results = {0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12,
 #                       0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
