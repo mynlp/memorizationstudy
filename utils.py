@@ -190,7 +190,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
         predicted_continuation = torch.zeros(batched_true_continuation.size()).long().to('cuda')
         for idx in range(1, context_size+continuation_size):
             if idx < context_size:
-                model_outputs = model.generate(batch_context_tokens[:, :idx], temperature=0.0, top_k=0, top_p=0,
+                model_outputs = model.module.generate(batch_context_tokens[:, :idx], temperature=0.0, top_k=0, top_p=0,
                                                max_length=idx + 1, min_length=idx + 1)
                 logits = model_outputs["scores"]
                 probability_scores = torch.nn.functional.softmax(logits[0], dim=1)
@@ -198,7 +198,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
                 batched_highest_entropy_at_idx.append(entropy_scores)
             else:
                 temp_context_tokens = torch.cat((batch_context_tokens, predicted_continuation[:, :idx - context_size]), dim=1).cuda()
-                model_outputs = model.generate(temp_context_tokens, temperature=0.0, top_k=0, top_p=0,
+                model_outputs = model.module..generate(temp_context_tokens, temperature=0.0, top_k=0, top_p=0,
                                                max_length=idx + 1,
                                                min_length=idx + 1)
                 predicted_continuation[:, idx-context_size] = model_outputs[0][:,-1].squeeze()
