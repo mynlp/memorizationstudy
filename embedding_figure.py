@@ -31,7 +31,7 @@ def label_points(x, y, legend_added):
     cmap = get_cmap('viridis', num_points)  # 使用matplotlib的颜色映射
     colors = [cmap(i) for i in range(num_points)]
     for i, idx in enumerate(indices):
-        label = f'Score {i}'
+        label = f'Memorized Token Num {i}'
         if label not in legend_added:
             plt.scatter(x[idx], y[idx], color=colors[i], s=120, edgecolor='black', label=label, zorder=5)
             legend_added.add(label)
@@ -117,9 +117,9 @@ plt.scatter(0, 0, s=200, color='black', marker='.', zorder=10)
 # plt.axvline(x=0, color='black', linewidth=1)  # 垂直线表示X轴
 # plt.axhline(y=0, color='black', linewidth=1)  # 水平线表示Y轴
 
-plt.title('Embedding Dynamics of Sentences with Different Memorization Scores')
-plt.xlabel('X Axis')
-plt.ylabel('Y Axis')
+plt.title('Embedding Dynamics of Sentences with Different Memorization Scores', fontsize=16)
+plt.xlabel('X Axis', fontsize=14)
+plt.ylabel('Y Axis', fontsize=14)
 plt.legend()
 plt.grid(True, linestyle='--', alpha=0.6)
 plt.axis('equal')

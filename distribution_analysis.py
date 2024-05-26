@@ -23,7 +23,7 @@ memorized_entropy_value = []
 half_memorized_entropy_value = []
 unmemorized_entropy_value = []
 #model_size_list = ["70m","410m", "1b", "2.8b", "6.9b", "12b"]
-model_size_list = ["70m","410m", "1b", "2.8b", "6.9b"]
+model_size_list = ["70m","410m", "1b", "2.8b", "6.9b", "12b"]
 for model_size in model_size_list:
     model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
     CHECKPOINT = 143000
@@ -152,8 +152,8 @@ plt.axvline(x=32, color='blue', linestyle='--')
 plt.text(32+0.3, 2*1e9, 'Decoding\nStart Point', rotation=0, size=12)
 
 plt.legend(loc='best', fontsize='12')
-plt.title('Entropy at Each Token for Memorized and Unmemorized Data',  fontsize=16)
-plt.xlabel('Token Position', fontsize=16)
+plt.title('Entropy at Each Token for Memorized and Unmemorized Data',  fontsize=14)
+plt.xlabel('Token Position', fontsize=14)
 plt.ylabel('Entropy', fontsize=16)
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()

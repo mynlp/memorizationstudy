@@ -173,42 +173,46 @@ with torch.no_grad():  # Do not calculate gradient since we are only evaluating
         #classificaiton_results = classificaiton_results.float().sum()
 f.close()
 print(memorized_dict)
-#
-# prediction_results = {0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12,
-#                       0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
-# prediction_results_1b = {0.75: 19, 0.1875: 17, 0.5625: 11, 0.0625: 60, 0.0: 93, 0.3125: 21, 0.9375: 22, 0.125: 28,
-#                          0.4375: 17, 0.875: 29, 0.25: 19, 0.8125: 24, 0.5: 21, 0.625: 19, 0.375: 25, 0.6875: 18, 1.0: 2}
-# prediction_results_70m = {0.5625: 20, 0.8125: 36, 0.0: 131, 0.875: 45, 0.3125: 16, 0.25: 17, 0.75: 35, 0.625: 38,
-#                           0.0625: 76, 0.4375: 20, 0.375: 21, 0.125: 45, 0.6875: 27, 0.5: 24, 0.9375: 59, 1.0: 9,
-#                           0.1875: 18}
-#
-# sorted_keys = sorted(prediction_results)
-#
-# # Normalize the results
-# total_1 = sum(prediction_results.values())
-# total_2 = sum(prediction_results_1b.values())
-# total_3 = sum(prediction_results_70m.values())
-#
-# sorted_values_1 = [prediction_results[key] / total_1 for key in sorted_keys]
-# sorted_values_2 = [prediction_results_1b[key] / total_2 for key in sorted_keys]
-# sorted_values_3 = [prediction_results_70m[key] / total_3 for key in sorted_keys]
-#
-# # Create bar width
-# bar_width = 0.2
-# index = np.arange(len(prediction_results))
-#
-# plt.figure(figsize=[12, 8])
-#
-# plt.bar(index, sorted_values_1, bar_width, color='skyblue', alpha=1, label='2.8b')
-# plt.bar(index + bar_width, sorted_values_2, bar_width, color='orange', alpha=1, label='1b')
-# plt.bar(index + 2 * bar_width, sorted_values_3, bar_width, color='green', alpha=1, label='70m')
-#
-# plt.xlabel('Memorization Score', fontsize=16)
-# plt.xticks(index + bar_width * 2, sorted_keys, rotation=90)  # reposition x-ticks location
-# plt.ylabel('Proportion', fontsize=16)  # Change y label to "Proportion"
-# plt.title('Normalized Full Accuracy Count Distribution over Memorization Score',
-#           fontsize=18)  # Change title to indicate it's normalized
-# plt.legend()
-# plt.grid(True)
-# plt.tight_layout()
-# plt.show()
+
+prediction_results_2_8b = {0.0625: 54, 0.25: 13, 0.375: 16, 0.9375: 27, 0.6875: 22, 0.0: 105, 0.8125: 19, 0.4375: 12,
+                      0.625: 20, 0.75: 18, 0.1875: 25, 0.875: 25, 0.5625: 9, 0.125: 30, 0.5: 20, 0.3125: 15, 1.0: 1}
+prediction_results_1b = {0.75: 19, 0.1875: 17, 0.5625: 11, 0.0625: 60, 0.0: 93, 0.3125: 21, 0.9375: 22, 0.125: 28,
+                         0.4375: 17, 0.875: 29, 0.25: 19, 0.8125: 24, 0.5: 21, 0.625: 19, 0.375: 25, 0.6875: 18, 1.0: 2}
+prediction_results_70m = {0.5625: 20, 0.8125: 36, 0.0: 131, 0.875: 45, 0.3125: 16, 0.25: 17, 0.75: 35, 0.625: 38,
+                          0.0625: 76, 0.4375: 20, 0.375: 21, 0.125: 45, 0.6875: 27, 0.5: 24, 0.9375: 59, 1.0: 9,
+                          0.1875: 18}
+prediction_results_6_9b={0.0: 219, 0.0625: 41, 0.4375: 18, 0.875: 14, 0.5: 17, 0.9375: 24, 0.375: 14, 0.625: 18, 0.5625: 23, 0.75: 12, 0.25: 9, 0.1875: 16, 0.125: 18, 0.6875: 18, 0.3125: 10, 0.8125: 16, 0.875:0, 0.9375:0, 1.0:0}
+sorted_keys = sorted(prediction_results_2_8b)
+
+# Normalize the results
+total_1 = sum(prediction_results_2_8b.values())
+total_2 = sum(prediction_results_1b.values())
+total_3 = sum(prediction_results_70m.values())
+total_4 = sum(prediction_results_6_9b.values())
+
+sorted_values_1 = [prediction_results_2_8b[key] / total_1 for key in sorted_keys]
+sorted_values_2 = [prediction_results_1b[key] / total_2 for key in sorted_keys]
+sorted_values_3 = [prediction_results_70m[key] / total_3 for key in sorted_keys]
+sorted_values_4 = [prediction_results_6_9b[key] / total_4 for key in sorted_keys]
+
+# Create bar width
+bar_width = 0.2
+index = np.arange(len(prediction_results_2_8b))
+
+plt.figure(figsize=[12, 8])
+
+plt.bar(index, sorted_values_3, bar_width, color='skyblue', alpha=1, label='70m')
+plt.bar(index + bar_width, sorted_values_2, bar_width, color='orange', alpha=1, label='1b')
+plt.bar(index + 2 * bar_width, sorted_values_1, bar_width, color='green', alpha=1, label='2.8b')
+plt.bar(index + 3 * bar_width, sorted_values_4, bar_width, color='red',alpha=1, label='6.9b')
+
+plt.xlabel('Memorization Score', fontsize=16)
+plt.xticks(index + bar_width * 3, sorted_keys, rotation=90, fontsize=14)  # reposition x-ticks location
+plt.ylabel('Proportion', fontsize=16)  # Change y label to "Proportion"
+plt.title('Normalized Full Accuracy Count Distribution over Memorization Score',
+          fontsize=18)  # Change title to indicate it's normalized
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('normalized_full_accuracy_count_distribution.png', dpi=600)
+plt.show()
