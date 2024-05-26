@@ -175,7 +175,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
         batched_true_continuation.append(true_continuation)
     context_tokens = torch.tensor(batched_context_tokens).to('cuda')
     true_continuation = torch.tensor(batched_true_continuation).to('cuda')
-    batch_size = 10  # set batch size based on your GPU and model requirements
+    batch_size = 2  # set batch size based on your GPU and model requirements
     highest_entropy_at_idx = []
 
     # process each batch
