@@ -50,7 +50,7 @@ for model_size in model_size_list:
     print("Let's use", torch.cuda.device_count(), "GPUs!")
     device_ids = list(range(torch.cuda.device_count()))
     # 将模型加载到所有 GPU 上
-    model = torch.nn.DataParallel(model, device_ids=[0, 1])
+    model = torch.nn.DataParallel(model, device_ids=device_ids)
 
     df = pd.read_csv(f"generate_results/memorization_evals_{model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
     df_full_memorization = df[df['score'] == 1]
