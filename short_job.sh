@@ -1,6 +1,6 @@
 #!/bin/zsh
-#PJM -L rscgrp=share
-#PJM -L gpu=2
+#PJM -L rscgrp=regular-a
+#PJM -L node=1
 #PJM -L elapse=12:00:00
 #PJM -g gk77
 #PJM -j
