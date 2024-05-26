@@ -194,7 +194,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
                                                max_length=idx + 1, min_length=idx + 1)
                 logits = model_outputs["scores"]
                 for tensor in logits:
-                    tensor.float_()
+                    tensor.float()
                 probability_scores = torch.nn.functional.softmax(logits[0], dim=1)
                 entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
                 batched_highest_entropy_at_idx.append(entropy_scores)
@@ -206,7 +206,7 @@ def logits_obtain(dataset, model, idx_list, context_size, continuation_size):
                 predicted_continuation[:, idx-context_size] = model_outputs[0][:,-1].squeeze()
                 logits = model_outputs["scores"]
                 for tensor in logits:
-                    tensor.float_()
+                    tensor.float()
                 probability_scores = torch.nn.functional.softmax(logits[0], dim=1)
                 entropy_scores = torch.distributions.Categorical(probs=probability_scores).entropy()
                 batched_highest_entropy_at_idx.append(entropy_scores)
