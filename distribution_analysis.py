@@ -46,7 +46,7 @@ for model_size in model_size_list:
     #model.generation_config.output_hidden_states = True
     #model.generation_config.output_attentions = True
     model.generation_config.output_scores = True
-    #model.generation_config.return_dict_in_generate = True
+    model.generation_config.return_dict_in_generate = True
     print("Let's use", torch.cuda.device_count(), "GPUs!")
     device_ids = list(range(torch.cuda.device_count()))
     # 将模型加载到所有 GPU 上
