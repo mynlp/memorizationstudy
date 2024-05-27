@@ -20,7 +20,7 @@ print(prefix)
 buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
-for model_size in ["70m","410m", "1b", "2.8b", "6.9b", "12b"]:
+for model_size in ["410m", "2.8b", "12b"]:
     model_name = f"EleutherAI/pythia-{model_size}-deduped-v0"
     CHECKPOINT= 143000
     context = 32
@@ -91,7 +91,7 @@ for model_size in ["70m","410m", "1b", "2.8b", "6.9b", "12b"]:
             embeddings.append(embedding.mean(0)[token-2])
 
         names = [f"{i}" for i in range(continuation+1)]
-        fig, axs = plt.subplots(2, 1, figsize=(10, 20))
+        fig, axs = plt.subplots(1, 2, figsize=(10, 20))
         similarities = pd.DataFrame(index=names, columns=names)
         for i in range(len(embeddings)):
             for j in range(i, len(embeddings)):
