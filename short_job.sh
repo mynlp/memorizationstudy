@@ -1,6 +1,6 @@
 #!/bin/zsh
 #PJM -L rscgrp=share
-#PJM -L gpu=2
+#PJM -L gpu=4
 #PJM -L elapse=4:00:00
 #PJM -g gk77
 #PJM -j
