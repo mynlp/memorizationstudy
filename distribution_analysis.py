@@ -127,6 +127,16 @@ f.close()
 f = open("unmemorized_entropy_value.pkl", "wb")
 pickle.dump(unmemorized_entropy_value, f)
 f.close()
+f = open("memorized_entropy_value.pkl", "rb")
+memorized_entropy_value = pickle.load(f)
+f.close()
+f = open("half_memorized_entropy_value.pkl", "rb")
+half_memorized_entropy_value = pickle.load(f)
+f.close()
+f = open("unmemorized_entropy_value.pkl", "rb")
+unmemorized_entropy_value = pickle.load(f)
+f.close()
+
 plt.figure(figsize=(12, 8))
 plt.plot(model_size_list, [x[0] for x in memorized_entropy_value], color='red', label=f'inital_token_memorized')
 plt.plot(model_size_list, [x[0] for x in unmemorized_entropy_value], color='blue', label=f'inital_token_unmemorized')
@@ -137,26 +147,31 @@ plt.xlabel('Model Size')
 plt.ylabel('Entropy')
 plt.legend()
 plt.savefig(f'entropy_across_size.png')
+plt.show()
 
 plt.figure(figsize=(12, 8))
-memorized_entropy_values = [memorized_entropy_value[i][19:] for i in range(5)]
-half_memorized_entropy_values = [half_memorized_entropy_value[i][19:] for i in range(5)]
-unmemorized_entropy_values = [unmemorized_entropy_value[i][19:] for i in range(5)]
-colors = ['red', 'green', 'blue', 'darkred', 'darkgreen', 'darkblue', 'purple', 'orange', 'yellow', 'brown', 'pink',
-          'gray', 'olive', 'cyan', 'magenta']
+memorized_entropy_values = [memorized_entropy_value[i][19:] for i in range(len(model_size_list))]
+half_memorized_entropy_values = [half_memorized_entropy_value[i][19:] for i in range(len(model_size_list))]
+unmemorized_entropy_values = [unmemorized_entropy_value[i][19:] for i in range(len(model_size_list))]
+colors = ['red', 'green', 'blue', 'darkred', 'darkgreen', 'darkblue', 'purple', 'orange', 'yellow',
+          'brown', 'pink', 'gray', 'olive', 'cyan', 'magenta', 'lightblue', 'lightgreen', 'lightyellow',
+          'lightgray', 'darkgray', 'lavender', 'turquoise', 'teal', 'peachpuff', 'navy', 'salmon',
+          'gold', 'black', 'beige', 'lime', 'coral', 'plum', 'tan', 'skyblue', 'aquamarine',
+          'slategray', 'orchid', 'hotpink', 'mediumspringgreen', 'khaki', 'seagreen',
+          'steelblue', 'powderblue', 'indigo', 'burlywood', 'darkmagenta', 'midnightblue',
+          'royalblue', 'mediumblue', 'palegreen', 'peru', 'lightpink', 'crimson',
+          'white', 'azure', 'oldlace', 'mintcream', 'linen', 'aliceblue', 'ghostwhite',
+          'honeydew', 'floralwhite', 'cornsilk', 'snow', 'seashell', 'ivory', 'lemonchiffon']
 x_values = range(20, context + continuation)
-
 for i in range(len(model_size_list)):
     plt.plot(x_values, memorized_entropy_values[i], color=colors[3 * i], label=f'{model_size_list[i]}_memorized')
     plt.plot(x_values, half_memorized_entropy_values[i], color=colors[3 * i + 1], label=f'{model_size_list[i]}_half_memorized')
     plt.plot(x_values, unmemorized_entropy_values[i], color=colors[3 * i + 2], label=f'{model_size_list[i]}_unmemorized')
-
 plt.axvline(x=31, color='red', linestyle='--')
-plt.text(31-1.8, 2*1e9, 'Context\nEnd Point', rotation=0, size=12)
+plt.text(31-1.8, 4, 'Context\nEnd Point', rotation=0, size=12)
 plt.axvline(x=32, color='blue', linestyle='--')
-plt.text(32+0.3, 2*1e9, 'Decoding\nStart Point', rotation=0, size=12)
-
-plt.legend(loc='best', fontsize='12')
+plt.text(32+0.3, 4, 'Decoding\nStart Point', rotation=0, size=12)
+plt.legend(loc='upper right', fontsize='12')
 plt.title('Entropy at Each Token for Memorized and Unmemorized Data',  fontsize=14)
 plt.xlabel('Token Position', fontsize=14)
 plt.ylabel('Entropy', fontsize=16)
