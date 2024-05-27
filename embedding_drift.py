@@ -92,7 +92,7 @@ for model_size in ["410m", "2.8b", "12b"]:
             embeddings.append(embedding.mean(0)[token-2])
 
         names = [f"{i}" for i in range(continuation+1)]
-        fig, axs = plt.subplots(1, 2, figsize=(18, 18))
+        fig, axs = plt.subplots(1, 2, figsize=(18, 9))
         similarities = pd.DataFrame(index=names, columns=names)
         for i in range(len(embeddings)):
             for j in range(i, len(embeddings)):
