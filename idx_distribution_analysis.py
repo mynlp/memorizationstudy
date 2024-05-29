@@ -22,7 +22,7 @@ for model_size in ["70m", "410m", "2.8b", "12b"]:
     print(counts_per_percentile)
 
     # 计算百分位区间的标签 (10% 到 100%)
-    percentile_labels = [f"{i}-{i+10}%" for i in range(0, 100, 2)]
+    percentile_labels = [f"{i}-{i+2}%" for i in range(0, 100, 2)]
 
     # 画图
     plt.figure(figsize=(10, 6))
