@@ -10,11 +10,11 @@ for model_size in ["70m", "410m", "2.8b", "12b"]:
     df_un_memorization = df[df['score'] ==0]
 
     # 计算`idx`在整个数据集中的百分位
-    df['percentile'] = pd.qcut(df['idx'], 100, labels=False)  # 把整个数据集的idx分成10个百分位区间
+    df['percentile'] = pd.qcut(df['idx'], 50, labels=False)  # 把整个数据集的idx分成10个百分位区间
 
     # 计算df_full_memorization中每个idx的百分位
-    df_full_memorization['percentile'] = pd.cut(df_full_memorization['idx'], bins=np.percentile(df['idx'], np.arange(0, 101, 1)), labels=False, include_lowest=True)
-    df_un_memorization['percentile'] = pd.cut(df_un_memorization['idx'], bins=np.percentile(df['idx'], np.arange(0, 101, 1)), labels=False, include_lowest=True)
+    df_full_memorization['percentile'] = pd.cut(df_full_memorization['idx'], bins=np.percentile(df['idx'], np.arange(0, 101, 2)), labels=False, include_lowest=True)
+    df_un_memorization['percentile'] = pd.cut(df_un_memorization['idx'], bins=np.percentile(df['idx'], np.arange(0, 101, 2)), labels=False, include_lowest=True)
     # 步骤2: 计算df_full_memorization中每个百分位区间的idx数量
     counts_per_percentile = df_full_memorization['percentile'].value_counts().sort_index()
     counts_per_percentile_un = df_un_memorization['percentile'].value_counts().sort_index()
@@ -22,7 +22,7 @@ for model_size in ["70m", "410m", "2.8b", "12b"]:
     print(counts_per_percentile)
 
     # 计算百分位区间的标签 (10% 到 100%)
-    percentile_labels = [f"{i}-{i+10}%" for i in range(0, 100, 1)]
+    percentile_labels = [f"{i}-{i+10}%" for i in range(0, 100, 2)]
 
     # 画图
     plt.figure(figsize=(10, 6))
