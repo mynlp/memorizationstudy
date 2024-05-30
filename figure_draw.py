@@ -83,11 +83,11 @@ for info in data:
 # plt.savefig("memorized.png", bbox_inches='tight', dpi=600)
 # plt.show()
 axs[0].set_yscale('log')
-axs[0].set_xlabel("Model Size", fontsize=14)
+axs[0].set_xlabel("(a) Model Size", fontsize=14)
 axs[0].set_ylabel("Number of Sentences", fontsize=14)
 axs[0].set_title("Sentences of Different Memorization Score vs Model Size", fontsize=14)
 axs[0].grid(True, linestyle='--', alpha=0.5)
-axs[0].legend(fontsize=10, loc='upper left')
+axs[0].legend(title='Memorization Scores:',fontsize=10, loc='upper left')
 fig.savefig('memorized_sentences.png', bbox_inches='tight', dpi=600)
 
 x_labels = ["32", "48", "64", "96"]
@@ -102,7 +102,7 @@ SUBSETS = ['70m', '160m', '410m', '1b', '2_8b', '6_9b', '12b']
 COLOURS = ["blue", "red", "green", "purple", "orange", "brown", "black"]
 MARKERS = ["o", "v", "s", "p", "*", "+", "x"]
 for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
-    axs[1].plot(x_labels, eval(f"memorized_{subset}_dynamic_complement"), label=subset, color=colour, marker=marker, linestyle=":", linewidth=2)
+    axs[1].plot(x_labels, eval(f"memorized_{subset}_dynamic_complement"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=":", linewidth=2)
 # plt.plot(x_labels, memoirzed_70m_dynamic_complement, label="70m", color="blue", marker="o", linestyle=":", linewidth=2)
 # plt.plot(x_labels, memoirzed_160m_dynamic_complement, label="160m", color="red", marker="v", linestyle=":", linewidth=2)
 # plt.plot(x_labels, memoirzed_410m_dynamic_complement, label="410m", color="green", marker="s", linestyle="-.", linewidth=2)
@@ -117,7 +117,7 @@ for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
 axs[1].set_xlabel("(b) Complement Size", fontsize=14)
 axs[1].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
 axs[1].set_title("Number of Sentences Memorized vs Complement Size", fontsize=14)
-axs[1].legend(title='(a) Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+axs[1].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
 axs[1].grid(True, linestyle='--', alpha=0.5)
 fig.savefig('memorized_dynamic_complement.png', bbox_inches='tight', dpi=600)
 
@@ -132,7 +132,7 @@ memorized_2_8b_dynamic_context = [2788505, 3848136,5348909, 8023383 ]
 memorized_6_9b_dynamic_context = [3300177, 4648803, 6415035,  9611496]
 memorized_12b_dynamic_context = [3614267, 5096116, 7033750, 10523472]
 for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
-    axs[2].plot(x_labels, eval(f"memorized_{subset}_dynamic_context"), label=subset, color=colour, marker=marker, linestyle=":", linewidth=2)
+    axs[2].plot(x_labels, eval(f"memorized_{subset}_dynamic_context"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=":", linewidth=2)
 # plt.plot(x_labels, memorized_70m_dynamic_context, label="70m", color="blue", marker="o", linestyle=":", linewidth=2)
 # plt.plot(x_labels, memorized_160m_dynamic_context, label="160m", color="red", marker="v", linestyle=":", linewidth=2)
 # plt.plot(x_labels, memorized_410m_dynamic_context, label="410m", color="green", marker="s", linestyle="-.", linewidth=2)
