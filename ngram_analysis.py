@@ -30,30 +30,30 @@ def read_by_idx(mmap_ds, idx_list):
 mmap_ds = MMapIndexedDataset('deduped_merge/document.bin', skip_warmup=True)
 for size in sizes:
     df = pd.read_csv(f"generate_results/memorization_evals_{size}-deduped-v0_32_48_143000.csv", index_col=0)
-    memorized = df[df['score'] == 1]
-    half_memorized = df[df['score'] == 0.5]
-    forgotten = df[df['score'] == 0]
+    #memorized = df[df['score'] == 1]
+    #half_memorized = df[df['score'] == 0.5]
+    #forgotten = df[df['score'] == 0]
     quarter_memorized = df[df['score'] == 0.25]
-    idx_full_memorization = memorized["idx"].tolist()
-    idx_not_full_memorization = half_memorized["idx"].tolist()
-    idx_half_memorization = forgotten["idx"].tolist()
+    #idx_full_memorization = memorized["idx"].tolist()
+    #idx_not_full_memorization = half_memorized["idx"].tolist()
+    #idx_half_memorization = forgotten["idx"].tolist()
     idx_quarter_memorization = quarter_memorized["idx"].tolist()
-    memorized_index = random.sample(idx_full_memorization, num_points)
-    half_memorized_index = random.sample(idx_not_full_memorization, num_points)
-    forgotten_index = random.sample(idx_half_memorization, num_points)
+    #memorized_index = random.sample(idx_full_memorization, num_points)
+    #half_memorized_index = random.sample(idx_not_full_memorization, num_points)
+    #forgotten_index = random.sample(idx_half_memorization, num_points)
     quarter_memorized_index = random.sample(idx_quarter_memorization, num_points)
-    memorized_batched = read_by_idx(mmap_ds, memorized_index)
-    half_memorized_batched = read_by_idx(mmap_ds, half_memorized_index)
-    forgotten_batched = read_by_idx(mmap_ds, forgotten_index)
+    #memorized_batched = read_by_idx(mmap_ds, memorized_index)
+    #half_memorized_batched = read_by_idx(mmap_ds, half_memorized_index)
+    #forgotten_batched = read_by_idx(mmap_ds, forgotten_index)
     quarter_memorized_batched = read_by_idx(mmap_ds, quarter_memorized_index)
-    averaged_memorized = torch.Tensor(memorized_batched).mean(dim=0)
-    averaged_half_memorized = torch.Tensor(half_memorized_batched).mean(dim=0)
-    averaged_forgotten = torch.Tensor(forgotten_batched).mean(dim=0)
+    #averaged_memorized = torch.Tensor(memorized_batched).mean(dim=0)
+    #veraged_half_memorized = torch.Tensor(half_memorized_batched).mean(dim=0)
+    #averaged_forgotten = torch.Tensor(forgotten_batched).mean(dim=0)
     averaged_quarter_memorized = torch.Tensor(quarter_memorized_batched).mean(dim=0)
     print("size: ", size)
-    print(averaged_memorized[:48])
-    print(averaged_half_memorized[:48])
-    print(averaged_forgotten[:48])
+    #print(averaged_memorized[:48])
+    #print(averaged_half_memorized[:48])
+    #print(averaged_forgotten[:48])
     print(averaged_quarter_memorized[:48])
 
 # size_70m_memorized=[1.7204e+09, 1.7526e+09, 1.7298e+09, 1.7660e+09, 1.6903e+09, 1.7650e+09,
