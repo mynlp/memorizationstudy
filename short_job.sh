@@ -14,4 +14,5 @@ fi
 #python prediction_inference.py
 #python distribution_analysis.py
 #python batch_generate.py
-python embedding_drift.py
+#python embedding_drift.py
+python corpus_sankey_flow.py
