@@ -10,9 +10,6 @@ tokenizer = AutoTokenizer.from_pretrained(
   revision="step143000",
   cache_dir="./pythia-160m-deduped/step143000",
 )
-
-
-
 #tokenizer = AutoTokenizer.from_pretrained("gpt2")
 #model = AutoModelForCausalLM.from_pretrained("gpt2")
 
@@ -22,8 +19,6 @@ model.generation_config.output_hidden_states = True
 model.generation_config.output_attentions = True
 model.generation_config.output_scores = True
 model.generation_config.return_dict_in_generate = True
-
-
 model.eval()
 
 

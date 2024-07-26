@@ -31,7 +31,7 @@ def label_points(x, y, legend_added):
     cmap = get_cmap('viridis', num_points)  # 使用matplotlib的颜色映射
     colors = [cmap(i) for i in range(num_points)]
     for i, idx in enumerate(indices):
-        label = f'Memorized Token Num {i}'
+        label = f' {i} Token Memorized'
         if label not in legend_added:
             plt.scatter(x[idx], y[idx], color=colors[i], s=120, edgecolor='black', label=label, zorder=5)
             legend_added.add(label)
@@ -52,11 +52,15 @@ def plot_annular_sector(x, y, label, color):
     sector = patches.Wedge((0, 0), max_radius_with_arrow, np.degrees(min_angle), np.degrees(max_angle), width=width,
                            edgecolor='black', facecolor=color, alpha=0.15)
     plt.gca().add_patch(sector)
-
-    mid_radius = (min_radius_with_arrow + max_radius_with_arrow) / 2
-    mid_angle = (min_angle + max_angle) / 2
-    plt.text(mid_radius * np.cos(mid_angle), mid_radius * np.sin(mid_angle), f"{label}",
-             color="black", fontsize=12, ha='center')
+    offset = 0.5  # adjust this value according to your graph's scale
+    text_radius = min_radius_with_arrow + offset
+    text_angle = min_angle  # position the text at left edge of the sector
+    plt.text(text_radius * np.cos(text_angle)+1, text_radius * np.sin(text_angle), f"{label}",
+             color="black", fontsize=12, ha='center', rotation=np.degrees(text_angle))
+    # mid_radius = (min_radius_with_arrow + max_radius_with_arrow) / 2
+    # mid_angle = (min_angle + max_angle) / 2
+    # plt.text(mid_radius * np.cos(mid_angle), mid_radius * np.sin(mid_angle), f"{label}",
+    #          color="black", fontsize=12, ha='center')
 
 
 
@@ -94,7 +98,7 @@ y3 = r3 * np.sin(theta3)
 
 
 
-plt.figure(figsize=(10, 9))
+plt.figure(figsize=(10, 8))
 
 # 画起始点，使用更大的点和明显的颜色标记起点
 plt.scatter(x1, y1, s=120, color='dodgerblue', edgecolor='black', linewidth=1, zorder=5)
@@ -116,7 +120,38 @@ plot_annular_sector(x3, y3, '12b', 'black')
 plt.scatter(0, 0, s=200, color='black', marker='.', zorder=10)
 # plt.axvline(x=0, color='black', linewidth=1)  # 垂直线表示X轴
 # plt.axhline(y=0, color='black', linewidth=1)  # 水平线表示Y轴
+# arrow = patches.FancyArrowPatch(
+#     (x3[-1], y3[-1]+2),
+#     (x3[0], y3[0]+2),
+#     connectionstyle="arc3,rad=-.4",
+#     color="black",
+#     arrowstyle="<|-",
+#     mutation_scale=20,
+#     linewidth=2)
 
+plt.gca().annotate(
+    '',  # No annotation text
+    xy=(x3[0]+1, y3[0] + 1.5),  # The point that the arrow points to
+    xytext=(x3[-1]-1, y3[-1] + 1.5),  # The starting point of arrow
+    textcoords='data',
+    arrowprops=dict(
+        arrowstyle="<|-",
+        connectionstyle="arc3,rad=-.3",
+        color="black",
+        mutation_scale=20,
+        linewidth=2)
+)
+
+# Text at the middle of arrow
+plt.gca().text(
+    (x3[0] + x3[-1]) / 2,  # x-coordinate of text (middle point of arrow)
+    (y3[0] + y3[-1]) / 2 + 5,  # y-coordinate of text (middle point of arrow)
+    'Memorization Score Decreasing',  # Your annotation text
+    verticalalignment='center', horizontalalignment='center',  # Centered text
+    fontsize=12,  # font size of the text
+    color='black'  # font color of the text
+)
+#plt.gca().add_patch(arrow)
 plt.title('Embedding Dynamics of Sentences with Different Memorization Scores', fontsize=16)
 plt.xlabel('X Axis', fontsize=14)
 plt.ylabel('Y Axis', fontsize=14)
@@ -126,5 +161,5 @@ plt.axis('equal')
 plt.xlim(-12, 12)
 y_max = max(np.max(y1), np.max(y2), np.max(y3))  # 确保包含所有组的最大值
 plt.ylim(-0.5, y_max + 0.5)
-plt.savefig('plot.png', bbox_inches='tight', dpi=300)
+plt.savefig('plot.png', bbox_inches='tight', dpi=600)
 plt.show()

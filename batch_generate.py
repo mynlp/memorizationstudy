@@ -84,21 +84,7 @@ def main():
     #LOG_INTERVAL = 100
     RANK = args.rank#int(os.environ['RANK'])
     NUM_PROCS = 64
-    #os.environ['MODEL'] = MODEL
-   #int(os.environ['CHECKPOINT'])
-    #os.environ['CHECKPOINT'] = str(CHECKPOINT)
-    #os.environ['MASTER_ADDR'] = "127.0.0.1"
-    #os.environ['MASTER_PORT'] = '13443'
-    #logging.basicConfig(format = f'rank-{RANK}:' + '%(levelname)s:%(message)s', level = print)
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
-    #torch.cuda.set_device(RANK)
-    #dist.init_process_group(
-    #     "nccl",
-    #     world_size=NUM_PROCS,
-    #     rank=RANK
-    #)
-    #store = dist.TCPStore(os.environ['MASTER_ADDR'], port=13443,
-    #                       world_size=NUM_PROCS, is_master=RANK == 0, timeout=datetime.timedelta(hours=3))
     print("start")
 
     #dist.barrier()

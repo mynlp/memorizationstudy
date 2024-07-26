@@ -57,39 +57,34 @@ model_size = ["70m", "160m", "410m", "1b", "2.8b", "6.9b", "12b"]
 
 # Create a list to store all data and labels for easy iteration
 data = [
-    (unmemorized_32_16, "Memorize Score 0", "red", "v", "--"),
-    (memorized_0_1_32_16, "Memorize Score 0.1", "green", "s", ":"),
-    (memorized_0_2_32_16, "Memorize Score 0.2", "purple", "^", "-."),
-    (memorized_0_3_32_16, "Memorize Score 0.3", "orange", "p", "-"),
-    (memorized_0_4_32_16, "Memorize Score 0.4", "pink", "*", "--"),
-    (memorized_0_5_32_16, "Memorize Score 0.5", "cyan", "H", ":"),
-    (memorized_0_6_32_16, "Memorize Score 0.6", "olive", "+", "-."),
-    (memorized_0_7_32_16, "Memorize Score 0.7", "darkgreen", "D", "-"),
-    (memorized_0_8_32_16, "Memorize Score 0.8", "yellow", "X", "--"),
-    (memorized_0_9_32_16, "Memorize Score 0.9", "black", ".", ":"),
-    (memorized_32_16, "Memorize Score 1", "blue", "o", "-")
+    (unmemorized_32_16, "0", "red", "v", "--"),
+    (memorized_0_1_32_16, "0.1", "green", "s", ":"),
+    (memorized_0_2_32_16, "0.2", "purple", "^", "-."),
+    (memorized_0_3_32_16, "0.3", "orange", "p", "-"),
+    (memorized_0_4_32_16, "0.4", "pink", "*", "--"),
+    (memorized_0_5_32_16, "0.5", "cyan", "H", ":"),
+    (memorized_0_6_32_16, "0.6", "olive", "+", "-."),
+    (memorized_0_7_32_16, "0.7", "darkgreen", "D", "-"),
+    (memorized_0_8_32_16, "0.8", "yellow", "X", "--"),
+    (memorized_0_9_32_16, "0.9", "black", ".", ":"),
+    (memorized_32_16, "1", "blue", "o", "-")
 ]
 
-fig, axs = plt.subplots(1, 3, figsize=(18, 6))# Plot each data series
+plt.figure(figsize=(6, 6))
 for info in data:
     array, label, color, marker, linestyle = info
-    axs[0].plot(model_size, array, label=label, color=color, marker=marker, linestyle=linestyle, linewidth=2, alpha=0.7)
-# plt.yscale('log')
-# plt.xlabel("Model Size", fontsize=14)
-# plt.ylabel("Number of Memorized Sentences", fontsize=14)
-# plt.title("Number of Sentences Memorized by Model Size", fontsize=16)
-# plt.legend(fontsize=10, loc='upper left')
-# plt.grid(True)
-# plt.savefig("memorized.png", bbox_inches='tight', dpi=600)
-# plt.show()
-axs[0].set_yscale('log')
-axs[0].set_xlabel("(a) Model Size", fontsize=14)
-axs[0].set_ylabel("Number of Sentences", fontsize=14)
-axs[0].set_title("Sentences of Different Memorization Score vs Model Size", fontsize=14)
-axs[0].grid(True, linestyle='--', alpha=0.5)
-axs[0].legend(title='Memorization Scores:',fontsize=10, loc='upper left')
-fig.savefig('memorized_sentences.png', bbox_inches='tight', dpi=600)
+    plt.plot(model_size, array, label=label, color=color, marker=marker, linestyle=linestyle, linewidth=2, alpha=0.7)
+plt.yscale('log')
+plt.xlabel("Model Size", fontsize=14)
+plt.ylabel("Number of Memorized Sentences", fontsize=14)
+plt.title("Number of Sentences Memorized Across Model Size", fontsize=16)
+legend = plt.legend(title="Memorization\nScore:", title_fontsize='10', fontsize=10, loc="upper left")
+legend._legend_box.align = "left"
+plt.grid(True)
+plt.savefig("memorized_sentences.png", dpi=600, bbox_inches="tight")
+plt.show()
 
+fig, axs = plt.subplots(1, 2, figsize=(12, 6))# Plot each data series
 x_labels = ["32", "48", "64", "96"]
 memorized_70m_dynamic_complement = [894809, 411428, 262729, 167846]
 memorized_160m_dynamic_complement = [1309026, 583993, 375560, 251136]
@@ -101,28 +96,16 @@ memorized_12b_dynamic_complement = [3614267, 1732833, 1247639, 935722]
 SUBSETS = ['70m', '160m', '410m', '1b', '2_8b', '6_9b', '12b']
 COLOURS = ["blue", "red", "green", "purple", "orange", "brown", "black"]
 MARKERS = ["o", "v", "s", "p", "*", "+", "x"]
-for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
-    axs[1].plot(x_labels, eval(f"memorized_{subset}_dynamic_complement"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=":", linewidth=2)
-# plt.plot(x_labels, memoirzed_70m_dynamic_complement, label="70m", color="blue", marker="o", linestyle=":", linewidth=2)
-# plt.plot(x_labels, memoirzed_160m_dynamic_complement, label="160m", color="red", marker="v", linestyle=":", linewidth=2)
-# plt.plot(x_labels, memoirzed_410m_dynamic_complement, label="410m", color="green", marker="s", linestyle="-.", linewidth=2)
-# plt.plot(x_labels, memoirzed_1b_dynamic_complement, label="1b", color="purple", marker="p", linestyle="--", linewidth=2)
-# plt.plot(x_labels, memoirzed_2_8b_dynamic_complement, label="2.8b", color="orange", marker="*", linestyle="--", linewidth=2)
-# plt.plot(x_labels, memoirzed_6_9b_dynamic_complement, label="6.9b", color="brown", marker="+", linestyle="-.", linewidth=2)
-# plt.plot(x_labels, memoirzed_12b_dynamic_complement, label="12b", color="black", marker="x", linestyle=":", linewidth=2)
-# plt.xlabel("Complement Size", fontsize=14)
-# plt.ylabel("Number of Memorized Sentences", fontsize=14)
-# plt.title("Number of Sentences Memorized vs Complement Size", fontsize=16)
-# plt.legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
-axs[1].set_xlabel("(b) Complement Size", fontsize=14)
-axs[1].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
-axs[1].set_title("Number of Sentences Memorized vs Complement Size", fontsize=14)
-axs[1].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
-axs[1].grid(True, linestyle='--', alpha=0.5)
+LINESTYLES = ['-', '--', '-.', ':']
+for index, (subset, colour, marker) in enumerate(zip(SUBSETS, COLOURS, MARKERS)):
+    linestyle = LINESTYLES[index % len(LINESTYLES)]
+    axs[0].plot(x_labels, eval(f"memorized_{subset}_dynamic_complement"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=linestyle, linewidth=2)
+axs[0].set_xlabel("(a) Complement Size", fontsize=14)
+axs[0].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
+axs[0].set_title("Number of Sentences Memorized vs Continuation Size", fontsize=14)
+axs[0].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+axs[0].grid(True, linestyle='--', alpha=0.5)
 fig.savefig('memorized_dynamic_complement.png', bbox_inches='tight', dpi=600)
-
-# plt.savefig("memorized_dynamic_context.png", bbox_inches='tight', dpi=600)
-# plt.show()
 
 memorized_70m_dynamic_context = [1273552, 1591431, 2079244, 3105332]
 memorized_160m_dynamic_context = [1309026, 1675521, 2204431, 3388421]
@@ -131,25 +114,14 @@ memorized_1b_dynamic_context = [2197780, 2923047, 4033804,  6131382]
 memorized_2_8b_dynamic_context = [2788505, 3848136,5348909, 8023383 ]
 memorized_6_9b_dynamic_context = [3300177, 4648803, 6415035,  9611496]
 memorized_12b_dynamic_context = [3614267, 5096116, 7033750, 10523472]
-for subset, colour, marker in zip(SUBSETS, COLOURS, MARKERS):
-    axs[2].plot(x_labels, eval(f"memorized_{subset}_dynamic_context"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=":", linewidth=2)
-# plt.plot(x_labels, memorized_70m_dynamic_context, label="70m", color="blue", marker="o", linestyle=":", linewidth=2)
-# plt.plot(x_labels, memorized_160m_dynamic_context, label="160m", color="red", marker="v", linestyle=":", linewidth=2)
-# plt.plot(x_labels, memorized_410m_dynamic_context, label="410m", color="green", marker="s", linestyle="-.", linewidth=2)
-# plt.plot(x_labels, memorized_1b_dynamic_context, label="1b", color="purple", marker="p", linestyle="--", linewidth=2)
-# plt.plot(x_labels, memorized_2_8b_dynamic_context, label="2.8b", color="orange", marker="*", linestyle="--", linewidth=2)
-# plt.plot(x_labels, memorized_6_9b_dynamic_context, label="6.9b", color="brown", marker="+", linestyle="-.", linewidth=2)
-# plt.plot(x_labels, memorized_12b_dynamic_context, label="12b", color="black", marker="x", linestyle=":", linewidth=2)
-axs[2].set_xlabel("(c) Context Size", fontsize=14)
-axs[2].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
-axs[2].set_title("Number of Sentences Memorized vs Context Size", fontsize=14)
-axs[2].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
-axs[2].grid(True, linestyle='--', alpha=0.5)
-# plt.xlabel("Context Size", fontsize=14)
-# plt.ylabel("Number of Memorized Sentences", fontsize=14)
-# plt.title("Number of Sentences Memorized vs Context Size", fontsize=16)
-# plt.legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
-# plt.grid(True, linestyle='--', alpha=0.5)
+for index, (subset, colour, marker) in enumerate(zip(SUBSETS, COLOURS, MARKERS)):
+    linestyle = LINESTYLES[index % len(LINESTYLES)]
+    axs[1].plot(x_labels, eval(f"memorized_{subset}_dynamic_context"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=linestyle, linewidth=2)
+axs[1].set_xlabel("(b) Context Size", fontsize=14)
+axs[1].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
+axs[1].set_title("Number of Sentences Memorized vs Context Size", fontsize=14)
+axs[1].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')
+axs[1].grid(True, linestyle='--', alpha=0.5)
 fig.savefig('memorized_dynamic_context.png', bbox_inches='tight', dpi=600)
 
 plt.tight_layout()  # adjust subplot params to give specified padding

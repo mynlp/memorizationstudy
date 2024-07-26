@@ -211,7 +211,7 @@ plt.xticks(index + bar_width * 3, sorted_keys, rotation=90, fontsize=14)  # repo
 plt.ylabel('Proportion', fontsize=16)  # Change y label to "Proportion"
 plt.title('Normalized Full Accuracy Count Distribution over Memorization Score',
           fontsize=18)  # Change title to indicate it's normalized
-plt.legend()
+plt.legend(fontsize=16)
 plt.grid(True)
 plt.tight_layout()
 plt.savefig('normalized_full_accuracy_count_distribution.png', dpi=600)

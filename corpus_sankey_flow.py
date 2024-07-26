@@ -82,6 +82,44 @@ axs[1].set_xlabel('12b Model')
 axs[1].set_ylabel('2.8b Model')
 plt.savefig('transition_matrix.png', bbox_inches='tight', dpi=600)
 plt.show()
+
+transition_matrix_extra_large_large = pd.crosstab(df_extra_large["score"], df_large["score"])
+transition_matrix_large_small = pd.crosstab(df_large["score"], df_small["score"])
+
+# compute probabilities
+transition_prob_matrix_extra_large_large = transition_matrix_extra_large_large.values / transition_matrix_extra_large_large.values.sum(
+    axis=1, keepdims=True)
+transition_prob_matrix_large_small = transition_matrix_large_small.values / transition_matrix_large_small.values.sum(
+    axis=1, keepdims=True)
+
+# create subplots again to show reverse transition matrices
+fig, axs = plt.subplots(1, 2, figsize=(20, 8), gridspec_kw={'wspace': 0.2})
+plt.rcParams.update({'font.size': 14})
+cbar_ax = fig.add_axes([.91, .12, .03, .76])
+
+# plot the reversed transition matrices
+plt.subplot(1, 2, 1)
+sns.heatmap(transition_prob_matrix_extra_large_large, annot=True, cmap="viridis", fmt=".3f",
+            xticklabels=df_large["score"].unique(),
+            yticklabels=df_extra_large["score"].unique(),
+            annot_kws={"size": 16}, ax=axs[0], cbar=False)
+axs[0].set_title('Transition Matrix 12b to 2.8b')
+axs[0].set_xlabel('2.8b Model')
+axs[0].set_ylabel('12b Model')
+
+sns.heatmap(transition_prob_matrix_large_small, annot=True, cmap="viridis", fmt=".3f",
+            xticklabels=df_small['score'].unique(),
+            yticklabels=df_large['score'].unique(),
+            annot_kws={"size": 16}, ax=axs[1], cbar_ax=cbar_ax)
+axs[1].set_title('Transition Matrix 2.8b to 410m')
+axs[1].set_xlabel('410m Model')
+axs[1].set_ylabel('2.8b Model')
+
+plt.savefig('reverse_transition_matrix.png', bbox_inches='tight', dpi=600)
+plt.show()
+
+
+
 # label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
 #
 # transition_matrix_large_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
