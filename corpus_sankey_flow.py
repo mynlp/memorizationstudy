@@ -1,7 +1,4 @@
-import pandas as pd
-from pythia.utils.mmap_dataset import MMapIndexedDataset
-from utils import *
-from sklearn.manifold import TSNE
+
 import matplotlib.pyplot as plt
 import random
 import plotly.graph_objects as go
@@ -109,10 +106,13 @@ score_labels = ['very low', 'low', 'low medium', 'medium', 'high medium', 'high'
 # plt.savefig('transition_matrix.png', bbox_inches='tight', dpi=600)
 # plt.show()
 
-df_reverse_1 = pd.merge(df_extra_large, df_large, on="idx", suffixes=("_extra_large", "_large"))
-transition_matrix_reverse_1 = pd.crosstab(df_reverse_1["score_extra_large"], df_reverse_1["score_large"])
-transition_matrix_value_reverse_1 = transition_matrix_reverse_1.values
-transition_prob_matrix_reverse_1 = transition_matrix_value_reverse_1 / transition_matrix_value_reverse_1.sum(axis=1, keepdims=True)
+#df_reverse_1 = pd.merge(df_extra_large, df_large, on="idx", suffixes=("_extra_large", "_large"))
+#transition_matrix_reverse_1 = pd.crosstab(df_reverse_1["score_extra_large"], df_reverse_1["score_large"])
+transition_matrix_reverse = pd.crosstab(df_extra_large["score"], df_large["score"])
+#transition_matrix_value_reverse_1 = transition_matrix_reverse_1.values
+transition_matrix_value_reverse = transition_matrix_reverse.values
+#transition_prob_matrix_reverse_1 = transition_matrix_value_reverse_1 / transition_matrix_value_reverse_1.sum(axis=1, keepdims=True)
+transition_matrix_value_reverse =  transition_matrix_value_reverse / transition_matrix_value_reverse.sum(axis=1, keepdims=True)
 
 # From 2.8b to 410m
 df_reverse_2 = pd.merge(df_large, df_small, on="idx", suffixes=("_large", "_small"))
@@ -126,7 +126,7 @@ plt.rcParams.update({'font.size': 14})
 
 cbar_ax = fig.add_axes([.91, .12, .03, .76])
 plt.subplot(1, 2, 1)
-sns.heatmap(transition_prob_matrix_reverse_1, annot=True, cmap="viridis", fmt=".3f",
+sns.heatmap(transition_matrix_value_reverse, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=score_labels, yticklabels=score_labels,
             annot_kws={"size": 16}, ax=axs[0], cbar=False)
 axs[0].set_title('Transition Matrix 12b to 2.8b')
@@ -139,9 +139,9 @@ sns.heatmap(transition_prob_matrix_reverse_2, annot=True, cmap="viridis", fmt=".
 axs[1].set_title('Transition Matrix 2.8b to 410m')
 axs[1].set_xlabel('410m Model')
 axs[1].set_ylabel('2.8b Model')
-print(transition_prob_matrix_reverse_1)
+print(transition_matrix_value_reverse)
 print(transition_prob_matrix_reverse_2)
-plt.savefig('reverse_transition_matrix.png', bbox_inches='tight', dpi=600)
+#plt.savefig('reverse_transition_matrix.png', bbox_inches='tight', dpi=600)
 plt.show()
 
 
