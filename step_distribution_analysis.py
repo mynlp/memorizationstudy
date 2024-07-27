@@ -35,7 +35,7 @@ tokenizer = AutoTokenizer.from_pretrained(
   revision="step143000",
   cache_dir=f"./pythia-{small_model_size}-deduped/step143000",
 )
-accuray = []
+accuracy = []
 for idx in tqdm(small_memorized_idx[:100]):
     data = mmap_ds[idx]
     context_tokens = data[:context].tolist()
@@ -52,9 +52,11 @@ for idx in tqdm(small_memorized_idx[:100]):
                                          max_length=context + continuation,
                                          min_length=context + continuation)
     accuracies = (true_continuation == generations[:, context:context + continuation]).float()
-    accuray.append(accuracies)
+    accuracy.append(accuracies.tolist())
     print(context_tokens)
     print(true_continuation)
     print(continuation)
     print("=====================================================")
-
+accuracy = torch.tensor(accuracy)
+sum_across_16 = accuracy.sum(dim=-1)
+print(sum_across_16)
