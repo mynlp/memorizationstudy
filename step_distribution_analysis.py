@@ -17,7 +17,7 @@ print(prefix)
 buff_size = 2049*1024*2
 print("Building dataset")
 # mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
-# batch_size = 10
+batch_size = 10
 # df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
 #
 # scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
@@ -59,8 +59,8 @@ for i in tqdm(range(num_batches)):
     start_idx = i * batch_size
     end_idx = min((i + 1) * batch_size, len(data_tensor))
     batch_data = data_tensor[start_idx:end_idx]
-    context_tokens = torch.tensor([sample[:context] for sample in batch_data]).cuda()
-    true_continuation = torch.tensor([sample[context:context + continuation] for sample in batch_data]).cuda()
+    context_tokens = torch.stack([sample[:context] for sample in batch_data]).cuda()
+    true_continuation = torch.stack([sample[context:context + continuation] for sample in batch_data]).cuda()
     with torch.no_grad():
         generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
                                      max_length=context + continuation,
