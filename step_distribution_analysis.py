@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 random.seed(42)
-small_model_size = "410m"
+small_model_size = "2.8b"
 large_model_size = "1b"
 context = 32
 continuation = 16
