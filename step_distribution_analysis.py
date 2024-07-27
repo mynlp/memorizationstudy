@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 random.seed(42)
-small_model_size = "2.8b"
+small_model_size = "1b"
 large_model_size = "1b"
 context = 32
 continuation = 16
@@ -22,17 +22,7 @@ mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
 
 df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
-# model = GPTNeoXForCausalLM.from_pretrained(
-#     f"EleutherAI/pythia-{small_model_size}",
-#     revision=f'step143000',
-# ).eval().cuda(0)
-# model = model.to_bettertransformer()
-#
-# tokenizer = AutoTokenizer.from_pretrained(
-#   f"EleutherAI/pythia-{small_model_size}-deduped",
-#   revision="step143000",
-#   cache_dir=f"./pythia-{small_model_size}-deduped/step143000",
-# )
+
 
 scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
 data_list = []
@@ -43,7 +33,36 @@ for score in scores:
         data = mmap_ds[idx]
         data_list.append(data.tolist())
 data = torch.tensor(data_list)
-data.save("cross_remembered/context_tokens.pt")
+torch.save(data, "data_sample.pt")
+
+data = torch.load("data_sample.pt")
+
+model = GPTNeoXForCausalLM.from_pretrained(
+    f"EleutherAI/pythia-{small_model_size}",
+    revision=f'step143000',
+).eval().cuda(0)
+model = model.to_bettertransformer()
+
+tokenizer = AutoTokenizer.from_pretrained(
+  f"EleutherAI/pythia-{small_model_size}-deduped",
+  revision="step143000",
+  cache_dir=f"./pythia-{small_model_size}-deduped/step143000",
+)
+accuracy_list = []
+for sample in data:
+    context_tokens = torch.tensor(data[:context]).cuda()
+    true_continuation = torch.tensor(data[context:context + continuation]).cuda()
+    with torch.no_grad():
+        generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
+                                     max_length=context + continuation,
+                                     min_length=context + continuation)
+        accuracies = (true_continuation == generations[:, context:context + continuation]).float().sum()
+        accuracy_list.append(accuracies.tolist())
+accuracy_list = torch.tensor(accuracy_list)
+for idx, score in enumerate(scores):
+    temp = accuracy_list == score
+    print(f"Number of Samples equal to score {score}: {temp.sum()}")
+
 
 
 # accuracy = []
