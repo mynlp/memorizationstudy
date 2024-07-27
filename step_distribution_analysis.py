@@ -48,8 +48,8 @@ tokenizer = AutoTokenizer.from_pretrained(
 )
 accuracy_list = []
 for sample in data:
-    context_tokens = torch.tensor(sample[:context]).cuda()
-    true_continuation = torch.tensor(sample[context:context + continuation]).cuda()
+    context_tokens = torch.tensor(sample[:context]).unsqueeze(0).cuda()
+    true_continuation = torch.tensor(sample[context:context + continuation]).unsqueeze(0).cuda()
     with torch.no_grad():
         generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
                                      max_length=context + continuation,
