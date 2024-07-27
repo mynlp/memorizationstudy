@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 random.seed(42)
 small_model_size = "410m"
-large_model_size = "410m"
+large_model_size = "1b"
 context = 32
 continuation = 16
 prefix = 'deduped_merge/document.bin'
@@ -69,6 +69,6 @@ for idx in tqdm(small_memorized_idx[:10000]):
         print("=====================================================")
         context_tokens_list = []
         true_continuation_list = []
-accuracy = torch.stack([ accuracy_batch for accuracy_batch in accuracy],dim=1)
+accuracy = torch.tensor(accuracy)
 accuracy = torch.cat([ accuracy_batch for accuracy_batch in accuracy],dim=0)
-print(accuracy.sum(dim=1)/accuracy.shape[0])
+print(accuracy.sum(dim=0)/accuracy.shape[0])
