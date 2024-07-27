@@ -36,27 +36,37 @@ tokenizer = AutoTokenizer.from_pretrained(
   cache_dir=f"./pythia-{small_model_size}-deduped/step143000",
 )
 accuracy = []
-for idx in tqdm(small_memorized_idx[:100]):
+batch_size = 32
+context_tokens_list = []
+true_continuation_list = []
+
+for idx in tqdm(small_memorized_idx[:1000]):
     data = mmap_ds[idx]
-    context_tokens = data[:context].tolist()
-    true_continuation = data[context:context + continuation].tolist()
-    context_tokens = torch.tensor(context_tokens).unsqueeze(0).cuda()
-    true_continuation = torch.tensor(true_continuation).unsqueeze(0).cuda()
-    with torch.no_grad():
-        if isinstance(model, torch.nn.DataParallel):
-            generations = model.module.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
-                                                max_length=context + continuation,
-                                                min_length=context + continuation)
-        else:
-            generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
-                                         max_length=context + continuation,
-                                         min_length=context + continuation)
-    accuracies = (true_continuation == generations[:, context:context + continuation]).float()
-    accuracy.append(accuracies.tolist())
-    print(context_tokens)
-    print(true_continuation)
-    print(continuation)
-    print("=====================================================")
+
+    context_tokens_list.append(data[:context].tolist())
+    true_continuation_list.append(data[context:context + continuation].tolist())
+
+    # Check if batch size is reached
+    if len(context_tokens_list) >= batch_size:
+        # Process batch here and do what you want with it
+        context_tokens_batch = torch.tensor(context_tokens_list).cuda()
+        true_continuation_batch = torch.tensor(true_continuation_list).cuda()
+        with torch.no_grad():
+            if isinstance(model, torch.nn.DataParallel):
+                generations = model.module.generate(context_tokens_batch, temperature=0.0, top_k=0, top_p=0,
+                                                    max_length=context + continuation,
+                                                    min_length=context + continuation)
+            else:
+                generations = model.generate(context_tokens_batch, temperature=0.0, top_k=0, top_p=0,
+                                             max_length=context + continuation,
+                                             min_length=context + continuation)
+        accuracies = (true_continuation_batch == generations[:, context:context + continuation]).float()
+        accuracy.append(accuracies.tolist())
+        print(context_tokens_batch)
+        print(true_continuation_batch)
+        print(continuation)
+        print("=====================================================")
+        context_tokens_list = []
+        true_continuation_list = []
 accuracy = torch.tensor(accuracy)
-sum_across_16 = accuracy.sum(dim=-1)
-print(sum_across_16)
+
