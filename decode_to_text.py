@@ -34,4 +34,4 @@ f.close()
 
 
 
-dataset = datasets.load_dataset("json", data_files="cross_remembered/memorized_text.json")
+dataset = load_dataset("json", data_files="cross_remembered/memorized_text.json")
