@@ -16,22 +16,23 @@ prefix = 'deduped_merge/document.bin'
 print(prefix)
 buff_size = 2049*1024*2
 print("Building dataset")
-mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
-batch_size = 10
-df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
-
+# mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
+# batch_size = 10
+# df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
+#
+# scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
+# data_list = []
+# for score in scores:
+#     df_small_memorized = df_small[df_small["score"] == score]
+#     small_memorized_idx = df_small_memorized.index
+#     for idx in tqdm(small_memorized_idx[:500]):
+#         data = mmap_ds[idx]
+#         data_list.append(data.tolist())
+# data = torch.tensor(data_list)
+# data = data.cpu().numpy() if data.is_cuda else data.numpy()
+# df = pd.DataFrame(data)
+# df.to_csv('data_sample.csv', index=False)
 scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
-data_list = []
-for score in scores:
-    df_small_memorized = df_small[df_small["score"] == score]
-    small_memorized_idx = df_small_memorized.index
-    for idx in tqdm(small_memorized_idx[:500]):
-        data = mmap_ds[idx]
-        data_list.append(data.tolist())
-data = torch.tensor(data_list)
-data = data.cpu().numpy() if data.is_cuda else data.numpy()
-df = pd.DataFrame(data)
-df.to_csv('data_sample.csv', index=False)
 df = pd.read_csv('data_sample.csv')
 data_numpy = df.values
 data_tensor = torch.from_numpy(data_numpy)
