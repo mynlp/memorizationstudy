@@ -20,18 +20,18 @@ buff_size = 2049*1024*2
 print("Building dataset")
 mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
 
-df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
-
-scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
-data_list = []
-for score in scores:
-    df_small_memorized = df_small[df_small["score"] == score]
-    small_memorized_idx = df_small_memorized.index
-    for idx in tqdm(small_memorized_idx[:1000]):
-        data = mmap_ds[idx]
-        data_list.append(data.tolist())
-data = torch.tensor(data_list)
-torch.save(data, "data_sample.pt")
+# df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
+#
+# scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
+# data_list = []
+# for score in scores:
+#     df_small_memorized = df_small[df_small["score"] == score]
+#     small_memorized_idx = df_small_memorized.index
+#     for idx in tqdm(small_memorized_idx[:1000]):
+#         data = mmap_ds[idx]
+#         data_list.append(data.tolist())
+# data = torch.tensor(data_list)
+# torch.save(data, "data_sample.pt")
 
 data = torch.load("data_sample.pt")
 
