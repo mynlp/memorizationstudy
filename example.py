@@ -4,9 +4,15 @@ import torch
 import numpy as np
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 from tqdm import tqdm
+from huggingface_hub import hf_hub_download
+import pandas as pd
 
+REPO_ID = "Parallaxixs/ARRJuneData"
+FILENAME = "data_sample.csv"
 
-df = pd.read_csv('data_sample.csv')
+df = pd.read_csv(
+    hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="dataset")
+)
 
 numpy_data = df.to_numpy(dtype=np.int)
 data_tensor = torch.from_numpy(numpy_data).int()
