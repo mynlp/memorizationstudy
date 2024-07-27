@@ -73,6 +73,9 @@ df_extra_large["score"] = df_extra_large["score"].apply(redefine_score)
 df_small["idx"] = df_small.index
 df_large["idx"] = df_large.index
 df_extra_large["idx"] = df_extra_large.index
+score_labels = ['very low', 'low', 'low medium', 'medium', 'high medium', 'high', 'very high', 'extremely high',
+                'almost perfect', 'perfect']
+
 # 连接 df_small 和 df_large
 # df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
 # df_new = pd.merge(df_large, df_extra_large, left_on="idx", right_on="idx", suffixes=("_large", "_extra_large"))
@@ -124,14 +127,14 @@ plt.rcParams.update({'font.size': 14})
 cbar_ax = fig.add_axes([.91, .12, .03, .76])
 plt.subplot(1, 2, 1)
 sns.heatmap(transition_prob_matrix_reverse_1, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=df_large["score"].unique(), yticklabels=df_extra_large["score"].unique(),
+            xticklabels=score_labels, yticklabels=score_labels,
             annot_kws={"size": 16}, ax=axs[0], cbar=False)
 axs[0].set_title('Transition Matrix 12b to 2.8b')
 axs[0].set_xlabel('2.8b Model')
 axs[0].set_ylabel('12b Model')
 
 sns.heatmap(transition_prob_matrix_reverse_2, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=df_small["score"].unique(), yticklabels=df_large["score"].unique(),
+            xticklabels=score_labels, yticklabels=score_labels,
             annot_kws={"size": 16}, ax=axs[1], cbar_ax=cbar_ax)
 axs[1].set_title('Transition Matrix 2.8b to 410m')
 axs[1].set_xlabel('410m Model')
