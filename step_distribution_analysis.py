@@ -27,7 +27,7 @@ small_memorized_idx = df_small_memorized.index
 model = GPTNeoXForCausalLM.from_pretrained(
     f"EleutherAI/pythia-{small_model_size}",
     revision=f'step143000',
-).half().eval()
+).eval().cuda(0)
 model = model.to_bettertransformer()
 
 tokenizer = AutoTokenizer.from_pretrained(
@@ -42,16 +42,16 @@ for idx in tqdm(small_memorized_idx[:100]):
     true_continuation = data[context:context + continuation].tolist()
     context_tokens = torch.tensor(context_tokens).unsqueeze(0).cuda()
     true_continuation = torch.tensor(true_continuation).unsqueeze(0).cuda()
-    if isinstance(model, torch.nn.DataParallel):
-        generations = model.module.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
-                                            max_length=context + continuation,
-                                            min_length=context + continuation)
-    else:
-        generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
-                                     max_length=context + continuation,
-                                     min_length=context + continuation)
-    accuracies = (true_continuation == generations[:, context:context + continuation]).float().mean(
-        axis=-1)
+    with torch.no_grad():
+        if isinstance(model, torch.nn.DataParallel):
+            generations = model.module.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
+                                                max_length=context + continuation,
+                                                min_length=context + continuation)
+        else:
+            generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
+                                         max_length=context + continuation,
+                                         min_length=context + continuation)
+    accuracies = (true_continuation == generations[:, context:context + continuation]).float()
     accuray.append(accuracies)
     print(context_tokens)
     print(true_continuation)
