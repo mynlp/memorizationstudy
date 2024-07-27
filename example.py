@@ -14,7 +14,7 @@ df = pd.read_csv(
     hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="dataset")
 )
 
-numpy_data = df.to_numpy(dtype=np.int)
+numpy_data = df.to_numpy(dtype=int)
 data_tensor = torch.from_numpy(numpy_data).int()
 
 model_size = "410m"
