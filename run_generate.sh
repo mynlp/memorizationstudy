@@ -19,5 +19,6 @@ fi
 
 ## available models: 70m, 160m, 410m, 1b, 1.4b, 2.8b, 6.9b, 12b deduped
 ## available models: 14m, 31m, 70m, 160m, 410m, 1b, 1.4b, 2.8b, 6.9b, 12b undeduped
-python embedding_drift.py
+python corpus_sankey_flow.py
+#python embedding_drift.py
 #python3 batch_generate.py --model 1b-deduped-v0 --checkpoint 143000 --batch_size 1024 --context_size 32 --continuation_size 16
