@@ -141,7 +141,7 @@ axs[1].set_xlabel('410m Model')
 axs[1].set_ylabel('2.8b Model')
 print(transition_matrix_value_reverse)
 print(transition_prob_matrix_reverse_2)
-#plt.savefig('reverse_transition_matrix.png', bbox_inches='tight', dpi=600)
+plt.savefig('reverse_transition_matrix.png', bbox_inches='tight', dpi=600)
 plt.show()
 
 
