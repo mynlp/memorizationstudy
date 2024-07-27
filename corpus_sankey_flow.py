@@ -11,17 +11,40 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+# def redefine_score(score):
+#     if score <= 0.2:
+#         return 'very low'
+#     elif score <= 0.4:
+#         return 'low'
+#     elif score <= 0.6:
+#         return 'medium'
+#     elif score <= 0.8:
+#         return 'high'
+#     else:
+#         return 'very high'
+
+
 def redefine_score(score):
-    if score <= 0.2:
+    if score <= 0.1:
         return 'very low'
-    elif score <= 0.4:
+    elif score <= 0.2:
         return 'low'
-    elif score <= 0.6:
+    elif score <= 0.3:
+        return 'low medium'
+    elif score <= 0.4:
         return 'medium'
-    elif score <= 0.8:
+    elif score <= 0.5:
+        return 'high medium'
+    elif score <= 0.6:
         return 'high'
-    else:
+    elif score <= 0.7:
         return 'very high'
+    elif score <= 0.8:
+        return 'extremely high'
+    elif score <= 0.9:
+        return 'almost perfect'
+    else:
+        return 'perfect'
 
 random.seed(42)
 small_model_size = "410m"
@@ -113,7 +136,8 @@ sns.heatmap(transition_prob_matrix_reverse_2, annot=True, cmap="viridis", fmt=".
 axs[1].set_title('Transition Matrix 2.8b to 410m')
 axs[1].set_xlabel('410m Model')
 axs[1].set_ylabel('2.8b Model')
-
+print(transition_prob_matrix_reverse_1)
+print(transition_prob_matrix_reverse_2)
 plt.savefig('reverse_transition_matrix.png', bbox_inches='tight', dpi=600)
 plt.show()
 
