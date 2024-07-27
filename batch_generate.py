@@ -1,16 +1,11 @@
 import os
-import logging
 import time
-import datetime
 import torch
-import torch.distributed as dist
 import transformers.utils as transformer_utils
 import multiprocessing as mp
 from pythia.utils.mmap_dataset import MMapIndexedDataset
-from transformers import GPTNeoXForCausalLM, AutoModelForCausalLM
 import argparse
 from utils import *
-import pdb
 def generate_dataset(model, batch_size, context_size, continuation_size, start_seq_idx, end_seq_idx, mp_queue, prefetch_max=128):
     prefix = 'undeduped_merge/document.bin'
     if "deduped" in model:
@@ -80,14 +75,11 @@ def main():
     paser.add_argument("--checkpoint", type=int, default=143000)
     paser.add_argument("--rank", type=int, default=0)
     args = paser.parse_args()
-    #BATCH_SIZE = 1024
-    #LOG_INTERVAL = 100
-    RANK = args.rank#int(os.environ['RANK'])
-    NUM_PROCS = 64
+
+    RANK = args.rank
+    NUM_PROCS = 1
     print(f"Initializing torch distributed with gpus {torch.cuda.device_count()}")
     print("start")
-
-    #dist.barrier()
 
     # Model initialization
     transformer_utils.logging.set_verbosity_error()
@@ -114,7 +106,6 @@ def main():
     ds_process.start()
 
     # Model initialization
-    #model = AutoModelForCausalLM.from_pretrained(f"EleutherAI/pythia-{args.model}", revision=f'step{args.checkpoint}', load_in_8bit=True, device_map="cuda:0")
     model = GPTNeoXForCausalLM.from_pretrained(
         f"EleutherAI/pythia-{args.model}",
         revision=f'step{args.checkpoint}',
@@ -125,7 +116,7 @@ def main():
         model = torch.nn.DataParallel(model,device_ids=[0, 1])
     else:
         model = model.cuda()
-    #dist.barrier()
+
     print("Loaded Model")
     all_memorization_evals = []
     all_memorization_evals_values = []
@@ -140,7 +131,6 @@ def main():
             if idx is None:
                 mp_queue.close()
                 break
-
             idx = idx
             print(f"Loading data took {time.time() - t:.3}s")
             t = time.time()
@@ -154,7 +144,6 @@ def main():
                 idx += 1
                 debug_count += 1
             print(f"Generation until {idx} took {time.time() - t:.3}s")
-            #dist.barrier()
             iters += 1
             if iters % 500 == 0:
                 print(f"Processed {iters} iterations until {idx}")
@@ -180,7 +169,6 @@ def main():
         df.to_csv(
             f"generate_results/memorization_evals_{args.model}_{args.context_size}_{args.context_size + args.continuation_size}_{args.checkpoint}_{RANK}.csv")
     ds_process.join()
-    # dist.barrier()
 
 if __name__ == '__main__':
     mp.set_start_method('spawn')
