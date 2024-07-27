@@ -40,7 +40,7 @@ data_tensor = data_tensor.int()
 model = GPTNeoXForCausalLM.from_pretrained(
     f"EleutherAI/pythia-{small_model_size}",
     revision=f'step143000',
-).eval().cuda(0)
+).half().eval().cuda(0)
 model = model.to_bettertransformer()
 
 tokenizer = AutoTokenizer.from_pretrained(
