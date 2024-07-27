@@ -31,17 +31,12 @@ for score in scores:
         data = mmap_ds[idx]
         data_list.append(data.tolist())
 data = torch.tensor(data_list)
-torch.save(data, "data_sample.pt")
 data = data.cpu().numpy() if data.is_cuda else data.numpy()
 df = pd.DataFrame(data)
 df.to_csv('data_sample.csv', index=False)
-
 df = pd.read_csv('data_sample.csv')
 data_numpy = df.values
-
 data_tensor = torch.from_numpy(data_numpy)
-
-# 进行必要的类型转换（如果需要的话）
 data_tensor = data_tensor.int()
 
 model = GPTNeoXForCausalLM.from_pretrained(
@@ -60,31 +55,23 @@ num_batches = len(data) // batch_size
 # Take care of the last batch if it doesn't align with the `batch_size`
 if len(data) % batch_size != 0:
     num_batches += 1
-
-for i in range(num_batches):
-    # Calculate start and end index for each batch
+accuracy_list = []
+for i in tqdm(range(num_batches)):
     start_idx = i * batch_size
     end_idx = min((i + 1) * batch_size, len(data))
-
-    # Get the batch data
     batch_data = data[start_idx:end_idx]
-
-    # Convert to PyTorch tensor and move to device
     context_tokens = torch.tensor([sample[:context] for sample in batch_data]).cuda()
     true_continuation = torch.tensor([sample[context:context + continuation] for sample in batch_data]).cuda()
-
     with torch.no_grad():
         generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
                                      max_length=context + continuation,
                                      min_length=context + continuation)
-
-        # Calculate accuracy for this batch and store
-        accuracies = (true_continuation == generations[:, :, context:context + continuation]).float().sum(
+        accuracies = (true_continuation == generations[:, context:context + continuation]).float().sum(
             dim=1).tolist()
         accuracy_list.extend(accuracies)
 accuracy_list = torch.tensor(accuracy_list)
 for idx, score in enumerate(scores):
-    temp = accuracy_list == score
+    temp = accuracy_list/continuation == score
     print(f"Number of Samples equal to score {score}: {temp.sum()}")
 
 
