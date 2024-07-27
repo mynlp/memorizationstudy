@@ -41,9 +41,12 @@ csv_filename = "data_sample.csv"
 df.to_csv(csv_filename, index=False)
 
 # Upload to Huggingface Dataset
-from datasets import Dataset
-dataset = Dataset.from_csv(csv_filename)
+from datasets import Dataset, load_dataset
+dataset = Dataset.from_pandas(csv_filename)
 dataset.push_to_hub("Parallaxixs/ARRJuneData")
+
+
+dataset = load_dataset("Parallaxixs/ARRJuneData")
 #
 # df.to_csv('data_sample.csv', index=False)
 # scores = [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1]
