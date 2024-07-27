@@ -5,8 +5,8 @@ import numpy as np
 from transformers import GPTNeoXForCausalLM, AutoTokenizer
 from tqdm import tqdm
 
-dataset = load_dataset("Parallaxixs/ARRJuneData")
-df = pd.DataFrame(dataset['train'])
+
+df = pd.read_csv('data_sample.csv')
 
 numpy_data = df.to_numpy(dtype=np.int)
 data_tensor = torch.from_numpy(numpy_data).int()

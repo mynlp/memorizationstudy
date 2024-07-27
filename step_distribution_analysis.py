@@ -7,6 +7,8 @@ import random
 import pandas as pd
 from tqdm import tqdm
 
+from datasets import Dataset, load_dataset
+
 
 random.seed(42)
 small_model_size = "410m"
@@ -33,18 +35,13 @@ data = torch.tensor(data_list)
 # Convert the tensor to a list of lists
 data_list = data.tolist()
 
-# Convert list of lists to a DataFrame
 df = pd.DataFrame(data_list)
-
-# Save the DataFrame as a CSV file
-csv_filename = "data_sample.csv"
+csv_filename = "data.csv"
 df.to_csv(csv_filename, index=False)
 
-# Upload to Huggingface Dataset
-from datasets import Dataset, load_dataset
-dataset = Dataset.from_pandas(csv_filename)
+# 创建数据集并上传到Huggingface
+dataset = Dataset.from_pandas(df)
 dataset.push_to_hub("Parallaxixs/ARRJuneData")
-
 
 dataset = load_dataset("Parallaxixs/ARRJuneData")
 #
