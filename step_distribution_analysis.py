@@ -5,13 +5,11 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import random
 import pandas as pd
-import json
 from tqdm import tqdm
 
 
 random.seed(42)
-small_model_size = "1b"
-large_model_size = "1b"
+small_model_size = "410m"
 context = 32
 continuation = 16
 prefix = 'deduped_merge/document.bin'
@@ -51,15 +49,15 @@ tokenizer = AutoTokenizer.from_pretrained(
   cache_dir=f"./pythia-{small_model_size}-deduped/step143000",
 )
 
-num_batches = len(data) // batch_size
+num_batches = len(data_tensor) // batch_size
 # Take care of the last batch if it doesn't align with the `batch_size`
-if len(data) % batch_size != 0:
+if len(data_tensor) % batch_size != 0:
     num_batches += 1
 accuracy_list = []
 for i in tqdm(range(num_batches)):
     start_idx = i * batch_size
-    end_idx = min((i + 1) * batch_size, len(data))
-    batch_data = data[start_idx:end_idx]
+    end_idx = min((i + 1) * batch_size, len(data_tensor))
+    batch_data = data_tensor[start_idx:end_idx]
     context_tokens = torch.tensor([sample[:context] for sample in batch_data]).cuda()
     true_continuation = torch.tensor([sample[context:context + continuation] for sample in batch_data]).cuda()
     with torch.no_grad():
