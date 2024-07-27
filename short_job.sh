@@ -1,7 +1,7 @@
 #!/bin/zsh
 #PJM -L rscgrp=regular-a
 #PJM -L node=1
-#PJM -L elapse=2:00:00
+#PJM -L elapse=1:00:00
 #PJM -g gk77
 #PJM -j
 #PJM -N short_job
