@@ -1,3 +1,4 @@
+import torch
 from pythia.utils.mmap_dataset import MMapIndexedDataset
 from utils import *
 from sklearn.manifold import TSNE
@@ -9,7 +10,7 @@ from tqdm import tqdm
 
 
 random.seed(42)
-small_model_size = "70m"
+small_model_size = "410m"
 large_model_size = "410m"
 context = 32
 continuation = 16
@@ -40,7 +41,7 @@ batch_size = 32
 context_tokens_list = []
 true_continuation_list = []
 
-for idx in tqdm(small_memorized_idx[:1000]):
+for idx in tqdm(small_memorized_idx[:10000]):
     data = mmap_ds[idx]
 
     context_tokens_list.append(data[:context].tolist())
@@ -68,5 +69,6 @@ for idx in tqdm(small_memorized_idx[:1000]):
         print("=====================================================")
         context_tokens_list = []
         true_continuation_list = []
-accuracy = torch.tensor(accuracy)
-
+accuracy = torch.stack([ accuracy_batch for accuracy_batch in accuracy],dim=1)
+accuracy = torch.cat([ accuracy_batch for accuracy_batch in accuracy],dim=0)
+print(accuracy.sum(dim=1)/accuracy.shape[0])
