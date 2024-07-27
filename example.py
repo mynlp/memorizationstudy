@@ -9,7 +9,7 @@ import pandas as pd
 
 REPO_ID = "Parallaxixs/ARRJuneData"
 FILENAME = "data_sample.csv"
-
+print("Data Download")
 df = pd.read_csv(
     hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="dataset")
 )
@@ -17,10 +17,10 @@ df = pd.read_csv(
 numpy_data = df.to_numpy(dtype=int)
 data_tensor = torch.from_numpy(numpy_data).int()
 
-model_size = "410m"
-batch_size = 10
-context = 32
-continuation = 16
+model_size = "410m"#model size parameter
+batch_size = 10#generetion batch size
+context = 32#number of context tokens
+continuation = 16#number of continuation tokens
 
 model = GPTNeoXForCausalLM.from_pretrained(
     f"EleutherAI/pythia-{model_size}",
@@ -50,9 +50,9 @@ for i in tqdm(range(num_batches)):
                                      max_length=context + continuation,
                                      min_length=context + continuation)
         accuracies = (true_continuation == generations[:, context:context + continuation]).float().sum(
-            dim=1).tolist()
+            dim=1).tolist()##compare to cacualte the memorization scores
         accuracy_list.extend(accuracies)
-accuracy_list = torch.tensor(accuracy_list)
+accuracy_list = torch.tensor(accuracy_list) #the memorization score for each sample
 
 
 
