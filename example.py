@@ -21,11 +21,18 @@ model_size = "410m"#model size parameter
 batch_size = 10#generetion batch size
 context = 32#number of context tokens
 continuation = 16#number of continuation tokens
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 model = GPTNeoXForCausalLM.from_pretrained(
     f"EleutherAI/pythia-{model_size}",
     revision=f'step143000',
-).half().eval().cuda(0)
+)
+
+if torch.cuda.is_available():
+    model = model.half()
+
+model = model.eval().to(device)
+
 model = model.to_bettertransformer()
 
 tokenizer = AutoTokenizer.from_pretrained(
