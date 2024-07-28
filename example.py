@@ -50,8 +50,8 @@ for i in tqdm(range(num_batches)):
     start_idx = i * batch_size
     end_idx = min((i + 1) * batch_size, len(data_tensor))
     batch_data = data_tensor[start_idx:end_idx]
-    context_tokens = torch.stack([sample[:context] for sample in batch_data]).cuda()
-    true_continuation = torch.stack([sample[context:context + continuation] for sample in batch_data]).cuda()
+    context_tokens = torch.stack([sample[:context] for sample in batch_data]).to(device)
+    true_continuation = torch.stack([sample[context:context + continuation] for sample in batch_data]).to(device)
     with torch.no_grad():
         generations = model.generate(context_tokens, temperature=0.0, top_k=0, top_p=0,
                                      max_length=context + continuation,
