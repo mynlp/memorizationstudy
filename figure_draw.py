@@ -100,7 +100,7 @@ LINESTYLES = ['-', '--', '-.', ':']
 for index, (subset, colour, marker) in enumerate(zip(SUBSETS, COLOURS, MARKERS)):
     linestyle = LINESTYLES[index % len(LINESTYLES)]
     axs[0].plot(x_labels, eval(f"memorized_{subset}_dynamic_complement"), label=subset.replace("_","."), color=colour, marker=marker, linestyle=linestyle, linewidth=2)
-axs[0].set_xlabel("(a) Complement Size", fontsize=14)
+axs[0].set_xlabel("(a) Continuation Size", fontsize=14)
 axs[0].set_ylabel("Number of Memorized Sentences (Millions)", fontsize=14)
 axs[0].set_title("Number of Sentences Memorized vs Continuation Size", fontsize=14)
 axs[0].legend(title='Model Sizes:', title_fontsize='10', fontsize='10', loc='upper left')

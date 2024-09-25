@@ -74,37 +74,37 @@ score_labels = ['very low', 'low', 'low medium', 'medium', 'high medium', 'high'
                 'almost perfect', 'perfect']
 
 # 连接 df_small 和 df_large
-# df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
-# df_new = pd.merge(df_large, df_extra_large, left_on="idx", right_on="idx", suffixes=("_large", "_extra_large"))
-# # 创建转移矩阵
-# transition_matrix = pd.crosstab(df_small["score"], df_large["score"])
-# transition_matrix_value = transition_matrix.values
-# transition_matrix_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
-# transition_matrix_value_extra_large = transition_matrix_extra_large.values
-#
-# transition_prob_matrix_small_large = transition_matrix_value / transition_matrix_value.sum(axis=1,keepdims=True)
-# transition_prob_matrix_large_extra_large = transition_matrix_value_extra_large / transition_matrix_value_extra_large.sum(
-#     axis=1, keepdims=True)
-#
-# fig, axs = plt.subplots(1, 2, figsize=(20, 8), gridspec_kw={'wspace': 0.2})
-# plt.rcParams.update({'font.size': 14})
-# cbar_ax = fig.add_axes([.91, .12, .03, .76])
-# plt.subplot(1, 2, 1)
-# sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
-#             xticklabels=df_large["score"].unique(),
-#             yticklabels=df_small["score"].unique(), annot_kws={"size": 16}, ax=axs[0], cbar=False)
-# axs[0].set_title('Transition Matrix 410m to 2.8b')
-# axs[0].set_xlabel('2.8b Model')
-# axs[0].set_ylabel('410m Model')
-# sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
-#             xticklabels=df_extra_large["score"].unique(),
-#             yticklabels=df_large["score"].unique(), annot_kws={"size": 16}, ax=axs[1],
-#             cbar_ax=cbar_ax)
-# axs[1].set_title('Transition Matrix 2.8b to 12b')
-# axs[1].set_xlabel('12b Model')
-# axs[1].set_ylabel('2.8b Model')
-# plt.savefig('transition_matrix.png', bbox_inches='tight', dpi=600)
-# plt.show()
+df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
+df_new = pd.merge(df_large, df_extra_large, left_on="idx", right_on="idx", suffixes=("_large", "_extra_large"))
+# 创建转移矩阵
+transition_matrix = pd.crosstab(df_small["score"], df_large["score"])
+transition_matrix_value = transition_matrix.values
+transition_matrix_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
+transition_matrix_value_extra_large = transition_matrix_extra_large.values
+
+transition_prob_matrix_small_large = transition_matrix_value / transition_matrix_value.sum(axis=1,keepdims=True)
+transition_prob_matrix_large_extra_large = transition_matrix_value_extra_large / transition_matrix_value_extra_large.sum(
+    axis=1, keepdims=True)
+
+fig, axs = plt.subplots(1, 2, figsize=(20, 8), gridspec_kw={'wspace': 0.2})
+plt.rcParams.update({'font.size': 14})
+cbar_ax = fig.add_axes([.91, .12, .03, .76])
+plt.subplot(1, 2, 1)
+sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
+            xticklabels=df_large["score"].unique(),
+            yticklabels=df_small["score"].unique(), annot_kws={"size": 16}, ax=axs[0], cbar=False)
+axs[0].set_title('Transition Matrix 410m to 2.8b')
+axs[0].set_xlabel('2.8b Model')
+axs[0].set_ylabel('410m Model')
+sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
+            xticklabels=df_extra_large["score"].unique(),
+            yticklabels=df_large["score"].unique(), annot_kws={"size": 16}, ax=axs[1],
+            cbar_ax=cbar_ax)
+axs[1].set_title('Transition Matrix 2.8b to 12b')
+axs[1].set_xlabel('12b Model')
+axs[1].set_ylabel('2.8b Model')
+plt.savefig('transition_matrix.png', bbox_inches='tight', dpi=600)
+plt.show()
 
 #df_reverse_1 = pd.merge(df_extra_large, df_large, on="idx", suffixes=("_extra_large", "_large"))
 #transition_matrix_reverse_1 = pd.crosstab(df_reverse_1["score_extra_large"], df_reverse_1["score_large"])

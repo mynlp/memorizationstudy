@@ -1,6 +1,6 @@
 import pandas
 import json
-from pythia.utils.mmap_dataset import MMapIndexedDataset
+#from pythia.utils.mmap_dataset import MMapIndexedDataset
 from tqdm import tqdm
 import ijson
 import pandas as pd
@@ -15,46 +15,46 @@ num_points = 20000
 
 memorized, half_memorized, forgotten = dict(), dict(), dict()
 index_set = set()
-with open("/work/gk77/share/memorizationstudy_freq/tokenid_frequency.1gram.json") as file:
-    n_gram_dict = json.load(file)
-def read_by_idx(mmap_ds, idx_list):
-    by_index_frequency_batched = []
-    for idx in idx_list:
-        sent_tokens = mmap_ds[int(idx)]
-        by_index_frequency = []
-        for token in sent_tokens[:80]:
-            by_index_frequency.append(n_gram_dict[str(token)])
-        by_index_frequency_batched.append(by_index_frequency)
-    return by_index_frequency_batched
-
-mmap_ds = MMapIndexedDataset('deduped_merge/document.bin', skip_warmup=True)
-for size in sizes:
-    df = pd.read_csv(f"generate_results/memorization_evals_{size}-deduped-v0_32_48_143000.csv", index_col=0)
-    #memorized = df[df['score'] == 1]
-    #half_memorized = df[df['score'] == 0.5]
-    #forgotten = df[df['score'] == 0]
-    quarter_memorized = df[df['score'] == 0.25]
-    #idx_full_memorization = memorized["idx"].tolist()
-    #idx_not_full_memorization = half_memorized["idx"].tolist()
-    #idx_half_memorization = forgotten["idx"].tolist()
-    idx_quarter_memorization = quarter_memorized["idx"].tolist()
-    #memorized_index = random.sample(idx_full_memorization, num_points)
-    #half_memorized_index = random.sample(idx_not_full_memorization, num_points)
-    #forgotten_index = random.sample(idx_half_memorization, num_points)
-    quarter_memorized_index = random.sample(idx_quarter_memorization, num_points)
-    #memorized_batched = read_by_idx(mmap_ds, memorized_index)
-    #half_memorized_batched = read_by_idx(mmap_ds, half_memorized_index)
-    #forgotten_batched = read_by_idx(mmap_ds, forgotten_index)
-    quarter_memorized_batched = read_by_idx(mmap_ds, quarter_memorized_index)
-    #averaged_memorized = torch.Tensor(memorized_batched).mean(dim=0)
-    #veraged_half_memorized = torch.Tensor(half_memorized_batched).mean(dim=0)
-    #averaged_forgotten = torch.Tensor(forgotten_batched).mean(dim=0)
-    averaged_quarter_memorized = torch.Tensor(quarter_memorized_batched).mean(dim=0)
-    print("size: ", size)
-    #print(averaged_memorized[:48])
-    #print(averaged_half_memorized[:48])
-    #print(averaged_forgotten[:48])
-    print(averaged_quarter_memorized[:48])
+# with open("/work/gk77/share/memorizationstudy_freq/tokenid_frequency.1gram.json") as file:
+#     n_gram_dict = json.load(file)
+# def read_by_idx(mmap_ds, idx_list):
+#     by_index_frequency_batched = []
+#     for idx in idx_list:
+#         sent_tokens = mmap_ds[int(idx)]
+#         by_index_frequency = []
+#         for token in sent_tokens[:80]:
+#             by_index_frequency.append(n_gram_dict[str(token)])
+#         by_index_frequency_batched.append(by_index_frequency)
+#     return by_index_frequency_batched
+#
+# mmap_ds = MMapIndexedDataset('deduped_merge/document.bin', skip_warmup=True)
+# for size in sizes:
+#     df = pd.read_csv(f"generate_results/memorization_evals_{size}-deduped-v0_32_48_143000.csv", index_col=0)
+#     #memorized = df[df['score'] == 1]
+#     #half_memorized = df[df['score'] == 0.5]
+#     #forgotten = df[df['score'] == 0]
+#     quarter_memorized = df[df['score'] == 0.25]
+#     #idx_full_memorization = memorized["idx"].tolist()
+#     #idx_not_full_memorization = half_memorized["idx"].tolist()
+#     #idx_half_memorization = forgotten["idx"].tolist()
+#     idx_quarter_memorization = quarter_memorized["idx"].tolist()
+#     #memorized_index = random.sample(idx_full_memorization, num_points)
+#     #half_memorized_index = random.sample(idx_not_full_memorization, num_points)
+#     #forgotten_index = random.sample(idx_half_memorization, num_points)
+#     quarter_memorized_index = random.sample(idx_quarter_memorization, num_points)
+#     #memorized_batched = read_by_idx(mmap_ds, memorized_index)
+#     #half_memorized_batched = read_by_idx(mmap_ds, half_memorized_index)
+#     #forgotten_batched = read_by_idx(mmap_ds, forgotten_index)
+#     quarter_memorized_batched = read_by_idx(mmap_ds, quarter_memorized_index)
+#     #averaged_memorized = torch.Tensor(memorized_batched).mean(dim=0)
+#     #veraged_half_memorized = torch.Tensor(half_memorized_batched).mean(dim=0)
+#     #averaged_forgotten = torch.Tensor(forgotten_batched).mean(dim=0)
+#     averaged_quarter_memorized = torch.Tensor(quarter_memorized_batched).mean(dim=0)
+#     print("size: ", size)
+#     #print(averaged_memorized[:48])
+#     #print(averaged_half_memorized[:48])
+#     #print(averaged_forgotten[:48])
+#     print(averaged_quarter_memorized[:48])
 
 size_70m_memorized=[1.7204e+09, 1.7526e+09, 1.7298e+09, 1.7660e+09, 1.6903e+09, 1.7650e+09,
         1.7450e+09, 1.7416e+09, 1.6979e+09, 1.7181e+09, 1.7516e+09, 1.7057e+09,
@@ -345,7 +345,7 @@ plt.text(40-2.2, 2*1e9, 'Decoding\nHalf Point', rotation=0, size=12)
 plt.title('Uni-gram Frequency Memorization Analysis at Each Sentence Index', fontsize=16)
 plt.xlabel('Index of the Sentence', fontsize=16)
 plt.ylabel('Frequency', fontsize=16)
-plt.legend(fontsize=12)
+plt.legend(fontsize=16)
 plt.grid(True)
 #plt.yscale('log')
 # plt.title('Comparison of Memorization Rates', fontsize=16)
