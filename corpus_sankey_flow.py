@@ -94,31 +94,39 @@ transition_matrix_value_reverse_2 = transition_matrix_reverse_2.values
 transition_prob_matrix_reverse_2 = transition_matrix_value_reverse_2 / transition_matrix_value_reverse_2.sum(axis=1, keepdims=True)
 
 # Plotting the heat maps
-fig, axs = plt.subplots(1, 4, figsize=(30, 8), gridspec_kw={'wspace': 0.4})
+fig, axs = plt.subplots(1, 4, figsize=(32, 8), gridspec_kw={'wspace': 0.4})
 plt.rcParams.update({'font.size': 16})
-cbar_ax = fig.add_axes([.91, .3, .03, .4])
+cbar_ax = fig.add_axes([.92, .15, .02, .7])  # Adjust the position and size of the color bar
+
+# Ensure the aspect ratio of each heatmap is 1
+for ax in axs:
+    ax.set_aspect('equal')
 
 # Small to Large Model Size
-sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[0], cbar=False)
-axs[0].set_title('Transition Matrix 410m to 2.8b')
+sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[0], cbar=False, square=True)
+axs[0].set_title('Transition Matrix\n410m to 2.8b')
 axs[0].set_xlabel('2.8b Model')
 axs[0].set_ylabel('410m Model')
 
-sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[1], cbar_ax=cbar_ax)
-axs[1].set_title('Transition Matrix 2.8b to 12b')
+sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[1], cbar=False, square=True)
+axs[1].set_title('Transition Matrix\n2.8b to 12b')
 axs[1].set_xlabel('12b Model')
 axs[1].set_ylabel('2.8b Model')
 
 # Large to Small Model Size
-sns.heatmap(transition_matrix_value_reverse_large_extra_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[2], cbar=False)
-axs[2].set_title('Transition Matrix 12b to 2.8b')
+sns.heatmap(transition_matrix_value_reverse_large_extra_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[2], cbar=False, square=True)
+axs[2].set_title('Transition Matrix\n12b to 2.8b')
 axs[2].set_xlabel('2.8b Model')
 axs[2].set_ylabel('12b Model')
 
-sns.heatmap(transition_prob_matrix_reverse_2, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[3], cbar_ax=cbar_ax)
-axs[3].set_title('Transition Matrix 2.8b to 410m')
+sns.heatmap(transition_prob_matrix_reverse_2, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[3], cbar_ax=cbar_ax, square=True)
+axs[3].set_title('Transition Matrix\n2.8b to 410m')
 axs[3].set_xlabel('410m Model')
 axs[3].set_ylabel('2.8b Model')
+
+# Add group titles with bold text
+fig.text(0.25, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsize=20, fontweight='bold')
+fig.text(0.75, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
 
 plt.savefig('combined_transition_matrix.png', bbox_inches='tight', dpi=600)
 plt.show()
