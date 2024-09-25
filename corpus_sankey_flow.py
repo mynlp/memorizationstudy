@@ -8,40 +8,40 @@ from tqdm import tqdm
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-# def redefine_score(score):
-#     if score <= 0.2:
-#         return 'very low'
-#     elif score <= 0.4:
-#         return 'low'
-#     elif score <= 0.6:
-#         return 'medium'
-#     elif score <= 0.8:
-#         return 'high'
-#     else:
-#         return 'very high'
-
-
 def redefine_score(score):
-    if score <= 0.1:
+    if score <= 0.2:
         return 'very low'
-    elif score <= 0.2:
-        return 'low'
-    elif score <= 0.3:
-        return 'low medium'
     elif score <= 0.4:
-        return 'medium'
-    elif score <= 0.5:
-        return 'high medium'
+        return 'low'
     elif score <= 0.6:
-        return 'high'
-    elif score <= 0.7:
-        return 'very high'
+        return 'medium'
     elif score <= 0.8:
-        return 'extremely high'
-    elif score <= 0.9:
-        return 'almost perfect'
+        return 'high'
     else:
-        return 'perfect'
+        return 'very high'
+
+
+# def redefine_score(score):
+#     if score <= 0.1:
+#         return 'very low'
+#     elif score <= 0.2:
+#         return 'low'
+#     elif score <= 0.3:
+#         return 'low medium'
+#     elif score <= 0.4:
+#         return 'medium'
+#     elif score <= 0.5:
+#         return 'high medium'
+#     elif score <= 0.6:
+#         return 'high'
+#     elif score <= 0.7:
+#         return 'very high'
+#     elif score <= 0.8:
+#         return 'extremely high'
+#     elif score <= 0.9:
+#         return 'almost perfect'
+#     else:
+#         return 'perfect'
 
 random.seed(42)
 small_model_size = "410m"
@@ -70,8 +70,7 @@ df_extra_large["score"] = df_extra_large["score"].apply(redefine_score)
 df_small["idx"] = df_small.index
 df_large["idx"] = df_large.index
 df_extra_large["idx"] = df_extra_large.index
-score_labels = ['very low', 'low', 'low medium', 'medium', 'high medium', 'high', 'very high', 'extremely high',
-                'almost perfect', 'perfect']
+score_labels = ['very low', 'low','medium', 'high', 'very high']
 
 # 连接 df_small 和 df_large
 df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
