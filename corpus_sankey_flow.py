@@ -90,14 +90,14 @@ plt.rcParams.update({'font.size': 16})
 cbar_ax = fig.add_axes([.91, .12, .03, .76])
 plt.subplot(1, 2, 1)
 sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=df_large["score"].unique(),
-            yticklabels=df_small["score"].unique(), annot_kws={"size": 16}, ax=axs[0], cbar=False)
+            xticklabels=score_labels,
+            yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[0], cbar=False)
 axs[0].set_title('Transition Matrix 410m to 2.8b')
 axs[0].set_xlabel('2.8b Model')
 axs[0].set_ylabel('410m Model')
 sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=df_extra_large["score"].unique(),
-            yticklabels=df_large["score"].unique(), annot_kws={"size": 16}, ax=axs[1],
+            xticklabels=score_labels,
+            yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[1],
             cbar_ax=cbar_ax)
 axs[1].set_title('Transition Matrix 2.8b to 12b')
 axs[1].set_xlabel('12b Model')
