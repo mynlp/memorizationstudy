@@ -87,7 +87,7 @@ transition_prob_matrix_large_extra_large = transition_matrix_value_extra_large /
     axis=1, keepdims=True)
 
 fig, axs = plt.subplots(1, 2, figsize=(20, 8), gridspec_kw={'wspace': 0.2})
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 16})
 cbar_ax = fig.add_axes([.91, .12, .03, .76])
 plt.subplot(1, 2, 1)
 sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
@@ -122,7 +122,7 @@ transition_prob_matrix_reverse_2 = transition_matrix_value_reverse_2 / transitio
 
 # 绘制反向转移矩阵的热力图
 fig, axs = plt.subplots(1, 2, figsize=(20, 8), gridspec_kw={'wspace': 0.2})
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 16})
 
 cbar_ax = fig.add_axes([.91, .12, .03, .76])
 plt.subplot(1, 2, 1)
