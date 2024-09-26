@@ -1,12 +1,9 @@
 import matplotlib.pyplot as plt
-import random
-import plotly.graph_objects as go
-import pandas as pd
-import plotly.io as pio
-from tqdm import tqdm
-import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
+import numpy as np
+
+# 定义用于重新定义评分的函数
 def redefine_score(score):
     if score <= 0.2:
         return 'very low'
@@ -19,222 +16,116 @@ def redefine_score(score):
     else:
         return 'very high'
 
-random.seed(42)
+# 设定随机种子（如果需要）
+np.random.seed(42)
+
+# 定义模型大小
 small_model_size = "410m"
 large_model_size = "2.8b"
 extra_large_model_size = "12b"
+
+# 读取数据集（请根据实际文件路径和名称替换下面的路径）
 context = 32
 continuation = 16
-prefix = 'deduped_merge/document.bin'
-print(prefix)
-buff_size = 2049*1024*2
-print("Building dataset")
-#mmap_ds = MMapIndexedDataset(prefix, skip_warmup=True)
-
 df_small = pd.read_csv(f"generate_results/memorization_evals_{small_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
 df_large = pd.read_csv(f"generate_results/memorization_evals_{large_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
 df_extra_large = pd.read_csv(f"generate_results/memorization_evals_{extra_large_model_size}-deduped-v0_{context}_{context+continuation}_143000.csv", index_col=0)
-# df_small_memorized = df_small[df_small["score"] == 1]
-# df_large_memorized = df_large[df_large["score"] == 1]
-# df_extra_large_memorized = df_extra_large[df_extra_large["score"] == 1]
-scores = pd.concat([df_small["score"], df_large["score"]]).unique()
 
+# 应用评分重新定义函数
 df_small['score'] = df_small['score'].apply(redefine_score)
 df_large['score'] = df_large['score'].apply(redefine_score)
-df_extra_large["score"] = df_extra_large["score"].apply(redefine_score)
+df_extra_large['score'] = df_extra_large['score'].apply(redefine_score)
 
-df_small["idx"] = df_small.index
-df_large["idx"] = df_large.index
-df_extra_large["idx"] = df_extra_large.index
-score_labels = ['very low', 'low','medium', 'high', 'very high']
+# 确保每个DataFrame都有'idx'列，用于合并
+df_small = df_small.reset_index().rename(columns={'index': 'idx'})
+df_large = df_large.reset_index().rename(columns={'index': 'idx'})
+df_extra_large = df_extra_large.reset_index().rename(columns={'index': 'idx'})
 
-df_small_large = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
-df_large_extra_large = pd.merge(df_large, df_extra_large, on="idx", suffixes=("_large", "_extra_large"))
-transition_matrix_small_large = pd.crosstab(df_small_large["score_small"], df_small_large["score_large"])
-transition_matrix_large_extra_large = pd.crosstab(df_large_extra_large["score_large"], df_large_extra_large["score_extra_large"])
-transition_prob_matrix_small_large = transition_matrix_small_large.div(transition_matrix_small_large.sum(axis=1), axis=0)
+# 定义评分标签
+score_labels = ['very low', 'low', 'medium', 'high', 'very high']
 
-# Transition probabilities from large to extra large
-transition_prob_matrix_large_extra_large = transition_matrix_large_extra_large.div(transition_matrix_large_extra_large.sum(axis=1), axis=0)
-df_large_small = pd.merge(df_large, df_small, on="idx", suffixes=("_large", "_small"))
+### 计算从小模型到大模型的转移矩阵 P(score_large | score_small) ###
 
-# Compute reverse transition matrix from large to small
-transition_matrix_large_small = pd.crosstab(df_large_small["score_large"], df_large_small["score_small"])
+# 合并 df_small 和 df_large
+df_small_large = pd.merge(df_small[['idx', 'score']], df_large[['idx', 'score']], on='idx', suffixes=('_small', '_large'))
 
-# Normalize to get transition probabilities
-transition_prob_matrix_large_small = transition_matrix_large_small.div(transition_matrix_large_small.sum(axis=1), axis=0)
+# 创建转移矩阵：行是小模型评分，列是大模型评分
+transition_matrix_small_large = pd.crosstab(df_small_large['score_small'], df_small_large['score_large'])
+transition_matrix_small_large = transition_matrix_small_large.reindex(index=score_labels, columns=score_labels, fill_value=0)
 
-# Merge df_extra_large and df_large on 'idx' for reverse transition
-df_extra_large_large = pd.merge(df_extra_large, df_large, on="idx", suffixes=("_extra_large", "_large"))
+# 计算条件概率矩阵 P(score_large | score_small)
+transition_prob_matrix_small_large = transition_matrix_small_large.div(transition_matrix_small_large.sum(axis=1), axis=0).fillna(0)
 
-# Compute reverse transition matrix from extra large to large
-transition_matrix_extra_large_large = pd.crosstab(df_extra_large_large["score_extra_large"], df_extra_large_large["score_large"])
+### 计算从大模型到更大模型的转移矩阵 P(score_extra_large | score_large) ###
 
-# Normalize to get transition probabilities
-transition_prob_matrix_extra_large_large = transition_matrix_extra_large_large.div(transition_matrix_extra_large_large.sum(axis=1), axis=0)
+# 合并 df_large 和 df_extra_large
+df_large_extra_large = pd.merge(df_large[['idx', 'score']], df_extra_large[['idx', 'score']], on='idx', suffixes=('_large', '_extra_large'))
 
-fig, axs = plt.subplots(1, 4, figsize=(32, 8), gridspec_kw={'wspace': 0.4})
-plt.rcParams.update({'font.size': 16})
-cbar_ax = fig.add_axes([.92, .15, .02, .7])  # Adjust the position and size of the color bar
+# 创建转移矩阵：行是大模型评分，列是更大模型评分
+transition_matrix_large_extra_large = pd.crosstab(df_large_extra_large['score_large'], df_large_extra_large['score_extra_large'])
+transition_matrix_large_extra_large = transition_matrix_large_extra_large.reindex(index=score_labels, columns=score_labels, fill_value=0)
 
-# Ensure the aspect ratio of each heatmap is 1
-for ax in axs:
-    ax.set_aspect('equal')
+# 计算条件概率矩阵 P(score_extra_large | score_large)
+transition_prob_matrix_large_extra_large = transition_matrix_large_extra_large.div(transition_matrix_large_extra_large.sum(axis=1), axis=0).fillna(0)
 
-# Small to Large Model Size
-sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16},
-            ax=axs[0], cbar=False, square=True)
-axs[0].set_title('Transition Matrix\n410m to 2.8b')
-axs[0].set_xlabel('2.8b Model')
-axs[0].set_ylabel('410m Model')
+### 计算从更大模型到大模型的逆转移矩阵 P(score_large | score_extra_large) ###
 
-# Large to Extra Large Model Size
-sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16},
-            ax=axs[1], cbar=False, square=True)
-axs[1].set_title('Transition Matrix\n2.8b to 12b')
-axs[1].set_xlabel('12b Model')
-axs[1].set_ylabel('2.8b Model')
+# 合并 df_extra_large 和 df_large
+df_extra_large_large = pd.merge(df_extra_large[['idx', 'score']], df_large[['idx', 'score']], on='idx', suffixes=('_extra_large', '_large'))
 
-# Reverse Transition: Extra Large to Large Model Size
-sns.heatmap(transition_prob_matrix_extra_large_large, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16},
-            ax=axs[2], cbar=False, square=True)
-axs[2].set_title('Transition Matrix\n12b to 2.8b')
-axs[2].set_xlabel('2.8b Model')
-axs[2].set_ylabel('12b Model')
+# 创建逆转移矩阵：行是更大模型评分，列是大模型评分
+transition_matrix_extra_large_large = pd.crosstab(df_extra_large_large['score_extra_large'], df_extra_large_large['score_large'])
+transition_matrix_extra_large_large = transition_matrix_extra_large_large.reindex(index=score_labels, columns=score_labels, fill_value=0)
 
-# Reverse Transition: Large to Small Model Size
-sns.heatmap(transition_prob_matrix_large_small, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16},
-            ax=axs[3], cbar_ax=cbar_ax, square=True)
-axs[3].set_title('Transition Matrix\n2.8b to 410m')
-axs[3].set_xlabel('410m Model')
-axs[3].set_ylabel('2.8b Model')
+# 计算条件概率矩阵 P(score_large | score_extra_large)
+transition_prob_matrix_extra_large_large = transition_matrix_extra_large_large.div(transition_matrix_extra_large_large.sum(axis=1), axis=0).fillna(0)
 
-# Add group titles with bold text
-fig.text(0.30, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsize=20, fontweight='bold')
-fig.text(0.70, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
+### 计算从大模型到小模型的逆转移矩阵 P(score_small | score_large) ###
 
-plt.savefig('combined_transition_matrix.png', bbox_inches='tight', dpi=600)
+# 合并 df_large 和 df_small
+df_large_small = pd.merge(df_large[['idx', 'score']], df_small[['idx', 'score']], on='idx', suffixes=('_large', '_small'))
+
+# 创建逆转移矩阵：行是大模型评分，列是小模型评分
+transition_matrix_large_small = pd.crosstab(df_large_small['score_large'], df_large_small['score_small'])
+transition_matrix_large_small = transition_matrix_large_small.reindex(index=score_labels, columns=score_labels, fill_value=0)
+
+# 计算条件概率矩阵 P(score_small | score_large)
+transition_prob_matrix_large_small = transition_matrix_large_small.div(transition_matrix_large_small.sum(axis=1), axis=0).fillna(0)
+
+### 绘制所有四个转移矩阵的热力图 ###
+
+# 设置绘图风格和大小
+sns.set(style='whitegrid', font_scale=1.2)
+fig, axs = plt.subplots(1, 4, figsize=(28, 6))
+plt.rcParams.update({'font.size': 12})
+
+# 从小模型到大模型的转移矩阵
+sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="Blues", fmt=".2f",
+            xticklabels=score_labels, yticklabels=score_labels, ax=axs[0], cbar=False, square=True)
+axs[0].set_title('410m to 2.8b\nP(score_large | score_small)')
+axs[0].set_xlabel('Large Model Score')
+axs[0].set_ylabel('Small Model Score')
+
+# 从大模型到更大模型的转移矩阵
+sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="Blues", fmt=".2f",
+            xticklabels=score_labels, yticklabels=score_labels, ax=axs[1], cbar=False, square=True)
+axs[1].set_title('2.8b to 12b\nP(score_extra_large | score_large)')
+axs[1].set_xlabel('Extra Large Model Score')
+axs[1].set_ylabel('Large Model Score')
+
+# 从更大模型到大模型的逆转移矩阵
+sns.heatmap(transition_prob_matrix_extra_large_large, annot=True, cmap="Greens", fmt=".2f",
+            xticklabels=score_labels, yticklabels=score_labels, ax=axs[2], cbar=False, square=True)
+axs[2].set_title('12b to 2.8b\nP(score_large | score_extra_large)')
+axs[2].set_xlabel('Large Model Score')
+axs[2].set_ylabel('Extra Large Model Score')
+
+# 从大模型到小模型的逆转移矩阵
+sns.heatmap(transition_prob_matrix_large_small, annot=True, cmap="Greens", fmt=".2f",
+            xticklabels=score_labels, yticklabels=score_labels, ax=axs[3], cbar=True, square=True)
+axs[3].set_title('2.8b to 410m\nP(score_small | score_large)')
+axs[3].set_xlabel('Small Model Score')
+axs[3].set_ylabel('Large Model Score')
+
+plt.tight_layout()
 plt.show()
-#
-# # 连接 df_small 和 df_large
-# df = pd.merge(df_small, df_large, on="idx", suffixes=("_small", "_large"))
-# df_new = pd.merge(df_large, df_extra_large, left_on="idx", right_on="idx", suffixes=("_large", "_extra_large"))
-#
-# # Create transition matrices
-# transition_matrix_small_large = pd.crosstab(df_small["score"], df_large["score"])
-# transition_matrix_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
-# transition_prob_matrix_small_large = transition_matrix_small_large.values / transition_matrix_small_large.values.sum(axis=1, keepdims=True)
-# transition_prob_matrix_large_extra_large = transition_matrix_extra_large.values / transition_matrix_extra_large.values.sum(axis=1, keepdims=True)
-#
-# # Reverse transition matrices
-# transition_matrix_reverse_large_extra_large = pd.crosstab(df_extra_large["score"], df_large["score"])
-# transition_matrix_value_reverse_large_extra_large = transition_matrix_reverse_large_extra_large.values / transition_matrix_reverse_large_extra_large.values.sum(axis=1, keepdims=True)
-# df_reverse_large_small = pd.merge(df_large, df_small, on="idx", suffixes=("_large", "_small"))
-# transition_matrix_reverse_2 = pd.crosstab(df_reverse_large_small["score_large"], df_reverse_large_small["score_small"])
-# transition_matrix_value_reverse_2 = transition_matrix_reverse_2.values / transition_matrix_reverse_2.values.sum(axis=1, keepdims=True)
-#
-# #transition_matrix_value_reverse_large_extra_large = transition_matrix_value_reverse_large_extra_large / transition_matrix_value_reverse_large_extra_large.sum(axis=1, keepdims=True)
-# #df_reverse_large_small = pd.merge(df_large, df_small, on="idx", suffixes=("_large", "_small"))
-# #transition_matrix_reverse_2 = pd.crosstab(df_reverse_large_small["score_large"], df_reverse_large_small["score_small"])
-# #transition_matrix_value_reverse_2 = transition_matrix_reverse_2.values
-# #transition_prob_matrix_reverse_2 = transition_matrix_value_reverse_2 / transition_matrix_value_reverse_2.sum(axis=1, keepdims=True)
-#
-# # Plotting the heat maps
-# fig, axs = plt.subplots(1, 4, figsize=(32, 8), gridspec_kw={'wspace': 0.4})
-# plt.rcParams.update({'font.size': 16})
-# cbar_ax = fig.add_axes([.92, .15, .02, .7])  # Adjust the position and size of the color bar
-#
-# # Ensure the aspect ratio of each heatmap is 1
-# for ax in axs:
-#     ax.set_aspect('equal')
-#
-# # Small to Large Model Size
-# sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[0], cbar=False, square=True)
-# axs[0].set_title('Transition Matrix\n410m to 2.8b')
-# axs[0].set_xlabel('2.8b Model')
-# axs[0].set_ylabel('410m Model')
-#
-# sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[1], cbar=False, square=True)
-# axs[1].set_title('Transition Matrix\n2.8b to 12b')
-# axs[1].set_xlabel('12b Model')
-# axs[1].set_ylabel('2.8b Model')
-#
-# # Large to Small Model Size
-# sns.heatmap(transition_matrix_value_reverse_large_extra_large, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[2], cbar=False, square=True)
-# axs[2].set_title('Transition Matrix\n12b to 2.8b')
-# axs[2].set_xlabel('2.8b Model')
-# axs[2].set_ylabel('12b Model')
-#
-# sns.heatmap(transition_matrix_value_reverse_2, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[3], cbar_ax=cbar_ax, square=True)
-# axs[3].set_title('Transition Matrix\n2.8b to 410m')
-# axs[3].set_xlabel('410m Model')
-# axs[3].set_ylabel('2.8b Model')
-#
-# # Add group titles with bold text
-# fig.text(0.30, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsize=20, fontweight='bold')
-# fig.text(0.70, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
-#
-# plt.savefig('combined_transition_matrix.png', bbox_inches='tight', dpi=600)
-# plt.show()
-
-
-
-# label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
-#
-# transition_matrix_large_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
-# label_large_extra_large = list(transition_matrix_large_extra_large.index.astype(str)) + list(
-#     transition_matrix_large_extra_large.columns.astype(str))
-# # 为Sankey图生成必要的数据
-# #label = list(transition_matrix.index.astype(str)) + list(transition_matrix.columns.astype(str))
-# source = []
-# target = []
-# value = []
-#
-# for r, row in tqdm(enumerate(transition_matrix.index)):
-#     for c, col in enumerate(transition_matrix.columns):
-#         source.append(r)
-#         target.append(c + len(transition_matrix.index))
-#         value.append(transition_matrix.at[row, col])
-#
-# for r, row in tqdm(enumerate(transition_matrix_large_extra_large.index)):
-#     for c, col in enumerate(transition_matrix_large_extra_large.columns):
-#         source.append(r + len(transition_matrix.index))  # 索引偏移，以便于连接到上一层
-#         target.append(c + len(transition_matrix.index) + len(transition_matrix_large_extra_large.index))  # 索引偏移
-#         value.append(transition_matrix_large_extra_large.at[row, col])
-#
-# label = label + label_large_extra_large
-# color = ["blue", "red", "green", "yellow", "purple"] * (len(label) // 5 + 1)
-#
-# # 创建Sankey图
-# fig = go.Figure(data=[go.Sankey(
-#     node=dict(
-#         pad=5,
-#         thickness=20,
-#         line=dict(color="black", width=0.5),
-#         label=label,
-#         color=color[:len(label)],  # 确保颜色列表和标签列表长度一致
-#     ),
-#     link=dict(
-#         source=source,
-#         target=target,
-#         value=value,
-#         color=["rgba(31,119,180,0.8)", "rgba(255,127,14,0.8)",
-#                "rgba(44,160,44,0.8)", "rgba(214,39,40,0.8)",
-#                "rgba(148,103,189,0.8)", "rgba(140,86,75,0.8)",
-#                "rgba(227,119,194,0.8)", "rgba(127,127,127,0.8)",
-#                "rgba(188,189,34,0.8)"] * (len(value) // 9 + 1)  # 确保颜色列表和值列表长度一致
-#     ))])
-# # 更新图设定
-# fig.update_layout(
-#     title_text="Sankey Diagram from small to large to extra_large",  # 修改标题
-#     font=dict(
-#         family="Times New Roman",  # 更改字体类型
-#         size=15,
-#     ),
-# )
-# pio.write_image(fig, 'sankey_diagram.png', dpi=800)
-# #fig.show()
