@@ -37,9 +37,9 @@ df_large['score'] = df_large['score'].apply(redefine_score)
 df_extra_large['score'] = df_extra_large['score'].apply(redefine_score)
 
 # 确保每个DataFrame都有'idx'列，用于合并
-df_small = df_small.reset_index().rename(columns={'index': 'idx'})
-df_large = df_large.reset_index().rename(columns={'index': 'idx'})
-df_extra_large = df_extra_large.reset_index().rename(columns={'index': 'idx'})
+# df_small = df_small.reset_index().rename(columns={'index': 'idx'})
+# df_large = df_large.reset_index().rename(columns={'index': 'idx'})
+# df_extra_large = df_extra_large.reset_index().rename(columns={'index': 'idx'})
 
 # 定义评分标签
 score_labels = ['very low', 'low', 'medium', 'high', 'very high']
@@ -95,37 +95,43 @@ transition_prob_matrix_large_small = transition_matrix_large_small.div(transitio
 ### 绘制所有四个转移矩阵的热力图 ###
 
 # 设置绘图风格和大小
-sns.set(style='whitegrid', font_scale=1.2)
-fig, axs = plt.subplots(1, 4, figsize=(28, 6))
-plt.rcParams.update({'font.size': 12})
-
+#sns.set(style='whitegrid', font_scale=1.2)
+fig, axs = plt.subplots(1, 4, figsize=(32, 8), gridspec_kw={'wspace': 0.4})
+plt.rcParams.update({'font.size': 16})
+cbar_ax = fig.add_axes([.92, .15, .02, .7])
+for ax in axs:
+    ax.set_aspect('equal')
 # 从小模型到大模型的转移矩阵
-sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="Blues", fmt=".2f",
+sns.heatmap(transition_prob_matrix_small_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=score_labels, yticklabels=score_labels, ax=axs[0], cbar=False, square=True)
-axs[0].set_title('410m to 2.8b\nP(score_large | score_small)')
-axs[0].set_xlabel('Large Model Score')
-axs[0].set_ylabel('Small Model Score')
+axs[0].set_title('Transition Matrix \n 410m to 2.8b')
+axs[0].set_xlabel('2.8b Model')
+axs[0].set_ylabel('410m Model')
 
 # 从大模型到更大模型的转移矩阵
-sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="Blues", fmt=".2f",
+sns.heatmap(transition_prob_matrix_large_extra_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=score_labels, yticklabels=score_labels, ax=axs[1], cbar=False, square=True)
-axs[1].set_title('2.8b to 12b\nP(score_extra_large | score_large)')
-axs[1].set_xlabel('Extra Large Model Score')
-axs[1].set_ylabel('Large Model Score')
+axs[1].set_title('Transition Matrix \n 2.8b to 12b')
+axs[1].set_xlabel('12b Model')
+axs[1].set_ylabel('2.8b Model')
 
 # 从更大模型到大模型的逆转移矩阵
-sns.heatmap(transition_prob_matrix_extra_large_large, annot=True, cmap="Greens", fmt=".2f",
+sns.heatmap(transition_prob_matrix_extra_large_large, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=score_labels, yticklabels=score_labels, ax=axs[2], cbar=False, square=True)
-axs[2].set_title('12b to 2.8b\nP(score_large | score_extra_large)')
-axs[2].set_xlabel('Large Model Score')
-axs[2].set_ylabel('Extra Large Model Score')
+axs[2].set_title('Inverse Transition Matrix\n 12b to 2.8b')
+axs[2].set_xlabel('2.8b Model')
+axs[2].set_ylabel('12b Model')
 
 # 从大模型到小模型的逆转移矩阵
-sns.heatmap(transition_prob_matrix_large_small, annot=True, cmap="Greens", fmt=".2f",
+sns.heatmap(transition_prob_matrix_large_small, annot=True, cmap="viridis", fmt=".3f",
             xticklabels=score_labels, yticklabels=score_labels, ax=axs[3], cbar=True, square=True)
-axs[3].set_title('2.8b to 410m\nP(score_small | score_large)')
-axs[3].set_xlabel('Small Model Score')
-axs[3].set_ylabel('Large Model Score')
+axs[3].set_title('Inverse Transition Matrix\n 2.8b to 410m')
+axs[3].set_xlabel('410m Model')
+axs[3].set_ylabel('2.8b Model')
+
+fig.text(0.30, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsize=20, fontweight='bold')
+fig.text(0.70, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
 
 plt.tight_layout()
+plt.savefig('combined_trainsition_matrix.png', dpi=600)
 plt.show()
