@@ -20,29 +20,6 @@ def redefine_score(score):
     else:
         return 'very high'
 
-
-# def redefine_score(score):
-#     if score <= 0.1:
-#         return 'very low'
-#     elif score <= 0.2:
-#         return 'low'
-#     elif score <= 0.3:
-#         return 'low medium'
-#     elif score <= 0.4:
-#         return 'medium'
-#     elif score <= 0.5:
-#         return 'high medium'
-#     elif score <= 0.6:
-#         return 'high'
-#     elif score <= 0.7:
-#         return 'very high'
-#     elif score <= 0.8:
-#         return 'extremely high'
-#     elif score <= 0.9:
-#         return 'almost perfect'
-#     else:
-#         return 'perfect'
-
 random.seed(42)
 small_model_size = "410m"
 large_model_size = "2.8b"
@@ -78,20 +55,22 @@ df_new = pd.merge(df_large, df_extra_large, left_on="idx", right_on="idx", suffi
 
 # Create transition matrices
 transition_matrix_small_large = pd.crosstab(df_small["score"], df_large["score"])
-transition_matrix_value_small_large = transition_matrix_small_large.values
 transition_matrix_extra_large = pd.crosstab(df_large["score"], df_extra_large["score"])
-transition_matrix_value_extra_large = transition_matrix_extra_large.values
-transition_prob_matrix_small_large = transition_matrix_value_small_large / transition_matrix_value_small_large.sum(axis=1, keepdims=True)
-transition_prob_matrix_large_extra_large = transition_matrix_value_extra_large / transition_matrix_value_extra_large.sum(axis=1, keepdims=True)
+transition_prob_matrix_small_large = transition_matrix_small_large.values / transition_matrix_small_large.values.sum(axis=1, keepdims=True)
+transition_prob_matrix_large_extra_large = transition_matrix_extra_large.values / transition_matrix_extra_large.values.sum(axis=1, keepdims=True)
 
 # Reverse transition matrices
 transition_matrix_reverse_large_extra_large = pd.crosstab(df_extra_large["score"], df_large["score"])
-transition_matrix_value_reverse_large_extra_large = transition_matrix_reverse_large_extra_large.values
-transition_matrix_value_reverse_large_extra_large = transition_matrix_value_reverse_large_extra_large / transition_matrix_value_reverse_large_extra_large.sum(axis=1, keepdims=True)
+transition_matrix_value_reverse_large_extra_large = transition_matrix_reverse_large_extra_large.values / transition_matrix_reverse_large_extra_large.values.sum(axis=1, keepdims=True)
 df_reverse_large_small = pd.merge(df_large, df_small, on="idx", suffixes=("_large", "_small"))
 transition_matrix_reverse_2 = pd.crosstab(df_reverse_large_small["score_large"], df_reverse_large_small["score_small"])
-transition_matrix_value_reverse_2 = transition_matrix_reverse_2.values
-transition_prob_matrix_reverse_2 = transition_matrix_value_reverse_2 / transition_matrix_value_reverse_2.sum(axis=1, keepdims=True)
+transition_matrix_value_reverse_2 = transition_matrix_reverse_2.values / transition_matrix_reverse_2.values.sum(axis=1, keepdims=True)
+
+#transition_matrix_value_reverse_large_extra_large = transition_matrix_value_reverse_large_extra_large / transition_matrix_value_reverse_large_extra_large.sum(axis=1, keepdims=True)
+#df_reverse_large_small = pd.merge(df_large, df_small, on="idx", suffixes=("_large", "_small"))
+#transition_matrix_reverse_2 = pd.crosstab(df_reverse_large_small["score_large"], df_reverse_large_small["score_small"])
+#transition_matrix_value_reverse_2 = transition_matrix_reverse_2.values
+#transition_prob_matrix_reverse_2 = transition_matrix_value_reverse_2 / transition_matrix_value_reverse_2.sum(axis=1, keepdims=True)
 
 # Plotting the heat maps
 fig, axs = plt.subplots(1, 4, figsize=(32, 8), gridspec_kw={'wspace': 0.4})
@@ -119,14 +98,14 @@ axs[2].set_title('Transition Matrix\n12b to 2.8b')
 axs[2].set_xlabel('2.8b Model')
 axs[2].set_ylabel('12b Model')
 
-sns.heatmap(transition_prob_matrix_reverse_2, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[3], cbar_ax=cbar_ax, square=True)
+sns.heatmap(transition_matrix_value_reverse_2, annot=True, cmap="viridis", fmt=".3f", xticklabels=score_labels, yticklabels=score_labels, annot_kws={"size": 16}, ax=axs[3], cbar_ax=cbar_ax, square=True)
 axs[3].set_title('Transition Matrix\n2.8b to 410m')
 axs[3].set_xlabel('410m Model')
 axs[3].set_ylabel('2.8b Model')
 
 # Add group titles with bold text
-fig.text(0.25, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsize=20, fontweight='bold')
-fig.text(0.75, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
+fig.text(0.30, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsize=20, fontweight='bold')
+fig.text(0.70, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
 
 plt.savefig('combined_transition_matrix.png', bbox_inches='tight', dpi=600)
 plt.show()
