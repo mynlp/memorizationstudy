@@ -124,7 +124,7 @@ axs[2].set_ylabel('12b Model')
 
 # 从大模型到小模型的逆转移矩阵
 sns.heatmap(transition_prob_matrix_large_small, annot=True, cmap="viridis", fmt=".3f",
-            xticklabels=score_labels, yticklabels=score_labels, ax=axs[3], annot_kws={"size": 16}, cbar=cbar_ax, square=True)
+            xticklabels=score_labels, yticklabels=score_labels, ax=axs[3], annot_kws={"size": 16}, cbar_ax=cbar_ax, square=True)
 axs[3].set_title('Inverse Transition Matrix\n 2.8b to 410m')
 axs[3].set_xlabel('410m Model')
 axs[3].set_ylabel('2.8b Model')
@@ -133,5 +133,5 @@ fig.text(0.30, 0.95, 'Small Model Size to Large Model Size', ha='center', fontsi
 fig.text(0.70, 0.95, 'Large Model Size to Small Model Size', ha='center', fontsize=20, fontweight='bold')
 
 #plt.tight_layout()
-plt.savefig('combined_transition_matrix.png', dpi=600)
+plt.savefig('combined_transition_matrix.png', bbox_inches="tight", dpi=600)
 plt.show()
